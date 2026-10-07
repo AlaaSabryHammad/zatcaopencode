@@ -1,31 +1,387 @@
-// ZatcaWeb data model.
-// Phase 1 sets up the datasource and client only; domain models arrive phase by phase
-// (Phase 2: identity, tenancy, RBAC, audit). See design/CLAUDE_CODE_PROMPT.md §5.
+// ZatcaWeb data model. See design/CLAUDE_CODE_PROMPT.md §5 and docs/DECISIONS.md.
 //
 // Conventions:
 //   id        String   @id @default(uuid()) @db.Uuid
-//   money     Decimal  @db.Decimal(18, 2)
-//   quantity  Decimal  @db.Decimal(18, 4)
-//   rate      Decimal  @db.Decimal(5, 2)
-//   every tenant table has organizationId (UUID, indexed, FK) + RLS policy.
+//   money     Decimal  @db.Decimal(18, 2) · quantity Decimal @db.Decimal(18, 4) · rate Decimal @db.Decimal(5, 2)
+//   timestamps @db.Timestamptz(6), stored UTC, displayed Asia/Riyadh
+//   every tenant table has organizationId (UUID, indexed, FK) + an RLS policy (see migrations/*_rls).
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = []
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_MIGRATION_URL")
-  directUrl         = env("DATABASE_MIGRATION_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-/// Platform-level, non-tenant table used for readiness checks and to prove migrations run.
+// ───────────────────────────── Platform ─────────────────────────────
+
+/// Platform-level key/value (schema version, seed markers).
 model SystemInfo {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   @@map("system_info")
+}
+
+/// Fixed-window counters for the PostgreSQL rate-limit store (used when Redis isn't configured).
+model RateLimitBucket {
+  key     String   @id
+  count   Int
+  resetAt DateTime @map("reset_at") @db.Timestamptz(6)
+
+  @@index([resetAt])
+  @@map("rate_limit_bucket")
+}
+
+// ───────────────────────────── Identity ─────────────────────────────
+
+enum ThemePreference {
+  light
+  dark
+  system
+}
+
+model User {
+  id                  String          @id @default(uuid()) @db.Uuid
+  name                String
+  email               String          @unique /// stored lower-cased
+  phone               String?         @unique /// E.164, e.g. +966551234567
+  passwordHash        String?         @map("password_hash")
+  emailVerifiedAt     DateTime?       @map("email_verified_at") @db.Timestamptz(6)
+  phoneVerifiedAt     DateTime?       @map("phone_verified_at") @db.Timestamptz(6)
+  locale              String          @default("ar")
+  theme               ThemePreference @default(system)
+  /// Envelope-encrypted TOTP secret (src/server/crypto.ts). Never returned to the client.
+  twoFactorSecret     String?         @map("two_factor_secret")
+  twoFactorEnabled    Boolean         @default(false) @map("two_factor_enabled")
+  twoFactorEnabledAt  DateTime?       @map("two_factor_enabled_at") @db.Timestamptz(6)
+  passwordChangedAt   DateTime?       @map("password_changed_at") @db.Timestamptz(6)
+  lastLoginAt         DateTime?       @map("last_login_at") @db.Timestamptz(6)
+  failedLoginCount    Int             @default(0) @map("failed_login_count")
+  lockedUntil         DateTime?       @map("locked_until") @db.Timestamptz(6)
+  createdAt           DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt           DateTime?       @map("deleted_at") @db.Timestamptz(6)
+
+  sessions           Session[]
+  accounts           Account[]
+  verificationTokens VerificationToken[]
+  otpCodes           OtpCode[]
+  recoveryCodes      RecoveryCode[]
+  memberships        Membership[]
+  platformAdmin      PlatformAdmin?
+  securityEvents     SecurityEvent[]
+  invitationsSent    Invitation[]        @relation("InvitedBy")
+
+  @@map("user")
+}
+
+/// Database session. The cookie holds a random token; only its SHA-256 is stored here.
+model Session {
+  id             String    @id @default(uuid()) @db.Uuid
+  tokenHash      String    @unique @map("token_hash")
+  userId         String    @map("user_id") @db.Uuid
+  /// true until the second factor is verified — such sessions can only reach /auth/2fa.
+  mfaPending     Boolean   @default(false) @map("mfa_pending")
+  remember       Boolean   @default(false)
+  activeOrgId    String?   @map("active_org_id") @db.Uuid
+  ip             String?
+  userAgent      String?   @map("user_agent")
+  expiresAt      DateTime  @map("expires_at") @db.Timestamptz(6)
+  lastSeenAt     DateTime  @default(now()) @map("last_seen_at") @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  revokedAt      DateTime? @map("revoked_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("session")
+}
+
+/// OAuth / SSO accounts (Auth.js-compatible shape; providers arrive later).
+model Account {
+  id                String  @id @default(uuid()) @db.Uuid
+  userId            String  @map("user_id") @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refreshToken      String? @map("refresh_token")
+  accessToken       String? @map("access_token")
+  expiresAt         Int?    @map("expires_at")
+  tokenType         String? @map("token_type")
+  scope             String?
+  idToken           String? @map("id_token")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("account")
+}
+
+enum TokenPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
+/// Single-use email link tokens (hash only).
+model VerificationToken {
+  id        String       @id @default(uuid()) @db.Uuid
+  userId    String       @map("user_id") @db.Uuid
+  purpose   TokenPurpose
+  tokenHash String       @unique @map("token_hash")
+  expiresAt DateTime     @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime?    @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@map("verification_token")
+}
+
+enum OtpPurpose {
+  LOGIN
+  VERIFY_PHONE
+}
+
+/// One-time SMS codes. `codeHash` = HMAC-SHA256(AUTH_SECRET, code); max 5 attempts.
+model OtpCode {
+  id         String     @id @default(uuid()) @db.Uuid
+  userId     String?    @map("user_id") @db.Uuid
+  phone      String
+  purpose    OtpPurpose
+  codeHash   String     @map("code_hash")
+  attempts   Int        @default(0)
+  expiresAt  DateTime   @map("expires_at") @db.Timestamptz(6)
+  consumedAt DateTime?  @map("consumed_at") @db.Timestamptz(6)
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([phone, purpose, createdAt])
+  @@map("otp_code")
+}
+
+/// 2FA recovery codes (hash only, single use).
+model RecoveryCode {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  codeHash  String    @map("code_hash")
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("recovery_code")
+}
+
+/// Platform super-admin (separate from tenant roles; MFA required).
+model PlatformAdmin {
+  userId    String   @id @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("platform_admin")
+}
+
+/// User-level security events (sign-in, failed sign-in, 2FA changes, password reset). Not tenant data.
+model SecurityEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  type      String
+  ip        String?
+  userAgent String?  @map("user_agent")
+  meta      Json?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@map("security_event")
+}
+
+// ───────────────────────────── Tenancy ─────────────────────────────
+
+enum OrganizationStatus {
+  trial
+  active
+  suspended
+}
+
+model Organization {
+  id                   String             @id @default(uuid()) @db.Uuid
+  slug                 String             @unique
+  nameAr               String             @map("name_ar")
+  nameEn               String?            @map("name_en")
+  legalName            String?            @map("legal_name")
+  crNumber             String?            @map("cr_number")
+  /// 15 digits, starts and ends with 3 (format check only).
+  vatNumber            String?            @map("vat_number")
+  tin                  String?
+  businessType         String?            @map("business_type")
+  industry             String?
+  employeesRange       String?            @map("employees_range")
+  invoiceVolume        String?            @map("invoice_volume")
+  logoKey              String?            @map("logo_key")
+  brandColor           String?            @map("brand_color")
+  defaultLocale        String             @default("ar") @map("default_locale")
+  currency             String             @default("SAR")
+  fiscalYearStartMonth Int                @default(1) @map("fiscal_year_start_month")
+  status               OrganizationStatus @default(trial)
+  createdById          String?            @map("created_by_id") @db.Uuid
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt            DateTime?          @map("deleted_at") @db.Timestamptz(6)
+
+  address     OrganizationAddress?
+  memberships Membership[]
+  roles       Role[]
+  invitations Invitation[]
+  auditLogs   AuditLog[]
+
+  @@map("organization")
+}
+
+/// Saudi National Address.
+model OrganizationAddress {
+  organizationId String   @id @map("organization_id") @db.Uuid
+  buildingNo     String?  @map("building_no") /// 4 digits
+  street         String?
+  district       String?
+  city           String?
+  postalCode     String?  @map("postal_code") /// 5 digits
+  additionalNo   String?  @map("additional_no") /// 4 digits
+  shortAddress   String?  @map("short_address")
+  country        String   @default("SA")
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("organization_address")
+}
+
+/// Permission catalogue (keys like `invoice.issue`). Synced from src/server/rbac/permissions.ts.
+model Permission {
+  key         String  @id
+  group       String
+  description String?
+
+  roles RolePermission[]
+
+  @@map("permission")
+}
+
+/// System roles have organizationId = null and a fixed `key`; custom roles belong to one organization.
+model Role {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String?  @map("organization_id") @db.Uuid
+  key            String
+  nameAr         String   @map("name_ar")
+  nameEn         String   @map("name_en")
+  isSystem       Boolean  @default(false) @map("is_system")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization?    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  permissions  RolePermission[]
+  memberships  Membership[]
+  invitations  Invitation[]
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+  @@map("role")
+}
+
+model RolePermission {
+  roleId        String @map("role_id") @db.Uuid
+  permissionKey String @map("permission_key")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionKey], references: [key], onDelete: Cascade)
+
+  @@id([roleId, permissionKey])
+  @@map("role_permission")
+}
+
+enum MembershipStatus {
+  active
+  suspended
+}
+
+model Membership {
+  id             String           @id @default(uuid()) @db.Uuid
+  userId         String           @map("user_id") @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  roleId         String           @map("role_id") @db.Uuid
+  status         MembershipStatus @default(active)
+  /// Optional branch scoping; empty = all branches.
+  branchIds      String[]         @default([]) @map("branch_ids") @db.Uuid
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role         Role         @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, organizationId])
+  @@index([organizationId, status])
+  @@map("membership")
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  revoked
+  expired
+}
+
+model Invitation {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  email          String /// lower-cased
+  roleId         String           @map("role_id") @db.Uuid
+  branchIds      String[]         @default([]) @map("branch_ids") @db.Uuid
+  tokenHash      String           @unique @map("token_hash")
+  status         InvitationStatus @default(pending)
+  invitedById    String           @map("invited_by_id") @db.Uuid
+  expiresAt      DateTime         @map("expires_at") @db.Timestamptz(6)
+  acceptedAt     DateTime?        @map("accepted_at") @db.Timestamptz(6)
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role         Role         @relation(fields: [roleId], references: [id])
+  invitedBy    User         @relation("InvitedBy", fields: [invitedById], references: [id])
+
+  @@index([organizationId, status])
+  @@index([email])
+  @@map("invitation")
+}
+
+/// Append-only audit trail for every tenant mutation (UPDATE/DELETE revoked + trigger).
+model AuditLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  actorId        String?  @map("actor_id") @db.Uuid
+  entity         String
+  entityId       String?  @map("entity_id")
+  action         String
+  before         Json?
+  after          Json?
+  diff           Json?
+  ip             String?
+  userAgent      String?  @map("user_agent")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, entity, entityId])
+  @@map("audit_log")
 }
