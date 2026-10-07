@@ -261,6 +261,7 @@ model Organization {
   invoices    Invoice[]
   invoiceLines InvoiceLine[]
   payments    Payment[]
+  shares      ShareLink[]
   expenseCategories ExpenseCategory[]
   expenses    Expense[]
   auditLogs   AuditLog[]
@@ -318,6 +319,9 @@ model InvoiceSequence {
   id             String   @id @default(uuid()) @db.Uuid
   organizationId String   @map("organization_id") @db.Uuid
   branchId       String?  @map("branch_id") @db.Uuid
+  /// Surrogate NULL-safe key: `${organizationId}:${branchId ?? '-'}:${documentType}:${year}`.
+  /// (Postgres unique constraints ignore NULLs, so the compound key alone can't dedupe org-wide rows.)
+  key            String   @unique
   /// TAX | SIMPLIFIED | QUOTATION | ...
   documentType   String   @map("document_type")
   /// Display pattern, e.g. INV-{YYYY}-{#####}
@@ -619,13 +623,27 @@ model Invoice {
   dueDate        DateTime?     @map("due_date") @db.Date
   currency       String        @default("SAR")
   subtotal       Decimal       @default(0) @map("subtotal") @db.Decimal(18, 2)
+  discountTotal  Decimal       @default(0) @map("discount_total") @db.Decimal(18, 2)
+  taxableAmount  Decimal       @default(0) @map("taxable_amount") @db.Decimal(18, 2)
   vatTotal       Decimal       @default(0) @map("vat_total") @db.Decimal(18, 2)
+  otherCharges   Decimal       @default(0) @map("other_charges") @db.Decimal(18, 2)
+  rounding       Decimal       @default(0) @db.Decimal(18, 2)
   grandTotal     Decimal       @default(0) @map("grand_total") @db.Decimal(18, 2)
   amountPaid     Decimal       @default(0) @map("amount_paid") @db.Decimal(18, 2)
   balanceDue     Decimal       @default(0) @map("balance_due") @db.Decimal(18, 2)
   notes          String?
+  terms          String?
+  supplyDate     DateTime?     @map("supply_date") @db.Date
+  poRef          String?       @map("po_ref")
+  contractRef    String?       @map("contract_ref")
+  salespersonId  String?       @map("salesperson_id") @db.Uuid
+  /// For credit/debit notes: the referenced original invoice + reason.
+  originalInvoiceId String?    @map("original_invoice_id") @db.Uuid
+  reason           String?
   issuedAt       DateTime?     @map("issued_at") @db.Timestamptz(6)
   issuedById     String?       @map("issued_by_id") @db.Uuid
+  /// Set on issue; locked invoices reject financial edits (service + DB trigger).
+  lockedAt       DateTime?     @map("locked_at") @db.Timestamptz(6)
   createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -633,12 +651,32 @@ model Invoice {
   customer     Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
   lines        InvoiceLine[]
   payments     Payment[]
+  shares       ShareLink[]
 
   @@unique([organizationId, number])
   @@index([organizationId, status])
   @@index([organizationId, issueDate])
   @@index([organizationId, customerId])
   @@map("invoice")
+}
+
+/// Tokenized public link (view-only bilingual render). Token is 256-bit; only its hash is stored.
+model ShareLink {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  invoiceId      String    @map("invoice_id") @db.Uuid
+  tokenHash      String    @unique @map("token_hash")
+  expiresAt      DateTime? @map("expires_at") @db.Timestamptz(6)
+  viewedAt       DateTime? @map("viewed_at") @db.Timestamptz(6)
+  createdById    String?   @map("created_by_id") @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([invoiceId])
+  @@map("share_link")
 }
 
 model InvoiceLine {

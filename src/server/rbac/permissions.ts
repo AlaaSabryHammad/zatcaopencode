@@ -46,6 +46,7 @@ export const PERMISSIONS = {
 
   // Invoices (e-invoicing)
   'invoice.view': { group: 'invoices', description: 'View invoices' },
+  'invoice.create': { group: 'invoices', description: 'Create draft invoices' },
   'invoice.issue': { group: 'invoices', description: 'Issue invoices (B2B/B2C)' },
   'invoice.cancel': { group: 'invoices', description: 'Cancel invoices' },
   'invoice.creditnote': { group: 'invoices', description: 'Issue credit/debit notes' },

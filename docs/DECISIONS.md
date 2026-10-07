@@ -131,6 +131,15 @@ The route returns 404 in production unless `ENABLE_DEV_GALLERY=true`.
 - `pnpm db:rls-check` proves cross-tenant isolation through the app role (reads isolated, writes
   blocked, invitation preview closed). Pure dashboard math has unit tests (`tests/unit/dashboard-stats`).
 
+### D-015 · Sequence key must be NULL-safe (concurrency bug caught by test)
+
+Postgres unique constraints ignore NULLs, so `@@unique([organizationId, branchId, …])` allowed
+duplicate org-wide rows (`branchId` null). Ten parallel `allocateNumber()` calls created ten rows and
+all returned 1 — the numbering test caught it. Fix: surrogate `InvoiceSequence.key`
+(`org:branch|'-':type:year`) with a real UNIQUE index; allocation locks by key. The same latent
+duplicate existed in the onboarding sequence upserts — now key-based too. TanStack Table stays pinned
+at v8 (v9 rewrote the API); see D-006.
+
 ### D-014 · Phase 5 scope notes (customers & products)
 
 - Lists are server-driven (search/sort/filter/pagination in URL query, TanStack Table v8 for sort/select

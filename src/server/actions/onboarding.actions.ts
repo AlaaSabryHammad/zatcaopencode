@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { getCurrentUser } from '@/server/auth/current-user';
 import { createOrganization, setActiveOrg } from '@/server/services/org.service';
+import { sequenceKey } from '@/server/modules/invoices/numbering';
 import { prisma, withRls } from '@/server/db';
 import { saudiMobileSchema } from '@/lib/validation/auth';
 import type { ActionResult } from '@/lib/action-result';
@@ -282,15 +283,13 @@ export async function saveTax(input: unknown): Promise<ActionResult> {
       },
     });
     for (const doc of ['TAX', 'SIMPLIFIED']) {
-      const seq = await tx.invoiceSequence.findFirst({
-        where: { organizationId: orgId, branchId: null, documentType: doc, year },
-        select: { id: true },
-      });
+      const key = sequenceKey(orgId, null, doc, year);
+      const seq = await tx.invoiceSequence.findFirst({ where: { organizationId: orgId, key }, select: { id: true } });
       if (seq) {
         await tx.invoiceSequence.update({ where: { id: seq.id }, data: { prefix: d.invoicePrefix, nextValue: d.startNumber } });
       } else {
         await tx.invoiceSequence.create({
-          data: { organizationId: orgId, branchId: null, documentType: doc, prefix: d.invoicePrefix, nextValue: d.startNumber, year },
+          data: { organizationId: orgId, branchId: null, key, documentType: doc, prefix: d.invoicePrefix, nextValue: d.startNumber, year },
         });
       }
     }
@@ -327,13 +326,11 @@ export async function finalizeWorkspace(): Promise<ActionResult> {
       });
     }
     for (const doc of ['TAX', 'SIMPLIFIED']) {
-      const seq = await tx.invoiceSequence.findFirst({
-        where: { organizationId: orgId, branchId: null, documentType: doc, year },
-        select: { id: true },
-      });
+      const key = sequenceKey(orgId, null, doc, year);
+      const seq = await tx.invoiceSequence.findFirst({ where: { organizationId: orgId, key }, select: { id: true } });
       if (!seq) {
         await tx.invoiceSequence.create({
-          data: { organizationId: orgId, branchId: null, documentType: doc, prefix: 'INV-{YYYY}-{#####}', nextValue: 1, year },
+          data: { organizationId: orgId, branchId: null, key, documentType: doc, prefix: 'INV-{YYYY}-{#####}', nextValue: 1, year },
         });
       }
     }
