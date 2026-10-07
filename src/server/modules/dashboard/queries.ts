@@ -132,7 +132,6 @@ export async function getDashboardData(
   const credit = sum2(notes, (r) => num(r.grandTotal));
   const net = Math.round((sales + credit) * 100) / 100;
   const expTotal = sum2(expenses, (r) => num(r.amountInclVat));
-  const expVat = sum2(expenses.filter((e) => e.recoverable), (r) => num(r.vatAmount));
   const prevSales = sum2(prevDocs, (r) => num(r.subtotal));
   const prevVat = sum2(prevDocs, (r) => num(r.vatTotal));
   const prevCredit = sum2(prevNotes, (r) => num(r.grandTotal));

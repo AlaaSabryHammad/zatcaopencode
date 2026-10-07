@@ -1,12 +1,19 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { Logo, Button, Badge } from '@/components/zw';
 import { LocaleThemeControls } from '@/components/app/locale-theme-controls';
+import { getCurrentUser, getCurrentMemberships } from '@/server/auth/current-user';
 
-/** Placeholder home until the public site lands in Phase 13. */
+/** Placeholder home until the public site lands in Phase 13. Signed-in members go to the dashboard. */
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const user = await getCurrentUser().catch(() => null);
+  if (user && !user.mfaPending) {
+    const ms = await getCurrentMemberships().catch(() => []);
+    if (ms.some((m) => m.organization.onboardingCompletedAt)) redirect(`/${locale}/dashboard`);
+  }
   setRequestLocale(locale as Locale);
   const t = await getTranslations('home');
   const c = await getTranslations('common');

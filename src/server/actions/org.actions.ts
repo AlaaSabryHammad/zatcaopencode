@@ -55,6 +55,14 @@ export async function switchOrg(orgId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+/** Clear the active org so the onboarding wizard starts a fresh organization. */
+export async function startNewOrg(): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user || user.mfaPending) return { ok: false, error: 'auth.errors.unauthorized' };
+  await setActiveOrg(user.sessionId, null);
+  return { ok: true };
+}
+
 /** Active organization details for the shell header. */
 export async function getActiveOrg() {
   const user = await getCurrentUser();

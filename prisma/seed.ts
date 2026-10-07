@@ -407,9 +407,9 @@ async function seedDemo() {
   // ── expenses: categories + monthly rows (Q3 recoverable tuned → q3VatIn) ──
   const expCat = (key: string, nameAr: string, nameEn: string) =>
     prisma.expenseCategory.create({ data: { organizationId: org.id, key, nameAr, nameEn } });
-  const catRent = await expCat('rent', 'إيجار', 'Rent');
+  const _catRent = await expCat('rent', 'إيجار', 'Rent');
   const catOps = await expCat('operations', 'تشغيل', 'Operations');
-  const catMkt = await expCat('marketing', 'تسويق', 'Marketing');
+  const _catMkt = await expCat('marketing', 'تسويق', 'Marketing');
   const catSal = await expCat('salaries', 'رواتب', 'Salaries');
   const addExpense = (o: { categoryId?: string; description: string; date: string; incl: number; vat: number; branchId?: string; status?: 'approved' | 'paid' | 'draft' | 'pending' }) =>
     prisma.expense.create({

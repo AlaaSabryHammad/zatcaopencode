@@ -81,6 +81,6 @@ export async function createOrganization(userId: string, input: CreateOrgInput) 
   }
 }
 
-export async function setActiveOrg(sessionId: string, orgId: string) {
+export async function setActiveOrg(sessionId: string, orgId: string | null) {
   return prisma.session.update({ where: { id: sessionId }, data: { activeOrgId: orgId } });
 }
