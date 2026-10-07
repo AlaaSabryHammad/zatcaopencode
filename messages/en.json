@@ -255,11 +255,14 @@
     "continue": "Continue"
   },
   "users": {
+    "title": "Users",
     "user": "User",
     "role": "Role",
     "twoFactor": "Two-factor",
     "lastActive": "Last active",
     "branches": "Branches",
+    "statusActive": "Active",
+    "statusSuspended": "Suspended",
     "errors": {
       "alreadyMember": "User is already a member",
       "pendingInvite": "There is a pending invitation for this email",
@@ -267,6 +270,7 @@
     }
   },
   "roles": {
+    "title": "Roles",
     "description": "Manage organization roles and permissions",
     "system": "System"
   }

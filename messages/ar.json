@@ -268,11 +268,14 @@
     "continue": "متابعة"
   },
   "users": {
+    "title": "المستخدمون",
     "user": "المستخدم",
     "role": "الدور",
     "twoFactor": "التحقق بخطوتين",
     "lastActive": "آخر نشاط",
     "branches": "الفروع",
+    "statusActive": "نشط",
+    "statusSuspended": "معلّق",
     "errors": {
       "alreadyMember": "المستخدم عضو بالفعل",
       "pendingInvite": "يوجد دعوة معلقة لهذا البريد",
@@ -280,6 +283,7 @@
     }
   },
   "roles": {
+    "title": "الأدوار",
     "description": "إدارة أدوار المؤسسة وصلاحياتها",
     "system": "نظامي"
   }
