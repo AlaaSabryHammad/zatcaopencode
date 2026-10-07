@@ -274,6 +274,37 @@
     "description": "Manage organization roles and permissions",
     "system": "System"
   },
+  "security": {
+    "title": "Security",
+    "passwordTitle": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password changed and other sessions were signed out",
+    "twoFactorTitle": "Two-factor authentication",
+    "twoFactorOn": "Enabled",
+    "twoFactorOff": "Not enabled",
+    "enable": "Enable",
+    "disable": "Disable",
+    "scanDesc": "Scan the code with your authenticator app, then enter the 6-digit code",
+    "manualKey": "Or enter the key manually",
+    "confirmEnable": "Confirm",
+    "recoveryTitle": "Recovery codes",
+    "recoveryDesc": "Save them somewhere safe — shown only once, used if you lose your device",
+    "disableDesc": "Enter your current password to disable two-factor authentication",
+    "disabled": "Two-factor authentication disabled",
+    "sessionsTitle": "Active sessions",
+    "sessionsDesc": "Devices signed in to your account",
+    "current": "Current",
+    "revoke": "Revoke",
+    "lastSeen": "Last seen",
+    "unknownDevice": "Unknown device",
+    "errors": {
+      "currentWrong": "Current password is incorrect",
+      "sameAsCurrent": "New password matches the current one",
+      "alreadyEnabled": "Two-factor authentication is already enabled",
+      "noSetup": "Start setup first",
+      "cannotRevokeCurrent": "Cannot revoke the current session here"
+    }
+  },
   "invites": {
     "title": "Invite user",
     "send": "Send invitation",

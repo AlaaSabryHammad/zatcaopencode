@@ -287,6 +287,37 @@
     "description": "إدارة أدوار المؤسسة وصلاحياتها",
     "system": "نظامي"
   },
+  "security": {
+    "title": "الأمان",
+    "passwordTitle": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "passwordChanged": "تم تغيير كلمة المرور وتم إنهاء الجلسات الأخرى",
+    "twoFactorTitle": "التحقق بخطوتين",
+    "twoFactorOn": "مفعّل",
+    "twoFactorOff": "غير مفعّل",
+    "enable": "تفعيل",
+    "disable": "إيقاف",
+    "scanDesc": "امسح الرمز بتطبيق المصادقة (Google Authenticator أو غيره) ثم أدخل الرمز المكوّن من ٦ أرقام",
+    "manualKey": "أو أدخل المفتاح يدويًا",
+    "confirmEnable": "تأكيد التفعيل",
+    "recoveryTitle": "رموز الاسترداد",
+    "recoveryDesc": "احفظها في مكان آمن — تُعرض مرة واحدة فقط وتُستخدم عند فقدان جهاز المصادقة",
+    "disableDesc": "أدخل كلمة المرور الحالية لإيقاف التحقق بخطوتين",
+    "disabled": "تم إيقاف التحقق بخطوتين",
+    "sessionsTitle": "الجلسات النشطة",
+    "sessionsDesc": "الأجهزة المسجّلة الدخول بحسابك",
+    "current": "الحالية",
+    "revoke": "إنهاء",
+    "lastSeen": "آخر ظهور",
+    "unknownDevice": "جهاز غير معروف",
+    "errors": {
+      "currentWrong": "كلمة المرور الحالية غير صحيحة",
+      "sameAsCurrent": "كلمة المرور الجديدة مطابقة للحالية",
+      "alreadyEnabled": "التحقق بخطوتين مفعّل بالفعل",
+      "noSetup": "ابدأ الإعداد أولًا",
+      "cannotRevokeCurrent": "لا يمكن إنهاء الجلسة الحالية من هنا"
+    }
+  },
   "invites": {
     "title": "دعوة مستخدم جديد",
     "send": "إرسال الدعوة",
