@@ -23,6 +23,7 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:clean": "tsx scripts/clean-expired.ts",
+    "db:rls-check": "tsx scripts/verify-rls.ts",
     "icons:sync": "node scripts/sync-design-assets.mjs",
     "prepare": "husky"
   },

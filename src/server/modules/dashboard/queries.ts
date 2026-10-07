@@ -71,7 +71,7 @@ export interface DashboardData {
     net: number; netDelta: number | null;
     vat: number; vatDelta: number | null;
     expenses: number; expensesDelta: number | null;
-    profit: number; profitMargin: number | null;
+    profit: number; profitMargin: number | null; profitDelta: number | null;
     outstanding: number; issuedCount: number;
   };
   buckets: { paid: number; paidCount: number; unpaid: number; unpaidCount: number; overdue: number; overdueCount: number; draft: number; draftCount: number };
@@ -82,11 +82,12 @@ export interface DashboardData {
   topCustomers: Array<{ id: string; name: string; amount: number; share: number }>;
   topProducts: Array<{ id: string; name: string; units: string; amount: number; share: number }>;
   methods: Array<{ method: string; amount: number; share: number }>;
-  recent: Array<{ id: string; number: string | null; customer: string; due: string | null; status: string; total: number }>;
+  recent: Array<{ id: string; number: string | null; customer: string; due: string | null; status: string; total: number; balance: number }>;
   activity: Array<{ id: string; kind: 'payment' | 'invoice' | 'expense'; title: string; detail: string; at: string }>;
   overdueList: Array<{ id: string; number: string | null; customer: string; balance: number; days: number }>;
   lowStock: Array<{ id: string; name: string; qty: number; min: number; branch: string | null }>;
   insight: { topDebtor: string; topAmount: number; share: number } | null;
+  cashflow: Array<{ key: string; label: string; inflow: number; outflow: number }>;
 }
 
 const num = (v: { toNumber(): number } | null | undefined) => v?.toNumber() ?? 0;
@@ -137,6 +138,7 @@ export async function getDashboardData(
   const prevCredit = sum2(prevNotes, (r) => num(r.grandTotal));
   const prevNet = Math.round((prevSales + prevCredit) * 100) / 100;
   const prevExp = sum2(prevExpenses, (r) => num(r.amountInclVat));
+  const prevProfit = Math.round((prevNet - prevExp) * 100) / 100;
   const profit = Math.round((net - expTotal) * 100) / 100;
 
   // Buckets: paid-in-range (payment date), open as-of-today, drafts as-of-today.
@@ -190,7 +192,7 @@ export async function getDashboardData(
   const monthly = monthlySeries(fromKey, toKey, revByMonth, expByMonth, locale);
 
   // Branches, VAT quarter-to-date, tops, methods, recent, activity, alerts, insight.
-  const [branchRows, branches, qDocs, qExp, custRows, lineRows, payRows, recentRows, payAct, invAct, expAct, lowRows] = await Promise.all([
+  const [branchRows, branches, qDocs, qExp, custRows, lineRows, payRows, recentRows, payAct, invAct, expAct, lowRows, cfPay, cfExp] = await Promise.all([
     tx.invoice.findMany({ where: { ...issuedWhere, ...inRange }, select: { branchId: true, subtotal: true } }),
     tx.branch.findMany({ where: { organizationId: orgId }, select: { id: true, nameAr: true, nameEn: true } }),
     tx.invoice.findMany({
@@ -217,7 +219,7 @@ export async function getDashboardData(
       where: { organizationId: orgId },
       orderBy: [{ issueDate: 'desc' }, { createdAt: 'desc' }],
       take: 6,
-      select: { id: true, number: true, dueDate: true, status: true, grandTotal: true, customer: { select: { nameAr: true, nameEn: true } } },
+      select: { id: true, number: true, dueDate: true, status: true, grandTotal: true, balanceDue: true, customer: { select: { nameAr: true, nameEn: true } } },
     }),
     tx.payment.findMany({
       where: { organizationId: orgId },
@@ -239,8 +241,16 @@ export async function getDashboardData(
     }),
     tx.stockLevel.findMany({
       where: { organizationId: orgId },
-      include: { product: { select: { id: true, nameAr: true, nameEn: true, minStock: true, trackStock: true } }, },
+      include: { product: { select: { id: true, nameAr: true, nameEn: true, minStock: true, trackStock: true } } },
       take: 50,
+    }),
+    tx.payment.findMany({
+      where: { organizationId: orgId, date: { gte: addDays(today, -70) } },
+      select: { date: true, amount: true },
+    }),
+    tx.expense.findMany({
+      where: { organizationId: orgId, status: { in: ['approved', 'paid'] }, date: { gte: addDays(today, -70) } },
+      select: { date: true, amountInclVat: true },
     }),
   ]);
 
@@ -300,6 +310,7 @@ export async function getDashboardData(
     due: r.dueDate ? r.dueDate.toISOString().slice(0, 10) : null,
     status: r.status,
     total: num(r.grandTotal),
+    balance: num(r.balanceDue),
   }));
 
   const activity: DashboardData['activity'] = [
@@ -339,6 +350,7 @@ export async function getDashboardData(
     }));
 
   const outstanding = Math.round((unpaid + overdue) * 100) / 100;
+  const cashflow = weeklyCashflow(cfPay, cfExp, today, locale);
   const [overdueDetails, topInsight, issuedCount] = await Promise.all([
     withOverdueDetails(tx, orgId, today, locale),
     topDebtor(tx, orgId, today, locale, outstanding),
@@ -351,7 +363,7 @@ export async function getDashboardData(
       net, netDelta: pctChange(net, prevNet),
       vat, vatDelta: pctChange(vat, prevVat),
       expenses: expTotal, expensesDelta: pctChange(expTotal, prevExp),
-      profit, profitMargin: net !== 0 ? Math.round((profit / net) * 1000) / 10 : null,
+      profit, profitMargin: net !== 0 ? Math.round((profit / net) * 1000) / 10 : null, profitDelta: pctChange(profit, prevProfit),
       outstanding,
       issuedCount,
     },
@@ -373,10 +385,48 @@ export async function getDashboardData(
     overdueList: overdueDetails,
     lowStock,
     insight: topInsight,
+    cashflow,
   };
 }
 
 // Helpers with extra queries (kept separate for readability).
+function isoWeek(dt: Date): { y: number; w: number } {
+  const d = new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate()));
+  const day = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - day + 3);
+  const first = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  const fday = (first.getUTCDay() + 6) % 7;
+  first.setUTCDate(first.getUTCDate() - fday + 3);
+  return { y: d.getUTCFullYear(), w: 1 + Math.round((d.getTime() - first.getTime()) / (7 * 86_400_000)) };
+}
+
+/** Last 10 ISO weeks of inflow (payments) vs outflow (expenses). */
+function weeklyCashflow(
+  pays: Array<{ date: Date; amount: { toNumber(): number } }>,
+  exps: Array<{ date: Date; amountInclVat: { toNumber(): number } }>,
+  today: Date,
+  _locale: string,
+): DashboardData['cashflow'] {
+  const weeks: Array<{ key: string; inflow: number; outflow: number }> = [];
+  const monday = new Date(today);
+  const dow = (monday.getUTCDay() + 6) % 7;
+  monday.setUTCHours(0, 0, 0, 0);
+  monday.setUTCDate(monday.getUTCDate() - dow - 9 * 7);
+  const bounds: Array<{ start: number; end: number }> = [];
+  for (let i = 0; i < 10; i++) {
+    const start = monday.getTime() + i * 7 * 86_400_000;
+    bounds.push({ start, end: start + 7 * 86_400_000 });
+    weeks.push({ key: `W${isoWeek(new Date(start)).w}`, inflow: 0, outflow: 0 });
+  }
+  const put = (list: typeof weeks, date: Date, cents: number, field: 'inflow' | 'outflow') => {
+    const t = date.getTime();
+    const i = bounds.findIndex((b) => t >= b.start && t < b.end);
+    if (i >= 0 && list[i]) list[i][field] = Math.round((list[i][field] + cents / 100) * 100) / 100;
+  };
+  for (const p of pays) put(weeks, p.date, Math.round(p.amount.toNumber() * 100), 'inflow');
+  for (const e of exps) put(weeks, e.date, Math.round(e.amountInclVat.toNumber() * 100), 'outflow');
+  return weeks.map((wk) => ({ ...wk, label: wk.key }));
+}
 function quarterStartOf(to: Date): Date {  const r = new Date(to.getTime() - 1 + RIYADH_MS);
   const y = r.getUTCFullYear();
   const q = Math.floor(r.getUTCMonth() / 3);

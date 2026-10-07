@@ -104,3 +104,23 @@ The route returns 404 in production unless `ENABLE_DEV_GALLERY=true`.
 - Welcome-checklist CTAs for customers / products / invoices / e-invoicing device are disabled with a
   "soon" badge until their phases land; Invite links to the working `/settings/users` page.
 - The old quick form `/onboarding/create-org` now redirects to the wizard `/onboarding`.
+
+### D-013 · Phase 4 scope notes (shell + dashboard)
+
+- Dashboard KPI semantics (single source of truth in `src/server/modules/dashboard/`):
+  sales = Σ subtotal, VAT = Σ vatTotal (Oct TAX/SIMPLIFIED issued, excl. drafts/cancelled/notes);
+  net = sales + credit-note grands; profit = net − approved/paid expenses; outstanding = open balances.
+  "Paid" bucket = fully-paid invoices with an October payment (payment-date, not issue-date); the seed
+  models this with September advance payments. Overdue is derived, never stored.
+- Input VAT aggregates approved/paid expenses' recoverable VAT. Until Bills land (Phase 8) there is no
+  separate purchase-VAT source; the demo seed concentrates Q3/Oct recoverable VAT on Operations rows.
+- The design's October numbers are mutually inconsistent (sales-implied issued ≠ buckets-implied issued),
+  so aging bands, top-N rankings, activity and weekly cashflow are computed really from the data and may
+  differ from the `.webp` renders. The §8 headline numbers are exact (asserted by the seed itself).
+- Charts use Recharts with RTL mirroring (time reversed, value axis right) and CSS chart tokens.
+- Sidebar items for future modules are disabled with a "soon" badge; quick-create likewise. No dead links.
+  The plan-usage card, favorites, AI assistant, notifications center, recurring invoices and E-invoicing
+  device flows arrive with their phases. The Topbar user chip has no menu yet — sign-out lives in the
+  command menu and `/settings/security` (full user menu arrives with Settings, Phase 11).
+- `pnpm db:rls-check` proves cross-tenant isolation through the app role (reads isolated, writes
+  blocked, invitation preview closed). Pure dashboard math has unit tests (`tests/unit/dashboard-stats`).
