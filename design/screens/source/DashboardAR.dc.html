@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>لوحة التحكم — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" dir="rtl" lang="ar" style="background: var(--bg-canvas); color: var(--ink); font-family: var(--font-arabic);">
+<x-import component-from-global-scope="ZatcaWeb.LocaleProvider" lang="ar">
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh;">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{nav}}" active="dash" favorites="{{favs}}" plan="{{plan}}" orgs="{{orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" title="لوحة التحكم" quick-create="{{quick}}" notifications="{{n3}}" user="{{user}}"></x-import>
+    <main style="width: 100%; max-width: 1360px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 14px; color: var(--ink-muted);">الأربعاء، ٧ أكتوبر ٢٠٢٦ · ٢٦ ربيع الآخر ١٤٤٨ هـ</span>
+          <h1 style="margin: 0; font-size: 30px; line-height: 44px; font-weight: 700;">صباح الخير، فيصل</h1>
+          <p style="margin: 0; font-size: 15px; color: var(--ink-muted);">نظرة عامة على أداء شركة آفاق التقنية المحدودة</p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{periods}}" default-value="month" size="sm" label="الفترة"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" size="sm" icon-start="download">تصدير</x-import>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" emphasis="{{yes}}" icon="chart-column" label="إجمالي المبيعات" value="{{k.sales}}" delta="{{d12}}" trend="{{k.salesTrend}}" footnote="غير شاملة الضريبة · مقارنة بسبتمبر"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="percent" tone="accent" label="ضريبة القيمة المضافة المحصّلة" value="{{k.vat}}" delta="{{d98}}" trend="{{k.vatTrend}}" trend-tone="accent" footnote="مقارنة بسبتمبر"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="clock" tone="warning" label="الذمم المدينة المستحقة" value="{{k.outstanding}}" delta="{{d18}}" invert="{{yes}}" footnote="١٨ فاتورة · منها ٤ متأخرة"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="trending-up" tone="info" label="صافي الربح" value="{{k.profit}}" delta="{{d71}}" footnote="هامش ٤٧٫٧٪"></x-import>
+      </div>
+
+      <x-import component-from-global-scope="ZatcaWeb.Insight" kicker="رؤية ذكية" action="{{remindBtn}}">ارتفعت الفواتير المستحقة بنسبة <strong>١٨٪</strong> مقارنة بالشهر الماضي، ومعظمها لدى <strong>شركة البناء الحديث</strong>.</x-import>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="grid-column: span 2; min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="bar" title="الإيرادات مقابل المصروفات" subtitle="آخر ٧ أشهر · ر.س" data="{{months}}" series="{{revSeries}}" format="currency" height="{{n260}}" table-toggle="{{yes}}"></x-import>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="donut" title="حالة الفواتير" subtitle="أكتوبر · ر.س" data="{{statusMix}}" format="currency" height="{{n180}}" center-label="الإجمالي"></x-import>
+        </section>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="grid-column: span 2; min-width: 0; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px;"><h2 style="margin: 0; font-size: 16px; font-weight: 700;">أحدث الفواتير</h2><a href="Invoices.dc.html" style="font-size: 14px;">كل الفواتير</a></div>
+          <div style="overflow-x: auto;">
+            <div role="table" style="display: table; width: 100%; border-collapse: collapse; font-size: 14px;">
+              <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 13px;">
+                <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: start; font-weight: 600;">رقم الفاتورة</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">العميل</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">الاستحقاق</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">الحالة</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: end; font-weight: 600;">الإجمالي</div>
+              </div></div>
+              <div role="rowgroup" style="display: table-row-group;">
+                <sc-for list="{{recent}}" as="r" hint-placeholder-count="5">
+                  <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle);">
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 24px; font-family: var(--font-mono); font-size: 13px; white-space: nowrap;" dir="ltr"><a href="InvoiceDetail.dc.html" style="color: var(--ink); text-decoration: none;">{{r.no}}</a></div>
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; white-space: nowrap; font-weight: 600;">{{r.customer}}</div>
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; white-space: nowrap; color: var(--ink-secondary);">{{r.due}}</div>
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px;"><x-import component-from-global-scope="ZatcaWeb.InvoiceStatus" status="{{r.status}}" size="sm"></x-import></div>
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 24px; text-align: end;"><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{r.total}}"></x-import></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 16px;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 700;">النشاط</h2>
+          <x-import component-from-global-scope="ZatcaWeb.Timeline" items="{{activity}}" compact="{{yes}}"></x-import>
+        </section>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="bar" title="المبيعات حسب الفرع" subtitle="أكتوبر · ر.س" data="{{branches}}" series="{{branchSeries}}" format="currency" height="{{n200}}"></x-import>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 700;">ملخص ضريبة القيمة المضافة</h2>
+          <sc-for list="{{vatRows}}" as="v" hint-placeholder-count="3">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle);"><span style="color: var(--ink-secondary);">{{v.label}}</span><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{v.amount}}" size="{{v.size}}"></x-import></div>
+          </sc-for>
+          <x-import component-from-global-scope="ZatcaWeb.Alert" tone="warning" title="إقرار الربع الثالث مستحق في ٣١ أكتوبر"></x-import>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 12px;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 700;">تنبيهات</h2>
+          <x-import component-from-global-scope="ZatcaWeb.Alert" tone="danger" title="تم رفض فاتورتين">صحّح عنوان البائع ثم أعد الإرسال.</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Alert" tone="warning" title="تنتهي شهادة جهاز جدة خلال ١٢ يومًا"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Alert" tone="info" title="مخزون منخفض: Dell Latitude 5540">٣ قطع متبقية في مستودع الرياض</x-import>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+<button type="button" style="position: fixed; bottom: 24px; inset-inline-end: 24px; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding-inline: 16px 20px; border: 0; border-radius: var(--radius-full); background: var(--brand-900); color: var(--on-brand-deep); font: 600 15px var(--font-arabic); box-shadow: var(--shadow-lg); cursor: pointer;"><span style="color: var(--accent-500); display: inline-flex;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="sparkles" size="{{n18}}"></x-import></span>اسأل زاتكا AI</button>
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var h = React.createElement, Z = window.ZatcaWeb;
+    return {
+      theme: this.props.theme ?? 'light',
+      yes: true, n3: 3, n18: 18, n180: 180, n200: 200, n260: 260,
+      d12: 12.4, d98: 9.8, d18: 18, d71: 7.1,
+      user: { name: 'فيصل العتيبي' },
+      nav: [
+        { items: [{ id: 'dash', label: 'لوحة التحكم', icon: 'layout-dashboard' }] },
+        { heading: 'المبيعات', items: [{ id: 'sales', label: 'المبيعات', icon: 'receipt', children: [{ id: 'invoices', label: 'الفواتير', badge: 18 }, { id: 'quotes', label: 'عروض الأسعار' }, { id: 'notes', label: 'الإشعارات الدائنة والمدينة' }, { id: 'recurring', label: 'الفواتير المتكررة' }] }, { id: 'customers', label: 'العملاء', icon: 'users' }, { id: 'payments', label: 'المدفوعات', icon: 'wallet' }] },
+        { heading: 'المشتريات', items: [{ id: 'purchases', label: 'المشتريات', icon: 'shopping-cart' }, { id: 'expenses', label: 'المصروفات', icon: 'banknote' }, { id: 'suppliers', label: 'الموردون', icon: 'truck' }, { id: 'products', label: 'المنتجات والخدمات', icon: 'package' }, { id: 'inventory', label: 'المخزون', icon: 'warehouse' }] },
+        { heading: 'المالية', items: [{ id: 'reports', label: 'التقارير', icon: 'chart-column' }, { id: 'accounting', label: 'المحاسبة', icon: 'calculator' }, { id: 'vat', label: 'مركز ضريبة القيمة المضافة', icon: 'percent' }, { id: 'einv', label: 'الفوترة الإلكترونية', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'مساحة العمل', items: [{ id: 'branches', label: 'الفروع', icon: 'building-2' }, { id: 'users', label: 'المستخدمون والصلاحيات', icon: 'user-cog' }, { id: 'integrations', label: 'التكاملات', icon: 'plug' }, { id: 'settings', label: 'الإعدادات', icon: 'settings' }, { id: 'help', label: 'المساعدة والدعم', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'إقرار الربع الثالث ٢٠٢٦' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'باقة الأعمال', badge: 'تجديد ١ يناير', used: 412, limit: 1000, meter: '412 / 1,000 فاتورة هذا الشهر' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'المالك', plan: 'الأعمال' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'محاسب', plan: 'المبتدئة' }],
+      quick: [{ heading: 'إنشاء سريع' }, { label: 'فاتورة جديدة', icon: 'receipt', shortcut: 'N' }, { label: 'عرض سعر جديد', icon: 'file-text', shortcut: 'Q' }, { label: 'عميل جديد', icon: 'user-plus', shortcut: 'C' }, { label: 'منتج جديد', icon: 'package', shortcut: 'P' }, { label: 'مصروف جديد', icon: 'banknote', shortcut: 'E' }, { label: 'تسجيل دفعة', icon: 'wallet', shortcut: 'R' }],
+      periods: [{ value: 'today', label: 'اليوم' }, { value: 'week', label: 'هذا الأسبوع' }, { value: 'month', label: 'هذا الشهر' }, { value: 'quarter', label: 'الربع' }, { value: 'year', label: 'السنة' }, { value: 'custom', label: 'مخصص', icon: 'calendar' }],
+      k: { sales: 248930.5, salesTrend: [120, 132, 128, 150, 162, 158, 181, 197], vat: 37339.58, vatTrend: [18, 20, 19, 23, 25, 24, 27, 30], outstanding: 95450, profit: 115130.5 },
+      remindBtn: Z ? h(Z.Button, { size: 'sm', variant: 'secondary', iconStart: 'send' }, 'تذكير ٤ عملاء') : null,
+      months: [['أبريل', 142, 98], ['مايو', 158, 104], ['يونيو', 151, 112], ['يوليو', 176, 109], ['أغسطس', 169, 121], ['سبتمبر', 192, 118], ['أكتوبر', 248.93, 126.48]].map(function (m) { return { label: m[0], revenue: Math.round(m[1] * 1000), expenses: Math.round(m[2] * 1000) }; }),
+      revSeries: [{ key: 'revenue', label: 'الإيرادات' }, { key: 'expenses', label: 'المصروفات', color: 'chart-3' }],
+      statusMix: [{ label: 'مدفوعة', value: 182400, color: 'success-fill' }, { label: 'غير مدفوعة', value: 64250, color: 'chart-2' }, { label: 'متأخرة', value: 31200, color: 'danger-fill' }, { label: 'مسودة', value: 9800, color: 'neutral-fg' }],
+      recent: [
+        { no: 'INV-2026-00126', customer: 'شركة الخليج للخدمات', due: '٦ نوفمبر ٢٠٢٦', status: 'sent', total: 13200 },
+        { no: 'INV-2026-00125', customer: 'مؤسسة النور التجارية', due: '٤ نوفمبر ٢٠٢٦', status: 'partially_paid', total: 8625 },
+        { no: 'INV-2026-00124', customer: 'شركة البناء الحديث', due: '٣١ أكتوبر ٢٠٢٦', status: 'paid', total: 48300 },
+        { no: 'INV-2026-00123', customer: 'شركة الواحة للضيافة', due: '٦ أكتوبر ٢٠٢٦', status: 'overdue', total: 3105 },
+        { no: 'INV-2026-00122', customer: 'شركة البناء الحديث', due: '١٨ أكتوبر ٢٠٢٦', status: 'viewed', total: 21850 }
+      ],
+      activity: [
+        { title: 'تم استلام دفعة · 3,200.00 ر.س', time: '١٠:١٢', icon: 'banknote', tone: 'success', description: 'مدى · مؤسسة النور التجارية' },
+        { title: 'قُبلت الفاتورة INV-2026-00126', time: '٠٩:٤٢', icon: 'shield-check', tone: 'success', description: 'تم الاعتماد عبر منصة الفوترة الإلكترونية' },
+        { title: 'تمت مشاهدة فاتورة', time: '٠٩:٠٥', icon: 'eye', tone: 'info', description: 'شركة البناء الحديث فتحت INV-2026-00122' },
+        { title: 'اعتماد مصروف · 4,850.00 ر.س', time: 'أمس', icon: 'check', tone: 'brand', description: 'إيجار مكتب الدمام — نورة القحطاني' }
+      ],
+      branches: [{ label: 'المركز الرئيسي', sales: 112400 }, { label: 'الدمام', sales: 78930.5 }, { label: 'جدة', sales: 57600 }],
+      branchSeries: [{ key: 'sales', label: 'المبيعات' }],
+      vatRows: [{ label: 'ضريبة المخرجات (المبيعات)', amount: 37339.58, size: 'md' }, { label: 'ضريبة المدخلات (المشتريات)', amount: 18972, size: 'md' }, { label: 'صافي الضريبة المستحقة', amount: 18367.58, size: 'lg' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Accounting.dc.html": {
+      "expand": "fill",
+      "h": 1775,
+      "page": "finance",
+      "title": "Accounting",
+      "w": 1440,
+      "x": 0,
+      "y": 2078
+    },
+    "Auth.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Login / Create account — Arabic (toggle works)",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Billing.dc.html": {
+      "expand": "fill",
+      "h": 1585,
+      "page": "finance",
+      "title": "Subscription & billing",
+      "w": 1440,
+      "x": 3040,
+      "y": 2078
+    },
+    "Compliance.dc.html": {
+      "expand": "fill",
+      "h": 1838,
+      "page": "finance",
+      "title": "E-Invoicing Compliance Center",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "CustomerProfile.dc.html": {
+      "expand": "fill",
+      "h": 1801,
+      "page": "core",
+      "title": "Customer profile",
+      "w": 1440,
+      "x": 3040,
+      "y": 5103
+    },
+    "Customers.dc.html": {
+      "expand": "fill",
+      "h": 1243,
+      "page": "core",
+      "title": "Customers",
+      "w": 1440,
+      "x": 1520,
+      "y": 5103
+    },
+    "Dashboard.dc.html": {
+      "expand": "fill",
+      "h": 2955,
+      "page": "core",
+      "title": "Dashboard",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "DashboardAR.dc.html": {
+      "expand": "fill",
+      "h": 2200,
+      "page": "core",
+      "title": "Dashboard — Arabic RTL",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Expenses.dc.html": {
+      "expand": "fill",
+      "h": 1535,
+      "page": "core",
+      "title": "Expenses",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "InvoiceCreate.dc.html": {
+      "expand": "fill",
+      "h": 1668,
+      "page": "core",
+      "title": "Create invoice — live preview (editable)",
+      "w": 1440,
+      "x": 1520,
+      "y": 3195,
+      "is_interactive": true
+    },
+    "InvoiceDetail.dc.html": {
+      "expand": "fill",
+      "h": 1998,
+      "page": "core",
+      "title": "Invoice details",
+      "w": 1440,
+      "x": 0,
+      "y": 5103
+    },
+    "Invoices.dc.html": {
+      "expand": "fill",
+      "h": 1376,
+      "page": "core",
+      "title": "Invoice list",
+      "w": 1440,
+      "x": 0,
+      "y": 3195
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 7762,
+      "page": "web",
+      "title": "Landing page",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "MobileHome.dc.html": {
+      "h": 844,
+      "page": "devices",
+      "radius": 32,
+      "title": "Mobile — home (Arabic)",
+      "w": 390,
+      "x": 914,
+      "y": 0
+    },
+    "MobileInvoice.dc.html": {
+      "h": 844,
+      "page": "devices",
+      "radius": 32,
+      "title": "Mobile — new invoice (steppers work)",
+      "w": 390,
+      "x": 1384,
+      "y": 0,
+      "is_interactive": true
+    },
+    "MobileShare.dc.html": {
+      "h": 844,
+      "page": "devices",
+      "radius": 32,
+      "title": "Mobile — invoice issued & share",
+      "w": 390,
+      "x": 1854,
+      "y": 0
+    },
+    "Onboarding.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Company onboarding (6 steps — click through)",
+      "w": 1440,
+      "x": 1520,
+      "y": 1200
+    },
+    "Products.dc.html": {
+      "expand": "fill",
+      "h": 1451,
+      "page": "core",
+      "title": "Products & services",
+      "w": 1440,
+      "x": 3040,
+      "y": 3195
+    },
+    "Reports.dc.html": {
+      "expand": "fill",
+      "h": 1259,
+      "page": "finance",
+      "title": "Reports",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "Settings.dc.html": {
+      "expand": "fill",
+      "h": 1300,
+      "page": "finance",
+      "title": "Settings — invoice template designer (controls work)",
+      "w": 1440,
+      "x": 0,
+      "y": 4204,
+      "is_interactive": true
+    },
+    "SuperAdmin.dc.html": {
+      "expand": "fill",
+      "h": 2183,
+      "page": "finance",
+      "title": "SaaS super admin",
+      "w": 1440,
+      "x": 1520,
+      "y": 4204
+    },
+    "TabletDashboard.dc.html": {
+      "h": 1194,
+      "page": "devices",
+      "radius": 24,
+      "title": "Tablet — dashboard",
+      "w": 834,
+      "x": 0,
+      "y": 0
+    },
+    "Users.dc.html": {
+      "expand": "fill",
+      "h": 1886,
+      "page": "finance",
+      "title": "Users & permissions",
+      "w": 1440,
+      "x": 1520,
+      "y": 2078
+    },
+    "VatCenter.dc.html": {
+      "expand": "fill",
+      "h": 1506,
+      "page": "finance",
+      "title": "VAT Center",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-07T06:05:00Z",
+    "v": 1
+  },
+  "designSystems": [
+    {
+      "artifact": "https://claude.ai/code/artifact/99a757e6-f316-436e-a9bd-5d8d8698a6a2",
+      "copiedAt": "2026-10-07T06:12:00Z",
+      "namespace": "zatcaweb",
+      "title": "ZatcaWeb",
+      "version": "1791353341-396f"
+    }
+  ],
+  "launch": {
+    "page": "web",
+    "view": "canvas"
+  },
+  "notes": {
+    "t_core": {
+      "kind": "title1",
+      "maxW": 4480,
+      "page": "core",
+      "text": "App — core screens",
+      "w": 240,
+      "x": 0,
+      "y": -320
+    },
+    "t_dev": {
+      "kind": "title1",
+      "maxW": 2244,
+      "page": "devices",
+      "text": "Tablet & mobile",
+      "w": 240,
+      "x": 0,
+      "y": -320
+    },
+    "t_fin": {
+      "kind": "title1",
+      "maxW": 4480,
+      "page": "finance",
+      "text": "App — finance, compliance & admin",
+      "w": 240,
+      "x": 0,
+      "y": -320
+    },
+    "t_web": {
+      "kind": "title1",
+      "maxW": 2960,
+      "page": "web",
+      "text": "Website & onboarding",
+      "w": 240,
+      "x": 0,
+      "y": -320
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Auth.dc.html",
+    "Onboarding.dc.html",
+    "Dashboard.dc.html",
+    "DashboardAR.dc.html",
+    "Expenses.dc.html",
+    "Invoices.dc.html",
+    "InvoiceCreate.dc.html",
+    "Products.dc.html",
+    "InvoiceDetail.dc.html",
+    "Customers.dc.html",
+    "CustomerProfile.dc.html",
+    "VatCenter.dc.html",
+    "Compliance.dc.html",
+    "Reports.dc.html",
+    "Accounting.dc.html",
+    "Users.dc.html",
+    "Billing.dc.html",
+    "Settings.dc.html",
+    "SuperAdmin.dc.html",
+    "TabletDashboard.dc.html",
+    "MobileHome.dc.html",
+    "MobileInvoice.dc.html",
+    "MobileShare.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "web",
+      "name": "Website & onboarding"
+    },
+    {
+      "id": "core",
+      "name": "App — core"
+    },
+    {
+      "id": "finance",
+      "name": "App — finance & admin"
+    },
+    {
+      "id": "devices",
+      "name": "Tablet & mobile"
+    }
+  ],
+  "title": "ZatcaWeb — Product Screens"
+}

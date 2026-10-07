@@ -1,0 +1,31 @@
+// ZatcaWeb data model.
+// Phase 1 sets up the datasource and client only; domain models arrive phase by phase
+// (Phase 2: identity, tenancy, RBAC, audit). See design/CLAUDE_CODE_PROMPT.md §5.
+//
+// Conventions:
+//   id        String   @id @default(uuid()) @db.Uuid
+//   money     Decimal  @db.Decimal(18, 2)
+//   quantity  Decimal  @db.Decimal(18, 4)
+//   rate      Decimal  @db.Decimal(5, 2)
+//   every tenant table has organizationId (UUID, indexed, FK) + RLS policy.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_MIGRATION_URL")
+  directUrl         = env("DATABASE_MIGRATION_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+/// Platform-level, non-tenant table used for readiness checks and to prove migrations run.
+model SystemInfo {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@map("system_info")
+}

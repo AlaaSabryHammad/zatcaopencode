@@ -1,0 +1,82 @@
+/*
+ * App-side adjustments on top of the verbatim reference CSS (zw-components.css).
+ * Only what the TSX port needs: Radix popper positioning, valid button nesting, and
+ * button resets where the reference used <a>/<span role=button>. Values use tokens only.
+ */
+
+/* Radix positions popovers itself; neutralise the reference's absolute anchoring. */
+.zw-pop.zw-pop--radix {
+  position: relative;
+  top: auto;
+  inset-inline: auto;
+  z-index: var(--z-dropdown);
+}
+.zw-menu-item[data-highlighted] {
+  background: var(--bg-hover);
+  outline: none;
+}
+.zw-menu-item[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.zw-tip.zw-tip--radix {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  top: auto;
+  transform: none;
+  z-index: var(--z-toast);
+}
+[dir='rtl'] .zw-tip.zw-tip--radix,
+.zw-tip.zw-tip--radix.zw-ar {
+  font-family: var(--font-arabic);
+}
+
+/* FilterChip: two sibling buttons instead of a nested interactive span. */
+.zw-chip {
+  cursor: default;
+}
+.zw-chip-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.zw-chip-x {
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Sidebar groups with children render as <button> (disclosure), not <a>. */
+button.zw-nav-item {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* Skip link */
+.zw-skip {
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  top: -100px;
+  z-index: var(--z-toast);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--bg-raised);
+  color: var(--ink);
+  box-shadow: var(--shadow-md);
+}
+.zw-skip:focus {
+  top: var(--space-4);
+}

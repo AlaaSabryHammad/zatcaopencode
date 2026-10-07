@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dashboard — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="display: flex; flex-wrap: wrap; min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{shell.nav}}" active="dash" favorites="{{shell.favs}}" plan="{{shell.plan}}" orgs="{{shell.orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" title="Dashboard" quick-create="{{shell.quick}}" notifications="{{shell.n}}" user="{{shell.user}}" theme="{{theme}}"></x-import>
+    <main style="width: 100%; max-width: 1360px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 13px; color: var(--ink-muted);">Wednesday, 7 October 2026</span>
+          <h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">Good morning, Faisal</h1>
+          <p style="margin: 0; font-size: 14px; color: var(--ink-muted);">Business performance overview · <span style="font-family: var(--font-arabic);">شركة آفاق التقنية المحدودة</span></p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{periods}}" default-value="month" size="sm" label="Period"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" size="sm" icon-start="download">Export</x-import>
+        </div>
+      </div>
+
+      <!-- Onboarding checklist strip -->
+      <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; padding: 16px 20px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default);">
+        <div style="display: flex; align-items: center; gap: 12px; min-width: 220px;">
+          <span style="font-weight: 650; font-size: 14px;">Finish setting up</span>
+          <span style="font-size: 13px; color: var(--ink-brand); font-weight: 600;">6 of 8 · 75%</span>
+        </div>
+        <div style="flex: 1; min-width: 160px;"><x-import component-from-global-scope="ZatcaWeb.Progress" value="{{n75}}" label="Setup progress"></x-import></div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" size="sm" icon-start="user-plus">Invite team</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" size="sm" icon-start="shield-check">Connect Jeddah device</x-import>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" emphasis="{{yes}}" icon="chart-column" label="Total sales" value="{{k.sales}}" delta="{{d12}}" trend="{{k.salesTrend}}" footnote="excl. VAT · vs September"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="wallet" label="Net revenue" value="{{k.net}}" delta="{{d10}}" trend="{{k.netTrend}}" footnote="after credit notes"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="percent" tone="accent" label="VAT collected" value="{{k.vat}}" delta="{{d98}}" trend="{{k.vatTrend}}" trend-tone="accent"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="trending-up" tone="info" label="Net profit" value="{{k.profit}}" delta="{{d71}}" footnote="47.7% margin · vs September"></x-import>
+      </div>
+
+      <!-- Receivables + expenses -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="grid-column: span 2; min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; gap: 4px;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Invoices &amp; receivables</h2><span style="font-size: 13px; color: var(--ink-muted);">October · 103 invoices issued</span></div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 12px; color: var(--ink-muted);">Outstanding receivables</span><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{k.outstanding}}" size="kpi"></x-import></div>
+          </div>
+          <div style="display: flex; height: 12px; border-radius: var(--radius-full); overflow: hidden; gap: 2px;">
+            <span style="width: 63.3%; background: var(--success-fill);"></span><span style="width: 22.3%; background: var(--chart-2);"></span><span style="width: 10.8%; background: var(--danger-fill);"></span><span style="width: 3.6%; background: var(--neutral-fg);"></span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px;">
+            <sc-for list="{{inv}}" as="i" hint-placeholder-count="4">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-secondary);"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{i.color}};"></span>{{i.label}}</span>
+                <x-import component-from-global-scope="ZatcaWeb.Amount" value="{{i.amount}}" size="lg"></x-import>
+                <span style="font-size: 12px; color: var(--ink-muted);">{{i.count}}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+            <span style="font-size: 13px; font-weight: 600;">Receivables aging</span>
+            <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;">
+              <sc-for list="{{aging}}" as="a" hint-placeholder-count="4">
+                <div style="padding: 12px; border-radius: var(--radius-md); background: {{a.bg}}; display: flex; flex-direction: column; gap: 2px;">
+                  <span style="font-size: 12px; color: var(--ink-muted);">{{a.label}}</span>
+                  <x-import component-from-global-scope="ZatcaWeb.Amount" value="{{a.amount}}" size="sm"></x-import>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+          <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="banknote" tone="warning" label="Expenses" value="{{k.expenses}}" delta="{{d46}}" invert="{{yes}}" trend="{{k.expTrend}}" trend-tone="danger" footnote="vs September"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Insight" kicker="Smart insight" action="{{remindBtn}}">Your outstanding invoices increased by <strong>18%</strong> compared with last month. <strong>شركة البناء الحديث</strong> accounts for SAR 41,650.00 of it.</x-import>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="grid-column: span 2; min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="bar" title="Revenue vs expenses" subtitle="Last 7 months · SAR" data="{{months}}" series="{{revSeries}}" format="currency" height="{{n260}}" table-toggle="{{yes}}"></x-import>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="donut" title="Invoice status" subtitle="October · SAR" data="{{statusMix}}" format="currency" height="{{n180}}"></x-import>
+        </section>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="area" title="Cash flow" subtitle="Weekly · SAR" data="{{cash}}" series="{{cashSeries}}" format="currency" height="{{n200}}"></x-import>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="bar" title="Sales by branch" subtitle="October · SAR" data="{{branches}}" series="{{branchSeries}}" format="currency" height="{{n200}}"></x-import>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><div style="display: flex; flex-direction: column;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">VAT summary</h2><span style="font-size: 12px; color: var(--ink-muted);">Q4 2026 to date</span></div><x-import component-from-global-scope="ZatcaWeb.Badge" tone="warning" icon="clock" size="sm">Q3 return due 31 Oct</x-import></div>
+          <div style="display: flex; flex-direction: column;">
+            <sc-for list="{{vatRows}}" as="v" hint-placeholder-count="3">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: 14px;"><span style="color: var(--ink-secondary);">{{v.label}}</span><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{v.amount}}"></x-import></div>
+            </sc-for>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-weight: 600;">Net VAT payable</span><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{k.netVat}}" size="lg"></x-import></div>
+          <a href="VatCenter.dc.html" style="font-size: 13px; font-weight: 600;">Open VAT Center</a>
+        </section>
+      </div>
+
+      <!-- Top lists -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Top customers</h2><a href="Customers.dc.html" style="font-size: 13px;">View all</a></div>
+          <sc-for list="{{topCustomers}}" as="c" hint-placeholder-count="5">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; align-items: center; gap: 10px;"><x-import component-from-global-scope="ZatcaWeb.Avatar" name="{{c.name}}" square="{{yes}}" size="sm"></x-import><span style="flex: 1; min-width: 0; font-size: 13px; font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{c.name}}</span><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{c.amount}}" size="sm"></x-import></div>
+              <div style="height: 4px; border-radius: 2px; background: var(--bg-sunken);"><div style="height: 4px; border-radius: 2px; background: var(--brand-400); width: {{c.pct}};"></div></div>
+            </div>
+          </sc-for>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Top products &amp; services</h2><a href="Products.dc.html" style="font-size: 13px;">View all</a></div>
+          <sc-for list="{{topProducts}}" as="p" hint-placeholder-count="5">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle);">
+              <span style="display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--bg-sunken); color: var(--ink-secondary);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="{{p.icon}}" size="{{n16}}"></x-import></span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-size: 13px; font-weight: 550;">{{p.name}}</span><span style="font-size: 12px; color: var(--ink-muted);">{{p.units}}</span></span>
+              <x-import component-from-global-scope="ZatcaWeb.Amount" value="{{p.amount}}" size="sm"></x-import>
+            </div>
+          </sc-for>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="donut" title="Payment methods" subtitle="Received in October · SAR" data="{{methods}}" format="currency" height="{{n160}}"></x-import>
+        </section>
+      </div>
+
+      <!-- Recent invoices + activity -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="grid-column: span 2; min-width: 0; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Recent invoices</h2><a href="Invoices.dc.html" style="font-size: 13px;">All invoices</a></div>
+          <div style="overflow-x: auto;">
+            <div role="table" style="display: table; width: 100%; border-collapse: collapse; font-size: 13px;">
+              <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px; text-align: start;">
+                <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: start; font-weight: 600;">Invoice</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Customer</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Due</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Status</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: end; font-weight: 600;">Total</div>
+              </div></div>
+              <div role="rowgroup" style="display: table-row-group;">
+                <sc-for list="{{recent}}" as="r" hint-placeholder-count="6">
+                  <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle);">
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 24px; font-family: var(--font-mono); white-space: nowrap;"><a href="InvoiceDetail.dc.html" style="color: var(--ink); text-decoration: none;">{{r.no}}</a></div>
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; white-space: nowrap; font-weight: 550;">{{r.customer}}</div>
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; white-space: nowrap; color: var(--ink-secondary);">{{r.due}}</div>
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px;"><x-import component-from-global-scope="ZatcaWeb.InvoiceStatus" status="{{r.status}}" size="sm"></x-import></div>
+                    <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 24px; text-align: end;"><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{r.total}}"></x-import></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 16px;">
+          <h2 style="margin: 0; font-size: 14px; font-weight: 600;">Activity</h2>
+          <x-import component-from-global-scope="ZatcaWeb.Timeline" items="{{activity}}" compact="{{yes}}"></x-import>
+        </section>
+      </div>
+
+      <!-- Recurring, alerts, recommendations -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Upcoming recurring invoices</h2><x-import component-from-global-scope="ZatcaWeb.Icon" name="repeat" size="{{n16}}"></x-import></div>
+          <sc-for list="{{recurring}}" as="r" hint-placeholder-count="3">
+            <div style="display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: var(--radius-md); background: var(--bg-sunken);">
+              <span style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--bg-surface); border: 1px solid var(--border-default);"><span style="font-size: 10px; color: var(--ink-muted); text-transform: uppercase;">{{r.mon}}</span><span style="font-size: 16px; font-weight: 650; line-height: 18px;">{{r.day}}</span></span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-size: 13px; font-weight: 550;">{{r.customer}}</span><span style="font-size: 12px; color: var(--ink-muted);">{{r.what}}</span></span>
+              <x-import component-from-global-scope="ZatcaWeb.Amount" value="{{r.amount}}" size="sm"></x-import>
+            </div>
+          </sc-for>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 12px;">
+          <h2 style="margin: 0; font-size: 14px; font-weight: 600;">Alerts</h2>
+          <x-import component-from-global-scope="ZatcaWeb.Alert" tone="danger" title="2 invoices rejected" action="{{reviewBtn}}">Fix the seller address and resubmit.</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Alert" tone="warning" title="Jeddah device certificate expires in 12 days"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Alert" tone="info" title="Low stock: Dell Latitude 5540">3 left in Riyadh warehouse · minimum 5</x-import>
+        </section>
+        <section style="min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <x-import component-from-global-scope="ZatcaWeb.Insight" kicker="Recommendation">Dammam branch sales grew <strong>22%</strong> this month. Its top item, Network installation service, is booked out until 20 October.</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Insight" kicker="Cash flow">Collecting the 4 overdue invoices would cover <strong>25%</strong> of October’s expenses.</x-import>
+        </section>
+      </div>
+    </main>
+  </div>
+  <button type="button" style="position: fixed; bottom: 24px; inset-inline-end: 24px; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px 0 16px; border: 0; border-radius: var(--radius-full); background: var(--brand-900); color: var(--on-brand-deep); font: 600 14px var(--font-sans); box-shadow: var(--shadow-lg); cursor: pointer;"><span style="color: var(--accent-500); display: inline-flex;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="sparkles" size="{{n18}}"></x-import></span>Ask Zatca AI</button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  shell() {
+    return {
+      n: 3,
+      user: { name: 'Faisal Al-Otaibi' },
+      nav: [
+        { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+        { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'notes', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+        { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+        { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'banking', label: 'Banking', icon: 'landmark' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'notifications', label: 'Notifications', icon: 'bell' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'VAT return · Q3 2026' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }],
+      quick: [{ heading: 'Quick create' }, { label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }]
+    };
+  }
+  renderVals() {
+    var h = React.createElement, Z = window.ZatcaWeb;
+    var btn = function (label, icon) { return Z ? h(Z.Button, { size: 'sm', variant: 'secondary', iconStart: icon }, label) : null; };
+    return {
+      theme: this.props.theme ?? 'light',
+      shell: this.shell(),
+      yes: true, n16: 16, n18: 18, n75: 75, n160: 160, n180: 180, n200: 200, n260: 260,
+      d12: 12.4, d10: 10.6, d98: 9.8, d71: 7.1, d46: 4.6,
+      periods: [{ value: 'today', label: 'Today' }, { value: 'week', label: 'This week' }, { value: 'month', label: 'This month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }, { value: 'custom', label: 'Custom', icon: 'calendar' }],
+      k: {
+        sales: 248930.5, salesTrend: [120, 132, 128, 150, 162, 158, 181, 197],
+        net: 241610.5, netTrend: [118, 128, 126, 146, 158, 151, 176, 192],
+        vat: 37339.58, vatTrend: [18, 20, 19, 23, 25, 24, 27, 30],
+        profit: 115130.5, outstanding: 95450, expenses: 126480, expTrend: [98, 104, 112, 109, 121, 118, 126], netVat: 18367.58
+      },
+      inv: [
+        { label: 'Paid', amount: 182400, count: '82 invoices', color: 'var(--success-fill)' },
+        { label: 'Unpaid', amount: 64250, count: '14 invoices', color: 'var(--chart-2)' },
+        { label: 'Overdue', amount: 31200, count: '4 invoices', color: 'var(--danger-fill)' },
+        { label: 'Draft', amount: 9800, count: '3 invoices', color: 'var(--neutral-fg)' }
+      ],
+      aging: [
+        { label: '0–30 days', amount: 52100, bg: 'var(--bg-sunken)' },
+        { label: '31–60 days', amount: 12150, bg: 'var(--bg-sunken)' },
+        { label: '61–90 days', amount: 19800, bg: 'var(--warning-bg)' },
+        { label: '90+ days', amount: 11400, bg: 'var(--danger-bg)' }
+      ],
+      remindBtn: btn('Remind 4 customers', 'send'),
+      reviewBtn: btn('Review', 'arrow-right'),
+      months: [['Apr', 142, 98], ['May', 158, 104], ['Jun', 151, 112], ['Jul', 176, 109], ['Aug', 169, 121], ['Sep', 192, 118], ['Oct', 248.93, 126.48]].map(function (m) { return { label: m[0], revenue: Math.round(m[1] * 1000), expenses: Math.round(m[2] * 1000) }; }),
+      revSeries: [{ key: 'revenue', label: 'Revenue' }, { key: 'expenses', label: 'Expenses', color: 'chart-3' }],
+      statusMix: [{ label: 'Paid', value: 182400, color: 'success-fill' }, { label: 'Unpaid', value: 64250, color: 'chart-2' }, { label: 'Overdue', value: 31200, color: 'danger-fill' }, { label: 'Draft', value: 9800, color: 'neutral-fg' }],
+      cash: [['W32', 42], ['W33', 38], ['W34', 51], ['W35', 47], ['W36', 55], ['W37', 49], ['W38', 61], ['W39', 66], ['W40', 58], ['W41', 72]].map(function (m) { return { label: m[0], inflow: m[1] * 1000, outflow: Math.round(m[1] * 720) }; }),
+      cashSeries: [{ key: 'inflow', label: 'Inflow' }, { key: 'outflow', label: 'Outflow', color: 'chart-3', dashed: true }],
+      branches: [{ label: 'Head Office', sales: 112400 }, { label: 'Dammam', sales: 78930.5 }, { label: 'Jeddah', sales: 57600 }],
+      branchSeries: [{ key: 'sales', label: 'Sales' }],
+      vatRows: [{ label: 'Output VAT (sales)', amount: 37339.58 }, { label: 'Input VAT (purchases)', amount: 18972 }],
+      topCustomers: [['شركة البناء الحديث', 64300], ['شركة الخليج للخدمات', 41250], ['مؤسسة النور التجارية', 33780], ['Al Waha Hospitality Co.', 22640], ['Najd Logistics LLC', 18900]].map(function (c) { return { name: c[0], amount: c[1], pct: Math.round(c[1] / 64300 * 100) + '%' }; }),
+      topProducts: [
+        { name: 'Network installation service', units: '12 jobs', amount: 58500, icon: 'workflow' },
+        { name: 'Dell Latitude 5540 laptop', units: '11 pcs', amount: 46750, icon: 'monitor' },
+        { name: 'Annual support contract', units: '4 contracts', amount: 38400, icon: 'life-buoy' },
+        { name: 'Microsoft 365 Business Premium', units: '90 seats', amount: 21600, icon: 'key-round' },
+        { name: 'Cisco Catalyst 9200 switch', units: '6 pcs', amount: 19800, icon: 'server' }
+      ],
+      methods: [{ label: 'Bank transfer', value: 104600 }, { label: 'Mada', value: 41300 }, { label: 'Cash', value: 18200 }, { label: 'Apple Pay', value: 11900 }, { label: 'Cheque', value: 6400 }],
+      recent: [
+        { no: 'INV-2026-00126', customer: 'شركة الخليج للخدمات', due: '06 Nov 2026', status: 'sent', total: 13200 },
+        { no: 'INV-2026-00125', customer: 'مؤسسة النور التجارية', due: '04 Nov 2026', status: 'partially_paid', total: 8625 },
+        { no: 'INV-2026-00124', customer: 'شركة البناء الحديث', due: '31 Oct 2026', status: 'paid', total: 48300 },
+        { no: 'INV-2026-00123', customer: 'Al Waha Hospitality Co.', due: '06 Oct 2026', status: 'overdue', total: 3105 },
+        { no: 'INV-2026-00122', customer: 'شركة البناء الحديث', due: '18 Oct 2026', status: 'viewed', total: 21850 },
+        { no: 'INV-2026-00121', customer: 'مؤسسة الريان للتوريدات', due: '—', status: 'draft', total: 5750 }
+      ],
+      activity: [
+        { title: 'Payment received · SAR 3,200.00', time: '10:12', icon: 'banknote', tone: 'success', description: 'Mada · INV-2026-00125 · مؤسسة النور التجارية' },
+        { title: 'INV-2026-00126 accepted', time: '09:42', icon: 'shield-check', tone: 'success', description: 'Cleared by the e-invoicing platform' },
+        { title: 'Invoice viewed', time: '09:05', icon: 'eye', tone: 'info', description: 'شركة البناء الحديث opened INV-2026-00122' },
+        { title: 'Expense approved · SAR 4,850.00', time: 'Yesterday', icon: 'check', tone: 'brand', description: 'Office rent — Dammam, by Noura Al-Qahtani' },
+        { title: 'New customer added', time: 'Yesterday', icon: 'user-plus', tone: 'neutral', description: 'Najd Logistics LLC by Ahmed Saleh' }
+      ],
+      recurring: [
+        { mon: 'Oct', day: '10', customer: 'Najd Logistics LLC', what: 'Monthly IT support · auto-send', amount: 4600 },
+        { mon: 'Oct', day: '15', customer: 'Al Waha Hospitality Co.', what: 'Managed Wi-Fi service · monthly', amount: 2875 },
+        { mon: 'Nov', day: '01', customer: 'شركة البناء الحديث', what: 'Network maintenance · quarterly', amount: 9200 }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

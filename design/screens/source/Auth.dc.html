@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>تسجيل الدخول — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" dir="rtl" lang="ar" style="background: var(--bg-canvas); color: var(--ink); font-family: var(--font-arabic);">
+<x-import component-from-global-scope="ZatcaWeb.LocaleProvider" lang="ar">
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap;">
+
+  <!-- Form side -->
+  <main style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; padding: 32px 40px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <x-import component-from-global-scope="ZatcaWeb.Logo" variant="arabic" size="{{n30}}"></x-import>
+      <a href="Main.dc.html" style="font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--ink-secondary); text-decoration: none;">English</a>
+    </div>
+
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 0;">
+      <div style="width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 24px;">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <h1 style="margin: 0; font-size: 30px; line-height: 44px; font-weight: 700;">{{heading}}</h1>
+          <p style="margin: 0; font-size: 15px; line-height: 26px; color: var(--ink-muted);">{{sub}}</p>
+        </div>
+
+        <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{modes}}" value="{{mode}}" on-change="{{setMode}}" label="نوع الدخول"></x-import>
+
+        <sc-if value="{{isLogin}}" hint-placeholder-val="{{true}}">
+          <form style="display: flex; flex-direction: column; gap: 16px;">
+            <x-import component-from-global-scope="ZatcaWeb.Input" label="البريد الإلكتروني" icon-start="mail" type="email" default-value="faisal@afaq-tech.sa" dir="ltr" required="{{yes}}"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Input" label="كلمة المرور" icon-start="lock" type="password" default-value="ZatcaWeb2026" required="{{yes}}" label-aside="{{forgot}}"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Checkbox" label="تذكرني على هذا الجهاز لمدة ٣٠ يومًا" default-checked="{{yes}}"></x-import>
+            <a href="Dashboard.dc.html" style="display: inline-flex; align-items: center; justify-content: center; height: 48px; border-radius: var(--radius-lg); background: var(--brand-600); color: var(--on-brand); font-weight: 700; font-size: 16px; text-decoration: none;">تسجيل الدخول</a>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{isSignup}}" hint-placeholder-val="{{false}}">
+          <form style="display: flex; flex-direction: column; gap: 16px;">
+            <x-import component-from-global-scope="ZatcaWeb.Input" label="الاسم الكامل" icon-start="users" default-value="فيصل العتيبي" required="{{yes}}"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Input" label="البريد الإلكتروني للعمل" icon-start="mail" type="email" default-value="faisal@afaq-tech.sa" dir="ltr" hint="سنرسل رابط تأكيد إلى هذا البريد." required="{{yes}}"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.PhoneInput" label="رقم الجوال" default-value="551234567" hint="سنرسل رمز تحقق (OTP) لمرة واحدة." required="{{yes}}"></x-import>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <x-import component-from-global-scope="ZatcaWeb.Input" label="كلمة المرور" icon-start="lock" type="password" default-value="Afaq#Riyadh2026" required="{{yes}}"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Progress" value="{{n80}}" label="قوة كلمة المرور"></x-import>
+              <span style="font-size: 12px; color: var(--success-fg); display: inline-flex; align-items: center; gap: 6px;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="circle-check" size="{{n14}}"></x-import>كلمة مرور قوية · ١٢ حرفًا مع رموز وأرقام</span>
+            </div>
+            <x-import component-from-global-scope="ZatcaWeb.Checkbox" label="أوافق على شروط الاستخدام وسياسة الخصوصية" default-checked="{{yes}}"></x-import>
+            <a href="Onboarding.dc.html" style="display: inline-flex; align-items: center; justify-content: center; height: 48px; border-radius: var(--radius-lg); background: var(--brand-600); color: var(--on-brand); font-weight: 700; font-size: 16px; text-decoration: none;">إنشاء الحساب والمتابعة</a>
+          </form>
+        </sc-if>
+
+        <div style="display: flex; align-items: center; gap: 12px; color: var(--ink-muted); font-size: 13px;"><span style="flex: 1; height: 1px; background: var(--border-default);"></span>أو<span style="flex: 1; height: 1px; background: var(--border-default);"></span></div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" size="lg" icon-start="smartphone" full-width="{{yes}}">الدخول برمز تحقق عبر الجوال</x-import>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: var(--radius-lg); border: 1px dashed var(--border-control); color: var(--ink-muted); font-size: 14px;">
+            <span style="display: inline-flex; align-items: center; gap: 8px;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="fingerprint" size="{{n18}}"></x-import>مفاتيح المرور (Passkeys) والدخول الموحّد SSO</span>
+            <x-import component-from-global-scope="ZatcaWeb.Badge" tone="accent" size="sm">قريبًا</x-import>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--ink-muted);">
+      <span>© 2026 ZatcaWeb · منصة مستقلة وغير تابعة لهيئة الزكاة والضريبة والجمارك</span>
+      <span style="display: inline-flex; align-items: center; gap: 6px;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="lock" size="{{n14}}"></x-import>اتصال آمن ومشفّر</span>
+    </div>
+  </main>
+
+  <!-- Brand side -->
+  <aside style="flex: 1 1 520px; min-width: 0; background: var(--brand-900); color: var(--on-brand-deep); padding: 56px; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; position: relative; overflow: hidden;">
+    <div aria-hidden="true" style="position: absolute; top: 48px; inset-inline-end: 48px; display: grid; grid-template-columns: repeat(5, 18px); gap: 6px;">
+      <sc-for list="{{pixels}}" as="p" hint-placeholder-count="20"><span style="height: 18px; border-radius: var(--radius-xs); background: {{p}};"></span></sc-for>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 16px; max-width: 460px; margin-top: 120px;">
+      <h2 style="margin: 0; font-size: 36px; line-height: 52px; font-weight: 700;">فواتيرك، ضريبتك، وأعمالك كلها في مكان واحد هادئ.</h2>
+      <p style="margin: 0; font-size: 17px; line-height: 30px; opacity: 0.88;">أصدر الفواتير الضريبية خلال ثوانٍ، وتابع المستحقات، واطّلع على موقفك الضريبي قبل موعد الإقرار.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 460px; color: var(--ink);">
+      <x-import component-from-global-scope="ZatcaWeb.ComplianceStatus" variant="detailed" status="accepted" detail="تم اعتماد الفاتورة INV-2026-00126 وقبولها." meta="09:42"></x-import>
+      <div style="display: flex; gap: 12px;">
+        <div style="flex: 1; min-width: 0; padding: 16px; border-radius: var(--radius-lg); background: var(--bg-surface); display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 13px; color: var(--ink-muted);">مبيعات أكتوبر</span>
+          <x-import component-from-global-scope="ZatcaWeb.Amount" value="{{sales}}" size="lg"></x-import>
+        </div>
+        <div style="flex: 1; min-width: 0; padding: 16px; border-radius: var(--radius-lg); background: var(--bg-surface); display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 13px; color: var(--ink-muted);">ضريبة القيمة المضافة</span>
+          <x-import component-from-global-scope="ZatcaWeb.Amount" value="{{vat}}" size="lg"></x-import>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"startMode":{"editor":"enum","options":["login","signup"],"default":"login","section":"Screen"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { mode: null }; }
+  renderVals() {
+    var self = this;
+    var mode = this.state.mode || this.props.startMode || 'login';
+    var login = mode === 'login';
+    var px = [];
+    var pattern = [2, 2, 0, 1, 3, 2, 0, 2, 2, 0, 0, 2, 0, 0, 2, 2, 2, 0, 2, 2];
+    var fills = ['transparent', 'var(--brand-500)', 'var(--brand-600)', 'var(--accent-500)'];
+    pattern.forEach(function (i) { px.push(fills[i]); });
+    return {
+      theme: this.props.theme ?? 'light',
+      yes: true, n14: 14, n18: 18, n30: 30, n80: 80,
+      mode: mode, isLogin: login, isSignup: !login,
+      modes: [{ value: 'login', label: 'تسجيل الدخول' }, { value: 'signup', label: 'إنشاء حساب' }],
+      setMode: function (v) { self.setState({ mode: v }); },
+      heading: login ? 'مرحبًا بعودتك' : 'أنشئ حسابك في ZatcaWeb',
+      sub: login ? 'سجّل الدخول للوصول إلى منشآتك وفواتيرك.' : 'حسابك الشخصي أولًا، ثم ننشئ مساحة عمل منشأتك في خطوات قليلة.',
+      forgot: React.createElement('a', { href: '#forgot', style: { color: 'var(--ink-brand)', fontWeight: 600 } }, 'نسيت كلمة المرور؟'),
+      pixels: px,
+      sales: 248930.5, vat: 37339.58
+    };
+  }
+}
+</script>
+</body>
+</html>

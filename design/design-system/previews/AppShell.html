@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head><link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script><meta charset="utf-8"><title>AppShell — preview</title>
+<style>html,body{margin:0}body{background:var(--bg-canvas);color:var(--ink);font-family:var(--font-sans);padding:20px;box-sizing:border-box}*{box-sizing:border-box}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.col{display:flex;flex-direction:column;gap:12px}.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.lbl{font:600 11px/16px var(--font-sans);color:var(--ink-muted);letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}.panel{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px}.stage{position:relative;overflow:hidden;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--bg-canvas)}body{padding:12px}</style></head>
+<body>
+<div id="root"></div>
+<script>
+var Z = window.ZatcaWeb, h = React.createElement, F = React.Fragment, useState = React.useState;
+function AR(c){ return h(Z.LocaleProvider, { lang: 'ar' }, c); }
+function EN(c){ return h(Z.LocaleProvider, { lang: 'en' }, c); }
+var sections = [
+  { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+  { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'credit', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+  { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+  { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+  { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }];
+var orgs = [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }];
+var plan = { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' };
+var quick = [{ label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }];
+var months = [['Apr',142,98],['May',158,104],['Jun',151,112],['Jul',176,109],['Aug',169,121],['Sep',192,118],['Oct',214,126]].map(function (m) { return { label: m[0], revenue: m[1] * 1000, expenses: m[2] * 1000 }; });
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'stage', style: { height: 680 } }, h(Z.AppShell, { height: '100%',
+  sidebar: h(Z.Sidebar, { sections: sections, active: 'dash', plan: plan, orgs: orgs, currentOrg: 'o1' }),
+  topbar: h(Z.Topbar, { title: 'Dashboard', quickCreate: quick, notifications: 3, user: { name: 'Faisal Al-Otaibi' } }) },
+  h(Z.PageHeader, { kicker: 'Wednesday, 7 October 2026', title: 'Good morning, Faisal', description: 'Here is how شركة آفاق التقنية is performing this month.', actions: h(Z.SegmentedControl, { size: 'sm', defaultValue: 'm', options: [{ value: 'w', label: 'Week' }, { value: 'm', label: 'Month' }, { value: 'q', label: 'Quarter' }, { value: 'y', label: 'Year' }] }) }),
+  h('div', { className: 'grid3' }, h(Z.StatCard, { emphasis: true, label: 'Total sales', icon: 'chart-column', value: 248930.5, delta: 12.4 }), h(Z.StatCard, { label: 'VAT collected', icon: 'percent', tone: 'accent', value: 37339.58, delta: 9.8 }), h(Z.StatCard, { label: 'Outstanding', icon: 'clock', tone: 'warning', value: 95450, delta: 18, invert: true })),
+  h('div', { style: { height: 16 } }),
+  h(Z.Card, { title: 'Revenue vs expenses' }, h(Z.Chart, { type: 'bar', data: months, series: [{ key: 'revenue', label: 'Revenue' }, { key: 'expenses', label: 'Expenses', color: 'chart-3' }], format: 'currency', height: 200 })))));
+</script>
+</body>
+</html>

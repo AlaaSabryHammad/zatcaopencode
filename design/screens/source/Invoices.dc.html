@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Invoices — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="display: flex; flex-wrap: wrap; min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{shell.nav}}" active="invoices" favorites="{{shell.favs}}" plan="{{shell.plan}}" orgs="{{shell.orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" breadcrumbs="{{crumbs}}" quick-create="{{shell.quick}}" notifications="{{shell.n}}" user="{{shell.user}}" theme="{{theme}}"></x-import>
+    <main style="width: 100%; max-width: 1360px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">Invoices</h1>
+          <p style="margin: 0; font-size: 14px; color: var(--ink-muted);">126 documents this year · SAR 1,241,860.00 issued</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="upload">Import</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.DropdownMenu" trigger="{{newTrigger}}" items="{{newTypes}}" align="end" width="{{n260}}"></x-import>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <sc-for list="{{summary}}" as="s" hint-placeholder-count="4">
+          <div style="padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; border-inline-end: 1px solid var(--border-subtle);">
+            <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-secondary);"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{s.dot}};"></span>{{s.label}}</span>
+            <x-import component-from-global-scope="ZatcaWeb.Amount" value="{{s.amount}}" size="lg"></x-import>
+            <span style="font-size: 12px; color: var(--ink-muted);">{{s.note}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <x-import component-from-global-scope="ZatcaWeb.Tabs" tabs="{{tabs}}" default-value="all"></x-import>
+
+      <x-import component-from-global-scope="ZatcaWeb.DataGrid" columns="{{cols}}" rows="{{rows}}" page-size="{{n10}}" search-placeholder="Search invoice #, customer or VAT number…" search-keys="{{searchKeys}}" filters="{{filters}}" actions="{{gridActions}}" bulk-actions="{{bulk}}" default-sort="{{sort}}"></x-import>
+
+      <div style="display: flex; gap: 12px; align-items: center; font-size: 13px; color: var(--ink-muted); flex-wrap: wrap;">
+        <x-import component-from-global-scope="ZatcaWeb.Icon" name="info" size="{{n16}}"></x-import>
+        Issued tax invoices can’t be edited or deleted — create a credit or debit note instead. E-invoice status reflects the e-invoicing platform’s response.
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  shell() {
+    return {
+      n: 3,
+      user: { name: 'Faisal Al-Otaibi' },
+      nav: [
+        { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+        { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'notes', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+        { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+        { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'banking', label: 'Banking', icon: 'landmark' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'notifications', label: 'Notifications', icon: 'bell' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'VAT return · Q3 2026' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }],
+      quick: [{ heading: 'Quick create' }, { label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }]
+    };
+  }
+  renderVals() {
+    var h = React.createElement, Z = window.ZatcaWeb || {};
+    var data = [
+      ['INV-2026-00126', 'Tax invoice', 'شركة الخليج للخدمات', 'Jeddah', '07 Oct 2026', '06 Nov 2026', 'accepted', 'sent', 13200, 13200],
+      ['INV-2026-00125', 'Tax invoice', 'مؤسسة النور التجارية', 'Dammam', '05 Oct 2026', '04 Nov 2026', 'accepted', 'partially_paid', 8625, 5425],
+      ['SIM-2026-04411', 'Simplified', 'Walk-in customer', 'Head Office', '05 Oct 2026', 'Paid at POS', 'accepted', 'paid', 862.5, 0],
+      ['INV-2026-00124', 'Tax invoice', 'شركة البناء الحديث', 'Head Office', '01 Oct 2026', '31 Oct 2026', 'accepted', 'paid', 48300, 0],
+      ['INV-2026-00123', 'Tax invoice', 'Al Waha Hospitality Co.', 'Head Office', '22 Sep 2026', '06 Oct 2026', 'warning', 'overdue', 3105, 3105],
+      ['INV-2026-00122', 'Tax invoice', 'شركة البناء الحديث', 'Head Office', '18 Sep 2026', '18 Oct 2026', 'accepted', 'viewed', 21850, 21850],
+      ['INV-2026-00121', 'Tax invoice', 'مؤسسة الريان للتوريدات', 'Dammam', '15 Sep 2026', '—', 'not_validated', 'draft', 5750, 5750],
+      ['CN-2026-0009', 'Credit note', 'Najd Logistics LLC', 'Head Office', '28 Sep 2026', '—', 'accepted', 'credited', -2300, 0],
+      ['INV-2026-00120', 'Tax invoice', 'شركة الخليج للخدمات', 'Jeddah', '11 Sep 2026', '11 Oct 2026', 'accepted', 'paid', 17940, 0],
+      ['INV-2026-00119', 'Tax invoice', 'Najd Logistics LLC', 'Head Office', '09 Sep 2026', '09 Oct 2026', 'submission_pending', 'issued', 9890, 9890],
+      ['INV-2026-00118', 'Tax invoice', 'مؤسسة النور التجارية', 'Dammam', '02 Sep 2026', '02 Oct 2026', 'rejected', 'pending', 4320, 4320],
+      ['INV-2026-00117', 'Tax invoice', 'شركة البناء الحديث', 'Head Office', '28 Aug 2026', '27 Sep 2026', 'accepted', 'overdue', 19800, 19800],
+      ['INV-2026-00116', 'Tax invoice', 'Al Waha Hospitality Co.', 'Head Office', '25 Aug 2026', '24 Sep 2026', 'accepted', 'cancelled', 1150, 0]
+    ];
+    var rows = data.map(function (d) { return { id: d[0], type: d[1], customer: d[2], branch: d[3], issued: d[4], due: d[5], zatca: d[6], status: d[7], total: d[8], balance: d[9] }; });
+    var cell = function (a, b) { return h('span', { className: 'zw-cell-primary' }, h('b', null, a), h('small', null, b)); };
+    return {
+      theme: this.props.theme ?? 'light',
+      shell: this.shell(),
+      n10: 10, n16: 16, n260: 260,
+      crumbs: [{ label: 'Sales' }, { label: 'Invoices' }],
+      newTrigger: Z.Button ? h(Z.Button, { iconStart: 'plus', iconEnd: 'chevron-down', kbd: 'N' }, 'New invoice') : null,
+      newTypes: [{ heading: 'Create' }, { label: 'Tax invoice', description: 'B2B · standard', icon: 'receipt', shortcut: 'N' }, { label: 'Simplified tax invoice', description: 'B2C · point of sale', icon: 'file-text' }, { label: 'Credit note', icon: 'file-minus' }, { label: 'Debit note', icon: 'file-plus' }, { divider: true }, { label: 'Quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'Proforma invoice', icon: 'file-text' }, { label: 'Recurring invoice', icon: 'repeat' }],
+      summary: [
+        { label: 'Issued · 2026', amount: 1241860, note: '126 documents', dot: 'var(--brand-500)' },
+        { label: 'Unpaid', amount: 64250, note: '14 invoices', dot: 'var(--chart-2)' },
+        { label: 'Overdue', amount: 31200, note: '4 invoices · oldest 40 days', dot: 'var(--danger-fill)' },
+        { label: 'Drafts', amount: 9800, note: '3 drafts', dot: 'var(--neutral-fg)' }
+      ],
+      tabs: [{ id: 'all', label: 'All', count: 126 }, { id: 'draft', label: 'Drafts', count: 3 }, { id: 'unpaid', label: 'Unpaid', count: 14 }, { id: 'overdue', label: 'Overdue', count: 4 }, { id: 'paid', label: 'Paid', count: 98 }, { id: 'notes', label: 'Credit & debit notes', count: 7 }, { id: 'rejected', label: 'Needs attention', count: 2 }],
+      searchKeys: ['id', 'customer', 'branch'],
+      sort: { key: 'issued', dir: 'desc' },
+      filters: Z.FilterChip ? [h(Z.FilterChip, { key: 'd', label: 'Date', value: 'This year', icon: 'calendar', active: true, onRemove: function () {} }), h(Z.FilterChip, { key: 'b', label: 'Branch', icon: 'building-2' }), h(Z.FilterChip, { key: 'c', label: 'Customer', icon: 'users' }), h(Z.FilterChip, { key: 'e', label: 'E-invoice status', icon: 'shield-check' })] : null,
+      gridActions: Z.Button ? [h(Z.Button, { key: 'v', size: 'sm', variant: 'ghost', iconStart: 'sliders-horizontal' }, 'Columns'), h(Z.Button, { key: 'x', size: 'sm', variant: 'secondary', iconStart: 'download' }, 'Export')] : null,
+      bulk: [{ label: 'Send reminders', icon: 'send' }, { label: 'Download PDFs', icon: 'download' }, { label: 'Export', icon: 'file-spreadsheet' }],
+      rows: rows,
+      cols: [
+        { key: 'id', header: 'Number', sortable: true, render: function (r) { return h('span', { className: 'zw-cell-primary' }, h('b', { className: 'zw-mono' }, r.id), h('small', null, r.type)); } },
+        { key: 'customer', header: 'Customer', sortable: true, render: function (r) { return h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 10 } }, Z.Avatar ? h(Z.Avatar, { name: r.customer, size: 'sm', square: r.customer !== 'Walk-in customer' }) : null, cell(r.customer, r.branch)); } },
+        { key: 'issued', header: 'Issued', sortable: true, sortValue: function (r) { return Date.parse(r.issued) || 0; } },
+        { key: 'due', header: 'Due' },
+        { key: 'zatca', header: 'E-invoice', render: function (r) { return Z.ComplianceStatus ? h(Z.ComplianceStatus, { status: r.zatca, size: 'sm' }) : r.zatca; } },
+        { key: 'status', header: 'Status', render: function (r) { return Z.InvoiceStatus ? h(Z.InvoiceStatus, { status: r.status, size: 'sm' }) : r.status; } },
+        { key: 'total', header: 'Total', align: 'end', sortable: true, render: function (r) { return Z.Amount ? h(Z.Amount, { value: r.total, tone: r.total < 0 ? 'danger' : undefined }) : r.total; } },
+        { key: 'balance', header: 'Balance due', align: 'end', sortable: true, render: function (r) { return Z.Amount ? h(Z.Amount, { value: r.balance, tone: r.balance === 0 ? 'muted' : undefined }) : r.balance; } },
+        { key: 'menu', header: '', width: 48, render: function () { return Z.IconButton ? h(Z.IconButton, { icon: 'ellipsis', label: 'Invoice actions', size: 'sm' }) : null; } }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

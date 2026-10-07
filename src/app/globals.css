@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Token values live in ./tokens.css (verbatim from the design handoff). The only change here:
+ * the font stacks point at next/font's self-hosted families first (same files, same order).
+ */
+:root {
+  --font-sans:
+    var(--font-inter), var(--font-plex-arabic), 'Inter Variable', 'IBM Plex Sans Arabic', system-ui,
+    -apple-system, 'Segoe UI', sans-serif;
+  --font-arabic:
+    var(--font-plex-arabic), var(--font-inter), 'IBM Plex Sans Arabic', 'Inter Variable', 'Noto Sans Arabic',
+    Tahoma, sans-serif;
+  --font-mono: var(--font-plex-mono), 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--bg-canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 22px;
+  }
+  html[lang='ar'] body {
+    font-family: var(--font-arabic);
+    font-size: 15px;
+    line-height: 26px;
+  }
+  ::selection {
+    background: var(--brand-100);
+    color: var(--ink);
+  }
+}
+
+@layer utilities {
+  /* Tabular figures for any number column. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+  /* Never uppercase / letter-space Arabic (bilingual-rtl.md). */
+  [lang='ar'] .overline-en,
+  .zw-ar .overline-en {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+}

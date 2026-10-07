@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Platform admin — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans); display: flex; flex-direction: column;">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 32px; background: var(--bg-inverse); color: var(--ink-inverse); font-size: 12px; font-weight: 600; letter-spacing: 0.02em;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="shield-alert" size="{{n14}}"></x-import>ZatcaWeb platform administration · every action is logged with your identity, IP and reason</div>
+  <div style="display: flex; flex-wrap: wrap; flex: 1;">
+    <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+      <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{nav}}" active="overview" plan="{{envPlan}}"></x-import>
+    </div>
+    <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="ZatcaWeb.Topbar" title="Platform overview" notifications="{{n7}}" user="{{user}}" theme="{{theme}}"></x-import>
+      <main style="width: 100%; max-width: 1400px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;">
+          <div style="display: flex; flex-direction: column; gap: 4px;"><div style="display: flex; align-items: center; gap: 10px;"><h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">Platform overview</h1><x-import component-from-global-scope="ZatcaWeb.Badge" tone="accent" icon="shield-check">Platform admin</x-import></div><p style="margin: 0; font-size: 14px; color: var(--ink-muted);">All tenants · production · figures as of 7 Oct 2026 10:00</p></div>
+          <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{range}}" default-value="30d" size="sm" label="Range"></x-import>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px;">
+          <x-import component-from-global-scope="ZatcaWeb.StatCard" emphasis="{{yes}}" icon="trending-up" label="MRR" value="{{k.mrr}}" delta="{{d42}}" trend="{{k.mrrTrend}}" footnote="ARR SAR 15,415,200.00"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="building-2" label="Organizations" value="2,846" currency="{{no}}" delta="{{d38}}" footnote="2,311 active · 214 on trial"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="user-plus" tone="accent" label="New registrations" value="342" currency="{{no}}" delta="{{d121}}" footnote="trial → paid 31.4%"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="trending-down" tone="danger" label="Logo churn" value="1.8%" currency="{{no}}" delta="{{dm03}}" invert="{{yes}}" footnote="monthly · 41 cancellations"></x-import>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;">
+          <sc-for list="{{mini}}" as="m" hint-placeholder-count="5">
+            <div style="padding: 14px 16px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 12px; color: var(--ink-muted);">{{m.label}}</span><span style="font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums;">{{m.value}}</span><span style="font-size: 12px; color: var(--ink-secondary);">{{m.note}}</span></div>
+          </sc-for>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+          <section style="grid-column: span 2; min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+            <x-import component-from-global-scope="ZatcaWeb.Chart" type="area" title="Monthly recurring revenue" subtitle="Last 12 months · SAR" data="{{mrr}}" series="{{mrrSeries}}" format="currency" height="{{n220}}"></x-import>
+          </section>
+          <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+            <x-import component-from-global-scope="ZatcaWeb.Chart" type="donut" title="Subscriptions by plan" subtitle="Paying organizations" data="{{planMix}}" format="number" height="{{n160}}" center-label="Paying"></x-import>
+          </section>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start;">
+          <section style="flex: 999 1 640px; min-width: 0; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; flex-wrap: wrap;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Organizations</h2><div style="width: 260px; max-width: 100%;"><x-import component-from-global-scope="ZatcaWeb.Input" size="sm" icon-start="search" placeholder="Name, VAT, owner email…" aria-label="Search organizations"></x-import></div></div>
+            <div style="overflow-x: auto;">
+              <div role="table" style="display: table; width: 100%; min-width: 820px; border-collapse: collapse; font-size: 13px;">
+                <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px;"><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 20px; text-align: start; font-weight: 600;">Organization</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Plan</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: end; font-weight: 600;">Users</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: end; font-weight: 600;">Invoices · 30d</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: end; font-weight: 600;">Storage</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Last activity</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 20px; text-align: start; font-weight: 600;">Status</div></div></div>
+                <div role="rowgroup" style="display: table-row-group;">
+                  <sc-for list="{{orgs}}" as="o" hint-placeholder-count="7">
+                    <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle); background: {{o.bg}};"><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 20px;"><span style="display: inline-flex; align-items: center; gap: 10px;"><x-import component-from-global-scope="ZatcaWeb.Avatar" name="{{o.name}}" size="sm" square="{{yes}}"></x-import><span style="display: flex; flex-direction: column;"><span style="font-weight: 600; white-space: nowrap;">{{o.name}}</span><span style="font-size: 12px; color: var(--ink-muted); font-family: var(--font-mono);">{{o.vat}}</span></span></span></div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 12px;"><x-import component-from-global-scope="ZatcaWeb.Badge" tone="{{o.planTone}}" size="sm">{{o.plan}}</x-import></div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 12px; text-align: end; font-variant-numeric: tabular-nums;">{{o.users}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 12px; text-align: end; font-variant-numeric: tabular-nums;">{{o.inv}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 12px; text-align: end; font-variant-numeric: tabular-nums; color: var(--ink-secondary);">{{o.storage}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 12px; white-space: nowrap; color: var(--ink-secondary);">{{o.last}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 20px;"><x-import component-from-global-scope="ZatcaWeb.Badge" tone="{{o.stTone}}" dot="{{yes}}" size="sm">{{o.status}}</x-import></div></div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <aside style="flex: 1 1 340px; min-width: 0; max-width: 440px; border-radius: var(--radius-xl); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-md); display: flex; flex-direction: column;">
+            <div style="display: flex; gap: 12px; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-subtle);"><x-import component-from-global-scope="ZatcaWeb.Avatar" name="شركة آفاق التقنية المحدودة" size="lg" square="{{yes}}"></x-import><div style="flex: 1; display: flex; flex-direction: column;"><span style="font-weight: 650; font-size: 15px;">شركة آفاق التقنية المحدودة</span><span style="font-size: 12px; color: var(--ink-muted);">Org ID org_8KQ2…7HF · since Jan 2025</span></div></div>
+            <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+              <sc-for list="{{detail}}" as="d" hint-placeholder-count="7"><div style="display: flex; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);"><span style="color: var(--ink-muted);">{{d.k}}</span><span style="font-weight: 550; text-align: end;">{{d.v}}</span></div></sc-for>
+            </div>
+            <div style="padding: 0 20px 16px; display: flex; flex-direction: column; gap: 8px;">
+              <span style="font-size: 12px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em;">Secured actions</span>
+              <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="eye" full-width="{{yes}}">View as support (read-only)</x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="sliders-horizontal" full-width="{{yes}}">Change plan or limits</x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Button" variant="danger-ghost" icon-start="lock" full-width="{{yes}}">Suspend organization</x-import>
+              <span style="font-size: 12px; line-height: 18px; color: var(--ink-muted);">Each action asks for a reason and a second admin’s approval, and notifies the organization owner.</span>
+            </div>
+          </aside>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 16px;">
+          <section style="min-width: 0; padding: 20px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">System health</h2><x-import component-from-global-scope="ZatcaWeb.Badge" tone="warning" icon="triangle-alert" size="sm">1 degraded</x-import></div>
+            <sc-for list="{{health}}" as="s" hint-placeholder-count="6"><div style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{s.dot}};"></span><span style="flex: 1;">{{s.name}}</span><span style="color: var(--ink-muted); font-variant-numeric: tabular-nums;">{{s.metric}}</span><span style="font-weight: 600; color: {{s.color}}; width: 82px; text-align: end;">{{s.state}}</span></div></sc-for>
+          </section>
+          <section style="min-width: 0; padding: 20px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Support tickets</h2><a href="#tickets" style="font-size: 13px;">Queue (23)</a></div>
+            <sc-for list="{{tickets}}" as="t" hint-placeholder-count="4"><div style="display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border-subtle);"><x-import component-from-global-scope="ZatcaWeb.Badge" tone="{{t.tone}}" size="sm">{{t.prio}}</x-import><span style="flex: 1; display: flex; flex-direction: column;"><span style="font-size: 13px; font-weight: 550;">{{t.subject}}</span><span style="font-size: 12px; color: var(--ink-muted);">{{t.meta}}</span></span></div></sc-for>
+          </section>
+          <section style="min-width: 0; padding: 20px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Feature flags</h2><a href="#flags" style="font-size: 13px;">All flags</a></div>
+            <x-import component-from-global-scope="ZatcaWeb.Switch" label="ocr_receipts" description="Receipt OCR · beta for 40 orgs" default-checked="{{yes}}"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Switch" label="zatca_ai_actions" description="AI assistant can draft invoices · 10% rollout" default-checked="{{yes}}"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Switch" label="passkeys" description="Passkey sign-in · internal only"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Switch" label="bank_feeds" description="Automatic bank statement import · off"></x-import>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var planTone = { Starter: 'neutral', Professional: 'info', Business: 'brand', Enterprise: 'accent', Trial: 'warning' };
+    var stTone = { Active: 'success', Trial: 'info', 'Past due': 'warning', Suspended: 'danger' };
+    var orgs = [
+      ['شركة آفاق التقنية المحدودة', '310123456700003', 'Business', 9, '1,284', '5.1 GB', '2 min ago', 'Active'],
+      ['مجموعة الراجحي للتجارة', '300214578900003', 'Enterprise', 148, '38,906', '412 GB', 'Now', 'Active'],
+      ['Najd Logistics LLC', '300998877600003', 'Professional', 4, '212', '1.2 GB', '1 h ago', 'Active'],
+      ['مؤسسة الريان للتوريدات', '301122334400003', 'Trial', 2, '18', '0.1 GB', 'Yesterday', 'Trial'],
+      ['Red Sea Clinics Co.', '302445566700003', 'Business', 22, '4,830', '38 GB', '12 min ago', 'Active'],
+      ['مطاعم البيت الشامي', '310776655400003', 'Starter', 1, '96', '0.3 GB', '3 days ago', 'Past due'],
+      ['Al Fajr Trading Est.', '311234509800003', 'Professional', 3, '0', '0.8 GB', '41 days ago', 'Suspended']
+    ];
+    var rows = [];
+    for (var i = 0; i < 12; i++) rows.push({ label: ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'][i], mrr: Math.round(812000 * Math.pow(1.0425, i)) });
+    return {
+      theme: this.props.theme ?? 'light',
+      yes: true, no: false, n7: 7, n14: 14, n160: 160, n220: 220, d42: 4.2, d38: 3.8, d121: 12.1, dm03: -0.3,
+      user: { name: 'Sara Al-Ghamdi' },
+      envPlan: { name: 'Production', badge: 'v4.18.2', tone: 'brand' },
+      nav: [
+        { items: [{ id: 'overview', label: 'Overview', icon: 'layout-dashboard' }] },
+        { heading: 'Customers', items: [{ id: 'orgs', label: 'Organizations', icon: 'building-2', badge: '2,846' }, { id: 'users', label: 'Users', icon: 'users' }, { id: 'subs', label: 'Subscriptions', icon: 'repeat' }, { id: 'plans', label: 'Plans', icon: 'package' }, { id: 'payments', label: 'Payments', icon: 'credit-card' }] },
+        { heading: 'Operations', items: [{ id: 'flags', label: 'Feature flags', icon: 'sliders-horizontal' }, { id: 'health', label: 'System health', icon: 'server', badge: 1, badgeTone: 'danger' }, { id: 'api', label: 'API usage', icon: 'key-round' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'audit', label: 'Audit logs', icon: 'history' }] },
+        { heading: 'Communication', items: [{ id: 'tickets', label: 'Support tickets', icon: 'life-buoy', badge: 23 }, { id: 'email', label: 'Email templates', icon: 'mail' }, { id: 'notif', label: 'Notifications', icon: 'bell' }, { id: 'ann', label: 'Announcements', icon: 'send' }] }
+      ],
+      range: [{ value: '7d', label: '7 days' }, { value: '30d', label: '30 days' }, { value: '90d', label: '90 days' }, { value: '12m', label: '12 months' }],
+      k: { mrr: 1284600, mrrTrend: [81, 85, 88, 92, 96, 100, 104, 109, 113, 118, 123, 128] },
+      mini: [
+        { label: 'Invoices generated · 30d', value: '1.42M', note: '+9.4% · 99.2% accepted' },
+        { label: 'Active users · 30d', value: '9,870', note: '3.5 per organization' },
+        { label: 'Storage used', value: '18.6 TB', note: 'of 40 TB provisioned' },
+        { label: 'API requests · 30d', value: '86.1M', note: 'p95 184 ms' },
+        { label: 'Open support tickets', value: '23', note: '4 high priority' }
+      ],
+      mrr: rows, mrrSeries: [{ key: 'mrr', label: 'MRR' }],
+      planMix: [{ label: 'Starter', value: 1104 }, { label: 'Professional', value: 742 }, { label: 'Business', value: 389 }, { label: 'Enterprise', value: 76 }],
+      orgs: orgs.map(function (o, i) { return { name: o[0], vat: o[1], plan: o[2], planTone: planTone[o[2]], users: o[3], inv: o[4], storage: o[5], last: o[6], status: o[7], stTone: stTone[o[7]], bg: i === 0 ? 'var(--bg-selected)' : 'transparent' }; }),
+      detail: [{ k: 'Owner', v: 'Faisal Al-Otaibi · faisal@afaq-tech.sa' }, { k: 'Plan', v: 'Business · annual · renews 1 Jan 2027' }, { k: 'Users', v: '9 of 10' }, { k: 'Invoices · 30d', v: '1,284 (2 rejected)' }, { k: 'Storage', v: '5.1 GB of 50 GB' }, { k: 'Last payment', v: '01 Jan 2026 · Mada •••• 4821' }, { k: 'Account status', v: 'Active · good standing' }],
+      health: [
+        { name: 'Web app & API', metric: 'p95 184 ms', state: 'Operational', dot: 'var(--success-fill)', color: 'var(--success-fg)' },
+        { name: 'E-invoicing gateway', metric: 'p95 1.4 s', state: 'Degraded', dot: 'var(--warning-fill)', color: 'var(--warning-fg)' },
+        { name: 'Job queue', metric: '312 queued', state: 'Operational', dot: 'var(--success-fill)', color: 'var(--success-fg)' },
+        { name: 'PostgreSQL primary', metric: 'CPU 41%', state: 'Operational', dot: 'var(--success-fill)', color: 'var(--success-fg)' },
+        { name: 'Redis', metric: 'hit 97.8%', state: 'Operational', dot: 'var(--success-fill)', color: 'var(--success-fg)' },
+        { name: 'Object storage', metric: '18.6 TB', state: 'Operational', dot: 'var(--success-fill)', color: 'var(--success-fg)' }
+      ],
+      tickets: [
+        { prio: 'High', tone: 'danger', subject: 'Clearance timeouts for Jeddah branch', meta: 'Red Sea Clinics Co. · 18 min ago · Omar' },
+        { prio: 'High', tone: 'danger', subject: 'Cannot renew device certificate (OTP rejected)', meta: 'Najd Logistics LLC · 1 h ago · unassigned' },
+        { prio: 'Normal', tone: 'neutral', subject: 'Arabic template shows wrong building number', meta: 'مطاعم البيت الشامي · 3 h ago · Lina' },
+        { prio: 'Low', tone: 'neutral', subject: 'Feature request: Hijri dates on statements', meta: 'Afaq Trading Est. · Yesterday' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

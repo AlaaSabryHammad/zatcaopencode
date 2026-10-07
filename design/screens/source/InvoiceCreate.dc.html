@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New tax invoice — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans); display: flex; flex-direction: column;">
+
+  <!-- Editor bar -->
+  <header style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; min-height: 64px; padding: 8px 24px; box-sizing: border-box; border-bottom: 1px solid var(--border-default); background: var(--bg-surface);">
+    <a href="Invoices.dc.html" aria-label="Back to invoices" style="display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--radius-md); color: var(--ink-secondary); border: 1px solid var(--border-default);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="arrow-left" size="{{n18}}"></x-import></a>
+    <x-import component-from-global-scope="ZatcaWeb.Logo" variant="mark" size="{{n28}}"></x-import>
+    <div style="display: flex; flex-direction: column; flex: 1; min-width: 200px;">
+      <x-import component-from-global-scope="ZatcaWeb.Breadcrumb" items="{{crumbs}}"></x-import>
+      <div style="display: flex; align-items: center; gap: 10px;"><span style="font-size: 16px; font-weight: 650;">New tax invoice</span><span style="font-family: var(--font-mono); font-size: 13px; color: var(--ink-muted);">INV-2026-00127</span><x-import component-from-global-scope="ZatcaWeb.InvoiceStatus" status="draft" size="sm"></x-import></div>
+    </div>
+    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-muted);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="cloud-upload" size="{{n16}}"></x-import>Autosaved 12:04</span>
+    <x-import component-from-global-scope="ZatcaWeb.Button" variant="ghost" icon-start="eye">Preview PDF</x-import>
+    <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary">Save draft</x-import>
+    <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="send" kbd="⌘↵">{{issueLabel}}</x-import>
+  </header>
+
+  <div style="flex: 1; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px; padding: 24px; box-sizing: border-box; width: 100%; max-width: 1600px; margin: 0 auto;">
+
+    <!-- Form -->
+    <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 20px;">
+      <div style="overflow-x: auto;"><x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{types}}" default-value="tax" label="Invoice type"></x-import></div>
+
+      <sc-if value="{{needsApproval}}" hint-placeholder-val="{{true}}">
+        <x-import component-from-global-scope="ZatcaWeb.Alert" tone="warning" title="Approval required — total is over SAR 50,000.00" icon="workflow">This invoice goes to Ahmed Saleh (Sales Manager), then Noura Al-Qahtani (Finance) before it can be issued.</x-import>
+      </sc-if>
+
+      <section style="padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600;">Invoice details</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 20px;">
+          <div style="grid-column: span 2; min-width: 0;"><x-import component-from-global-scope="ZatcaWeb.Combobox" label="Customer" required="{{yes}}" options="{{customers}}" default-value="c3" placeholder="Search by name or VAT number…" on-create="{{noop}}"></x-import></div>
+          <x-import component-from-global-scope="ZatcaWeb.Input" label="Invoice number" mono="{{yes}}" default-value="INV-2026-00127" read-only="{{yes}}" dir="ltr" hint="Next in the Jeddah sequence"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Select" label="Branch" icon-start="building-2" options="{{branches}}" default-value="jed"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.DatePicker" label="Issue date" default-value="2026-10-07" today="2026-10-07"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.DatePicker" label="Supply date" default-value="2026-10-07" today="2026-10-07"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.DatePicker" label="Due date" default-value="2026-11-06" today="2026-10-07" presets="{{duePresets}}"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Select" label="Payment terms" options="{{terms}}" default-value="net30"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Select" label="Salesperson" options="{{people}}" default-value="ahmed"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Select" label="Currency" options="{{currencies}}" default-value="SAR"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Input" label="Purchase order ref." default-value="PO-GS-2026-0331" optional="{{yes}}" mono="{{yes}}" dir="ltr"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Input" label="Contract ref." default-value="CT-0091" optional="{{yes}}" mono="{{yes}}" dir="ltr"></x-import>
+        </div>
+      </section>
+
+      <section style="border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 20px 24px; flex-wrap: wrap;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600;">Items</h2>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-secondary);">Bulk discount
+              <input value="{{bulkDisc}}" onChange="{{setBulk}}" inputMode="decimal" aria-label="Bulk discount percent" style="width: 56px; height: 32px; box-sizing: border-box; padding: 0 8px; text-align: end; border: 1px solid var(--border-control); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--ink); font: 500 13px var(--font-sans);"> %</label>
+            <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" size="sm" icon-start="package">Quick-create product</x-import>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <div role="table" style="display: table; width: 100%; min-width: 940px; border-collapse: collapse; font-size: 13px;">
+            <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px;">
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; width: 28px;"></div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 8px; text-align: start; font-weight: 600; min-width: 260px;">Product / service</div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 8px; text-align: end; font-weight: 600; width: 72px;">Qty</div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 8px; text-align: start; font-weight: 600; width: 64px;">Unit</div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 8px; text-align: end; font-weight: 600; width: 112px;">Unit price</div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 8px; text-align: end; font-weight: 600; width: 72px;">Disc. %</div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 8px; text-align: end; font-weight: 600; width: 64px;">VAT %</div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 8px; text-align: end; font-weight: 600; width: 100px;">VAT</div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 16px 10px 8px; text-align: end; font-weight: 600; width: 120px;">Total</div>
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; width: 40px;"></div>
+            </div></div>
+            <div role="rowgroup" style="display: table-row-group;">
+              <sc-for list="{{lines}}" as="l" hint-placeholder-count="3">
+                <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle); vertical-align: top;">
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 14px 0 0 10px; color: var(--ink-disabled); cursor: grab;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="grip-vertical" size="{{n16}}"></x-import></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 10px 8px;"><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-weight: 600; font-size: 14px; color: var(--ink);">{{l.name}}</span><span style="color: var(--ink-muted);">{{l.desc}}</span><span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted);">{{l.sku}}</span></div></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 10px 8px;"><input value="{{l.qty}}" onChange="{{l.setQty}}" inputMode="decimal" aria-label="Quantity" style="width: 100%; height: 34px; box-sizing: border-box; padding: 0 8px; text-align: end; border: 1px solid var(--border-control); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--ink); font: 500 13px var(--font-sans);"></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 18px 8px 0; color: var(--ink-secondary);">{{l.unit}}</div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 10px 8px;"><input value="{{l.price}}" onChange="{{l.setPrice}}" inputMode="decimal" aria-label="Unit price" style="width: 100%; height: 34px; box-sizing: border-box; padding: 0 8px; text-align: end; border: 1px solid var(--border-control); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--ink); font: 500 13px var(--font-sans);"></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 10px 8px;"><input value="{{l.disc}}" onChange="{{l.setDisc}}" inputMode="decimal" aria-label="Discount percent" style="width: 100%; height: 34px; box-sizing: border-box; padding: 0 8px; text-align: end; border: 1px solid var(--border-control); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--ink); font: 500 13px var(--font-sans);"></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 18px 8px 0; text-align: end; color: var(--ink-secondary);">15%</div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 18px 8px 0; text-align: end; font-variant-numeric: tabular-nums; color: var(--ink-secondary);">{{l.vatF}}</div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 18px 16px 0 8px; text-align: end; font-variant-numeric: tabular-nums; font-weight: 600;">{{l.totalF}}</div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 10px 8px 0 0;"><button type="button" onClick="{{l.remove}}" aria-label="Remove line" style="display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-muted); cursor: pointer;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="trash-2" size="{{n16}}"></x-import></button></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--border-subtle); flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="ghost" size="sm" icon-start="plus" on-click="{{addLine}}">Add item</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="ghost" size="sm" icon-start="pencil" on-click="{{addCustom}}">Custom line</x-import>
+          <span style="margin-inline-start: auto; font-size: 12px; color: var(--ink-muted); align-self: center;">Drag rows to reorder · Tab moves between cells</span>
+        </div>
+      </section>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <section style="padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 16px;">
+          <x-import component-from-global-scope="ZatcaWeb.Textarea" label="Notes to customer" default-value="Thank you for your business. Installation scheduled for 12 October at your Jeddah office."></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Textarea" label="Terms &amp; conditions" default-value="Payment by bank transfer to Al Rajhi Bank, IBAN SA03 8000 0000 6080 1016 7519. Warranty per manufacturer terms."></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.FileUpload" label="Attachments" compact="{{yes}}" hint="Quotation, delivery note, contract" files="{{attach}}"></x-import>
+        </section>
+        <section style="padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 4px;">
+          <h2 style="margin: 0 0 8px; font-size: 16px; font-weight: 600;">Summary</h2>
+          <sc-for list="{{summary}}" as="s" hint-placeholder-count="6">
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; border-bottom: 1px solid var(--border-subtle);"><span style="color: var(--ink-secondary);">{{s.label}}</span><span style="font-variant-numeric: tabular-nums; font-weight: 500;">{{s.value}}</span></div>
+          </sc-for>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0 6px;"><span style="font-weight: 650; font-size: 16px;">Grand total</span><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{grand}}" size="kpi"></x-import></div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-muted);"><span>Paid</span><span style="font-variant-numeric: tabular-nums;">0.00</span></div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; padding-top: 6px;"><span>Balance due</span><span style="font-variant-numeric: tabular-nums;">{{grandF}} SAR</span></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Live preview -->
+    <aside style="flex: 1 1 460px; min-width: 0; max-width: 620px; display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ink-secondary);"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--success-fill);"></span>Live preview</span>
+        <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{langs}}" default-value="bi" size="sm" label="Preview language"></x-import>
+      </div>
+      <div style="background: #ffffff; color: #0f1a16; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); border: 1px solid var(--border-default); padding: 28px; display: flex; flex-direction: column; gap: 18px; font-size: 11px; line-height: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span style="display: inline-flex; align-items: center; gap: 8px;"><span style="width: 28px; height: 28px; border-radius: 7px; background: #0e6a50; color: #ffffff; display: grid; place-items: center; font: 700 13px var(--font-sans);">A</span><span style="font-weight: 700; font-size: 13px;">Afaq Technology Co. Ltd</span></span>
+            <span style="color: #5a6862;">7421 King Fahd Rd, Al Olaya, Riyadh 12214</span>
+            <span style="color: #5a6862; font-family: var(--font-mono);">VAT 310123456700003 · CR 1010654321</span>
+          </div>
+          <div dir="rtl" style="display: flex; flex-direction: column; gap: 4px; text-align: right; font-family: var(--font-arabic);">
+            <span style="font-weight: 700; font-size: 13px;">شركة آفاق التقنية المحدودة</span>
+            <span style="color: #5a6862;">٧٤٢١ طريق الملك فهد، العليا، الرياض</span>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 8px; background: #f0f8f4; border-inline-start: 0;">
+          <span style="font-weight: 700; font-size: 15px; color: #0a5540;">Tax Invoice</span>
+          <span style="font-weight: 700; font-size: 15px; color: #0a5540; font-family: var(--font-arabic);">فاتورة ضريبية</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+          <div style="display: flex; flex-direction: column; gap: 2px;"><span style="color: #5a6862; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;">Bill to · العميل</span><span style="font-weight: 700; font-family: var(--font-arabic); font-size: 12px;">شركة الخليج للخدمات</span><span style="color: #5a6862;">Al Rawdah, Jeddah 23435</span><span style="color: #5a6862; font-family: var(--font-mono);">VAT 302233445500003</span></div>
+          <div style="display: grid; grid-template-columns: auto auto; gap: 2px 10px; align-content: start; justify-content: end;">
+            <span style="color: #5a6862;">Invoice no.</span><span style="font-family: var(--font-mono); text-align: end;">INV-2026-00127</span>
+            <span style="color: #5a6862;">Issue date</span><span style="text-align: end;">07 Oct 2026</span>
+            <span style="color: #5a6862;">Supply date</span><span style="text-align: end;">07 Oct 2026</span>
+            <span style="color: #5a6862;">Due date</span><span style="text-align: end;">06 Nov 2026</span>
+            <span style="color: #5a6862;">PO ref.</span><span style="text-align: end; font-family: var(--font-mono);">PO-GS-2026-0331</span>
+          </div>
+        </div>
+        <div role="table" style="display: table; width: 100%; border-collapse: collapse; font-size: 10.5px;">
+          <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; border-bottom: 2px solid #0e6a50; color: #3d4a44;">
+            <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; text-align: start; padding: 6px 4px; font-weight: 700;">Item · الصنف</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; text-align: end; padding: 6px 4px; font-weight: 700;">Qty</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; text-align: end; padding: 6px 4px; font-weight: 700;">Price</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; text-align: end; padding: 6px 4px; font-weight: 700;">VAT</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; text-align: end; padding: 6px 4px; font-weight: 700;">Total</div>
+          </div></div>
+          <div role="rowgroup" style="display: table-row-group;">
+            <sc-for list="{{lines}}" as="l" hint-placeholder-count="3">
+              <div role="row" style="display: table-row; border-bottom: 1px solid #e3e8e2;"><div role="cell" style="display: table-cell; vertical-align: middle; padding: 6px 4px;">{{l.name}}<span style="display: block; color: #5a6862; font-family: var(--font-arabic);">{{l.ar}}</span></div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 6px 4px; text-align: end;">{{l.qty}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 6px 4px; text-align: end; font-variant-numeric: tabular-nums;">{{l.priceF}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 6px 4px; text-align: end; font-variant-numeric: tabular-nums;">{{l.vatF}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 6px 4px; text-align: end; font-variant-numeric: tabular-nums; font-weight: 600;">{{l.totalF}}</div></div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; gap: 16px; align-items: flex-end;">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 104px;">
+            <div style="width: 96px; height: 96px; border: 1.5px dashed #b9c2bc; border-radius: 6px; display: grid; place-items: center; text-align: center; color: #7d8982; font-size: 9px; padding: 6px; box-sizing: border-box;">QR code is generated when the invoice is issued</div>
+          </div>
+          <div style="display: grid; grid-template-columns: auto auto; gap: 4px 16px; min-width: 220px;">
+            <sc-for list="{{summary}}" as="s" hint-placeholder-count="6"><span style="color: #5a6862;">{{s.label}}</span><span style="text-align: end; font-variant-numeric: tabular-nums;">{{s.value}}</span></sc-for>
+            <span style="font-weight: 700; font-size: 13px; padding-top: 6px; border-top: 2px solid #0e6a50;">Total · الإجمالي</span><span style="text-align: end; font-weight: 700; font-size: 13px; padding-top: 6px; border-top: 2px solid #0e6a50; font-variant-numeric: tabular-nums;">{{grandF}} SAR</span>
+          </div>
+        </div>
+      </div>
+      <section style="padding: 16px 20px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 14px; font-weight: 600;">Pre-issue checks</span><x-import component-from-global-scope="ZatcaWeb.ComplianceStatus" status="not_validated" size="sm"></x-import></div>
+        <sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-secondary);"><span style="display: inline-flex; color: {{c.color}};"><x-import component-from-global-scope="ZatcaWeb.Icon" name="{{c.icon}}" size="{{n16}}"></x-import></span>{{c.label}}</div>
+        </sc-for>
+        <span style="font-size: 12px; color: var(--ink-muted);">Full validation, signing and QR generation run when you issue the invoice.</span>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1450}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      bulk: '0',
+      lines: [
+        { id: 1, name: 'Network installation service', ar: 'خدمة تركيب شبكة', desc: 'Structured cabling and switch configuration, Jeddah office', sku: 'SRV-NET-INSTALL', qty: '1', unit: 'job', price: '18500', disc: '0' },
+        { id: 2, name: 'Dell Latitude 5540 laptop', ar: 'حاسب محمول ديل', desc: 'Intel Core i7, 16 GB RAM, 512 GB SSD', sku: 'HW-DELL-5540', qty: '6', unit: 'pcs', price: '4250', disc: '5' },
+        { id: 3, name: 'Annual support contract', ar: 'عقد دعم سنوي', desc: 'On-site and remote support, Nov 2026 – Oct 2027', sku: 'SRV-SUP-ANNUAL', qty: '1', unit: 'year', price: '9600', disc: '0' }
+      ],
+      nextId: 4
+    };
+  }
+  setLine(id, key, value) {
+    var v = String(value).replace(/[^0-9.]/g, '');
+    this.setState({ lines: this.state.lines.map(function (l) { if (l.id !== id) return l; var c = Object.assign({}, l); c[key] = v; return c; }) });
+  }
+  renderVals() {
+    var self = this, Z = window.ZatcaWeb || {};
+    var f = function (n) { return Z.fmtNumber ? Z.fmtNumber(n) : (Math.round(n * 100) / 100).toFixed(2); };
+    var bulk = parseFloat(this.state.bulk) || 0;
+    var sub = 0, disc = 0, vat = 0;
+    var lines = this.state.lines.map(function (l) {
+      var q = parseFloat(l.qty) || 0, p = parseFloat(l.price) || 0, d = (parseFloat(l.disc) || 0) + bulk;
+      var gross = q * p, dAmt = gross * Math.min(d, 100) / 100, net = gross - dAmt, v = Math.round(net * 0.15 * 100) / 100;
+      sub += gross; disc += dAmt; vat += v;
+      return Object.assign({}, l, {
+        priceF: f(p), vatF: f(v), totalF: f(net + v),
+        setQty: function (e) { self.setLine(l.id, 'qty', e.target.value); },
+        setPrice: function (e) { self.setLine(l.id, 'price', e.target.value); },
+        setDisc: function (e) { self.setLine(l.id, 'disc', e.target.value); },
+        remove: function () { self.setState({ lines: self.state.lines.filter(function (x) { return x.id !== l.id; }) }); }
+      });
+    });
+    var taxable = sub - disc, grand = taxable + vat;
+    var opt = function (arr) { return arr.map(function (a) { return { value: a[0], label: a[1] }; }); };
+    return {
+      theme: this.props.theme ?? 'light',
+      yes: true, n16: 16, n18: 18, n28: 28,
+      noop: function () {},
+      crumbs: [{ label: 'Sales' }, { label: 'Invoices' }, { label: 'New' }],
+      issueLabel: grand > 50000 ? 'Submit for approval' : 'Issue invoice',
+      needsApproval: grand > 50000,
+      types: [{ value: 'tax', label: 'Tax invoice' }, { value: 'simplified', label: 'Simplified' }, { value: 'credit', label: 'Credit note' }, { value: 'debit', label: 'Debit note' }, { value: 'quote', label: 'Quotation' }, { value: 'proforma', label: 'Proforma' }, { value: 'recurring', label: 'Recurring', icon: 'repeat' }],
+      customers: [
+        { value: 'c1', label: 'شركة البناء الحديث', description: 'VAT 300456789100003 · Riyadh', meta: 'SAR 31,200 overdue', avatar: true, square: true },
+        { value: 'c2', label: 'مؤسسة النور التجارية', description: 'VAT 310987654300003 · Dammam', meta: 'SAR 5,425 due', avatar: true, square: true },
+        { value: 'c3', label: 'شركة الخليج للخدمات', description: 'VAT 302233445500003 · Jeddah', meta: 'SAR 13,200 due', avatar: true, square: true },
+        { value: 'c4', label: 'Al Waha Hospitality Co.', description: 'VAT 311122233300003 · Al Khobar', meta: 'SAR 3,105 overdue', avatar: true, square: true },
+        { value: 'c5', label: 'Najd Logistics LLC', description: 'VAT 300998877600003 · Riyadh', meta: 'Paid up', avatar: true, square: true }
+      ],
+      branches: opt([['hq', 'Head Office — Riyadh'], ['dmm', 'Dammam'], ['jed', 'Jeddah']]),
+      terms: opt([['due', 'Due on receipt'], ['net15', 'Net 15'], ['net30', 'Net 30'], ['net60', 'Net 60']]),
+      people: opt([['ahmed', 'Ahmed Saleh'], ['faisal', 'Faisal Al-Otaibi'], ['reem', 'Reem Hassan']]),
+      currencies: opt([['SAR', 'SAR — ر.س'], ['USD', 'USD']]),
+      duePresets: [{ label: 'Net 15', value: '2026-10-22' }, { label: 'Net 30', value: '2026-11-06' }],
+      bulkDisc: this.state.bulk,
+      setBulk: function (e) { self.setState({ bulk: String(e.target.value).replace(/[^0-9.]/g, '') }); },
+      lines: lines,
+      addLine: function () { var id = self.state.nextId; self.setState({ nextId: id + 1, lines: self.state.lines.concat({ id: id, name: 'Microsoft 365 Business Premium', ar: 'ترخيص مايكروسوفت ٣٦٥', desc: 'Monthly licence per user', sku: 'LIC-M365-BP', qty: '10', unit: 'seat', price: '240', disc: '0' }) }); },
+      addCustom: function () { var id = self.state.nextId; self.setState({ nextId: id + 1, lines: self.state.lines.concat({ id: id, name: 'Custom line', ar: 'بند مخصص', desc: 'Describe the item or service', sku: '—', qty: '1', unit: 'unit', price: '0', disc: '0' }) }); },
+      summary: [
+        { label: 'Subtotal', value: f(sub) },
+        { label: 'Discount', value: disc ? '−' + f(disc) : '0.00' },
+        { label: 'Taxable amount', value: f(taxable) },
+        { label: 'VAT 15%', value: f(vat) },
+        { label: 'Other charges', value: '0.00' },
+        { label: 'Rounding', value: '0.00' }
+      ],
+      grand: grand, grandF: f(grand),
+      attach: [{ name: 'quotation-QT-2026-0088.pdf', size: 184000, status: 'done' }],
+      langs: [{ value: 'ar', label: 'عربي' }, { value: 'en', label: 'English' }, { value: 'bi', label: 'Bilingual' }],
+      checks: [
+        { label: 'Buyer VAT number format is valid', icon: 'circle-check', color: 'var(--success-fg)' },
+        { label: 'Seller and buyer National Address complete', icon: 'circle-check', color: 'var(--success-fg)' },
+        { label: 'Every line has a VAT category', icon: 'circle-check', color: 'var(--success-fg)' },
+        { label: grand > 50000 ? 'Needs approval before issue (over SAR 50,000)' : 'No approval needed', icon: grand > 50000 ? 'triangle-alert' : 'circle-check', color: grand > 50000 ? 'var(--warning-fg)' : 'var(--success-fg)' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

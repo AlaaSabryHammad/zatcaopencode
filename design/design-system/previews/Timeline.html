@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head><link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script><meta charset="utf-8"><title>Timeline — preview</title>
+<style>html,body{margin:0}body{background:var(--bg-canvas);color:var(--ink);font-family:var(--font-sans);padding:20px;box-sizing:border-box}*{box-sizing:border-box}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.col{display:flex;flex-direction:column;gap:12px}.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.lbl{font:600 11px/16px var(--font-sans);color:var(--ink-muted);letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}.panel{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px}.stage{position:relative;overflow:hidden;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--bg-canvas)}</style></head>
+<body>
+<div id="root"></div>
+<script>
+var Z = window.ZatcaWeb, h = React.createElement, F = React.Fragment, useState = React.useState;
+function AR(c){ return h(Z.LocaleProvider, { lang: 'ar' }, c); }
+function EN(c){ return h(Z.LocaleProvider, { lang: 'en' }, c); }
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'grid2' },
+  h('div', { className: 'panel' }, h('p', { className: 'lbl' }, 'E-invoice lifecycle · INV-2026-00124'), h(Z.Timeline, { compact: true, items: [
+    { title: 'Invoice created', time: '09:31', icon: 'file-plus', tone: 'brand', description: 'by Faisal Al-Otaibi' },
+    { title: 'Validated', time: '09:31', icon: 'circle-check', tone: 'success', description: 'Schema and business rules passed' },
+    { title: 'Signed', time: '09:32', icon: 'key-round', tone: 'success' },
+    { title: 'QR generated', time: '09:32', icon: 'qr-code', tone: 'success' },
+    { title: 'Reported — Accepted', time: '09:42', icon: 'shield-check', tone: 'success', description: '1 warning: BR-KSA-08 buyer address' }] })),
+  h('div', { className: 'panel' }, h('p', { className: 'lbl' }, 'Customer activity'), h(Z.Timeline, { compact: true, items: [
+    { title: 'Payment received · SAR 25,000', time: 'Today', icon: 'banknote', tone: 'success', description: 'Bank transfer · Al Rajhi · INV-2026-00125' },
+    { title: 'Invoice viewed', time: 'Yesterday', icon: 'eye', tone: 'info', description: 'Opened from WhatsApp link' },
+    { title: 'Reminder sent', time: '2 Oct', icon: 'send', tone: 'neutral' },
+    { title: 'Credit note CN-2026-0009', time: '28 Sep', icon: 'file-minus', tone: 'accent' },
+    { title: 'Payment due', time: '6 Nov', state: 'pending', icon: 'clock' }] }))));
+</script>
+</body>
+</html>

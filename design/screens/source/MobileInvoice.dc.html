@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New invoice — ZatcaWeb mobile</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="width: 390px; height: 844px; overflow: hidden; display: flex; flex-direction: column; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <header style="display: flex; align-items: center; gap: 8px; padding: 16px 12px 12px; background: var(--bg-surface); border-bottom: 1px solid var(--border-default);">
+    <a href="MobileHome.dc.html" aria-label="Close" style="display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-md); color: var(--ink-secondary);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="x" size="{{n20}}"></x-import></a>
+    <div style="flex: 1; display: flex; flex-direction: column;"><span style="font-size: 17px; font-weight: 650;">New invoice</span><span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted);">INV-2026-00128 · Draft</span></div>
+    <x-import component-from-global-scope="ZatcaWeb.Button" variant="ghost" size="sm">Save</x-import>
+  </header>
+
+  <main style="flex: 1; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+    <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{types}}" default-value="tax" label="Invoice type"></x-import>
+
+    <section style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default);">
+      <x-import component-from-global-scope="ZatcaWeb.Avatar" name="شركة الخليج للخدمات" size="lg" square="{{yes}}"></x-import>
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-size: 12px; color: var(--ink-muted);">Customer</span><span style="font-weight: 650; font-size: 15px; font-family: var(--font-arabic);">شركة الخليج للخدمات</span><span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted);">VAT 302233445500003</span></div>
+      <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" size="sm">Change</x-import>
+    </section>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+      <x-import component-from-global-scope="ZatcaWeb.DatePicker" label="Issue date" default-value="2026-10-07" today="2026-10-07"></x-import>
+      <x-import component-from-global-scope="ZatcaWeb.Select" label="Due" options="{{terms}}" default-value="net15"></x-import>
+    </div>
+
+    <section style="border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); overflow: hidden;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px;"><span style="font-weight: 650; font-size: 14px;">Items</span><span style="font-size: 12px; color: var(--ink-muted);">{{count}} items</span></div>
+      <sc-for list="{{lines}}" as="l" hint-placeholder-count="2">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-top: 1px solid var(--border-subtle);">
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-size: 14px; font-weight: 600;">{{l.name}}</span><span style="font-size: 12px; color: var(--ink-muted);">{{l.price}} SAR · VAT 15%</span></span>
+          <span style="display: inline-flex; align-items: center; border: 1px solid var(--border-control); border-radius: var(--radius-md); overflow: hidden;">
+            <button type="button" aria-label="Decrease quantity" onClick="{{l.dec}}" style="width: 44px; height: 44px; border: 0; background: var(--bg-sunken); color: var(--ink); font-size: 18px; cursor: pointer;">−</button>
+            <span style="width: 34px; text-align: center; font-weight: 650; font-variant-numeric: tabular-nums;">{{l.qty}}</span>
+            <button type="button" aria-label="Increase quantity" onClick="{{l.inc}}" style="width: 44px; height: 44px; border: 0; background: var(--bg-sunken); color: var(--ink); font-size: 18px; cursor: pointer;">+</button>
+          </span>
+        </div>
+      </sc-for>
+      <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 48px; border: 0; border-top: 1px dashed var(--border-control); background: transparent; color: var(--ink-brand); font: 600 14px var(--font-sans); cursor: pointer;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="plus" size="{{n18}}"></x-import>Add item</button>
+    </section>
+
+    <section style="padding: 14px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+      <div style="display: flex; justify-content: space-between;"><span style="color: var(--ink-secondary);">Subtotal</span><span style="font-variant-numeric: tabular-nums;">{{subF}}</span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: var(--ink-secondary);">VAT 15%</span><span style="font-variant-numeric: tabular-nums;">{{vatF}}</span></div>
+    </section>
+  </main>
+
+  <footer style="padding: 12px 16px 24px; background: var(--bg-surface); border-top: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 14px; color: var(--ink-secondary);">Total</span><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{total}}" size="kpi"></x-import></div>
+    <a href="MobileShare.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; border-radius: var(--radius-lg); background: var(--brand-600); color: var(--on-brand); font-weight: 650; font-size: 16px; text-decoration: none;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="file-check" size="{{n20}}"></x-import>Issue invoice</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { q: [1, 4] }; }
+  renderVals() {
+    var self = this, Z = window.ZatcaWeb || {};
+    var f = function (n) { return Z.fmtNumber ? Z.fmtNumber(n) : n.toFixed(2); };
+    var items = [['Managed Wi-Fi service · Oct', 2500], ['Ubiquiti U6 Pro access point', 890]];
+    var sub = 0;
+    var lines = items.map(function (it, i) {
+      var q = self.state.q[i]; sub += q * it[1];
+      var set = function (d) { return function () { var n = self.state.q.slice(); n[i] = Math.max(0, n[i] + d); self.setState({ q: n }); }; };
+      return { name: it[0], price: f(it[1]), qty: q, inc: set(1), dec: set(-1) };
+    });
+    var vat = Math.round(sub * 0.15 * 100) / 100;
+    return {
+      theme: this.props.theme ?? 'light',
+      yes: true, n18: 18, n20: 20,
+      types: [{ value: 'tax', label: 'Tax invoice' }, { value: 'simple', label: 'Simplified' }, { value: 'quote', label: 'Quotation' }],
+      terms: [{ value: 'now', label: 'On receipt' }, { value: 'net15', label: 'Net 15' }, { value: 'net30', label: 'Net 30' }],
+      lines: lines, count: lines.length,
+      subF: f(sub), vatF: f(vat), total: sub + vat
+    };
+  }
+}
+</script>
+</body>
+</html>

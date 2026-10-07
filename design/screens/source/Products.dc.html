@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Products &amp; services — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="display: flex; flex-wrap: wrap; min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{shell.nav}}" active="products" favorites="{{shell.favs}}" plan="{{shell.plan}}" orgs="{{shell.orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" breadcrumbs="{{crumbs}}" quick-create="{{shell.quick}}" notifications="{{shell.n}}" user="{{shell.user}}" theme="{{theme}}"></x-import>
+    <main style="width: 100%; max-width: 1400px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">Products &amp; services</h1>
+          <p style="margin: 0; font-size: 14px; color: var(--ink-muted);">214 items · 3 below minimum stock · stock value SAR 386,420.00</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="upload">Import</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="plus" kbd="P">New item</x-import>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <x-import component-from-global-scope="ZatcaWeb.Tabs" tabs="{{tabs}}" default-value="all" variant="pill"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{views}}" default-value="table" size="sm" label="View"></x-import>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+        <div style="flex: 999 1 600px; min-width: 0;">
+          <x-import component-from-global-scope="ZatcaWeb.DataGrid" columns="{{cols}}" rows="{{rows}}" page-size="{{n10}}" search-placeholder="Search name, SKU or barcode…" search-keys="{{searchKeys}}" filters="{{filters}}" bulk-actions="{{bulk}}"></x-import>
+        </div>
+
+        <aside style="flex: 1 1 360px; min-width: 0; max-width: 460px; border-radius: var(--radius-xl); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-md); display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: flex-start; gap: 12px; padding: 20px 24px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 12px; color: var(--ink-muted);">Editing product</span><span style="font-size: 17px; font-weight: 650;">Dell Latitude 5540 laptop</span></div>
+            <x-import component-from-global-scope="ZatcaWeb.Badge" tone="warning" icon="triangle-alert" size="sm">Low stock</x-import>
+          </div>
+          <div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <div style="width: 88px; height: 88px; border-radius: var(--radius-lg); background: var(--bg-sunken); border: 1px solid var(--border-default); display: grid; place-items: center; color: var(--ink-muted);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="monitor" size="{{n32}}"></x-import></div>
+              <div style="display: flex; flex-direction: column; gap: 6px;"><x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" size="sm" icon-start="upload">Replace image</x-import><span style="font-size: 12px; color: var(--ink-muted);">JPG or PNG, square, up to 2 MB</span></div>
+            </div>
+            <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{kinds}}" default-value="product" size="sm" label="Item type"></x-import>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+              <x-import component-from-global-scope="ZatcaWeb.Input" label="SKU" mono="{{yes}}" default-value="HW-DELL-5540" dir="ltr"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Input" label="Barcode" mono="{{yes}}" default-value="5397184672310" icon-end="scan-line" dir="ltr"></x-import>
+            </div>
+            <x-import component-from-global-scope="ZatcaWeb.Input" label="Name (English)" default-value="Dell Latitude 5540 laptop" required="{{yes}}"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Input" label="Name (Arabic)" default-value="حاسب محمول ديل لاتيتيود 5540" dir="rtl" required="{{yes}}"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Textarea" label="Description" default-value="Intel Core i7-1365U, 16 GB RAM, 512 GB SSD, 15.6&quot; FHD, 3-year warranty."></x-import>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+              <x-import component-from-global-scope="ZatcaWeb.Select" label="Category" options="{{categories}}" default-value="hw"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Select" label="Unit" options="{{units}}" default-value="pcs"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.CurrencyInput" label="Purchase price" default-value="{{p3480}}"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.CurrencyInput" label="Selling price" default-value="{{p4250}}"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Select" label="VAT category" options="{{vatCats}}" default-value="S"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Input" label="VAT rate" default-value="15" suffix="%" align="end" read-only="{{yes}}"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Input" label="In stock" default-value="3" align="end" suffix="pcs" hint="Riyadh warehouse"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Input" label="Minimum stock" default-value="5" align="end" suffix="pcs"></x-import>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: var(--radius-md); background: var(--bg-sunken); font-size: 13px;"><span style="color: var(--ink-secondary);">Margin</span><span style="font-weight: 650; color: var(--success-fg); font-variant-numeric: tabular-nums;">SAR 770.00 · 18.1%</span></div>
+            <x-import component-from-global-scope="ZatcaWeb.Switch" label="Active" description="Available on new invoices and quotations" default-checked="{{yes}}"></x-import>
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--border-subtle); background: var(--bg-sunken); border-radius: 0 0 var(--radius-xl) var(--radius-xl);">
+            <x-import component-from-global-scope="ZatcaWeb.Button" variant="ghost">Cancel</x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="check">Save changes</x-import>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+  shell() {
+    return {
+      n: 3,
+      user: { name: 'Faisal Al-Otaibi' },
+      nav: [
+        { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+        { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'notes', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+        { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+        { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'banking', label: 'Banking', icon: 'landmark' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'notifications', label: 'Notifications', icon: 'bell' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'VAT return · Q3 2026' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }],
+      quick: [{ heading: 'Quick create' }, { label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }]
+    };
+  }
+  renderVals() {
+    var h = React.createElement, Z = window.ZatcaWeb || {};
+    var opt = function (arr) { return arr.map(function (a) { return { value: a[0], label: a[1] }; }); };
+    var data = [
+      ['HW-DELL-5540', 'Dell Latitude 5540 laptop', 'حاسب محمول ديل 5540', 'Hardware', 'Product', 4250, 3480, 3, 5, 'S'],
+      ['HW-CSC-9200', 'Cisco Catalyst 9200 switch, 24-port', 'محوّل سيسكو ٢٤ منفذ', 'Networking', 'Product', 3300, 2610, 14, 4, 'S'],
+      ['HW-UBQ-U6P', 'Ubiquiti U6 Pro access point', 'نقطة وصول يوبيكيتي', 'Networking', 'Variant', 890, 640, 42, 10, 'S'],
+      ['SRV-NET-INSTALL', 'Network installation service', 'خدمة تركيب شبكة', 'Services', 'Service', 18500, null, null, null, 'S'],
+      ['SRV-SUP-ANNUAL', 'Annual support contract', 'عقد دعم سنوي', 'Services', 'Service', 9600, null, null, null, 'S'],
+      ['LIC-M365-BP', 'Microsoft 365 Business Premium', 'ترخيص مايكروسوفت ٣٦٥', 'Licences', 'Service', 240, 196, null, null, 'S'],
+      ['BND-OFFICE-10', 'Small office starter bundle', 'باقة المكتب الصغير', 'Bundles', 'Bundle', 24900, 19850, 4, 2, 'S'],
+      ['HW-HP-M404', 'HP LaserJet Pro M404dn', 'طابعة إتش بي ليزر', 'Hardware', 'Product', 1180, 905, 2, 3, 'S'],
+      ['SRV-TRAIN-EXP', 'Staff IT training (export)', 'تدريب تقني (تصدير)', 'Services', 'Service', 6500, null, null, null, 'Z'],
+      ['HW-APC-1500', 'APC Smart-UPS 1500VA', 'مزوّد طاقة احتياطي', 'Power', 'Product', 2750, 2140, 1, 2, 'S']
+    ];
+    var kindTone = { Product: 'neutral', Service: 'info', Bundle: 'accent', Variant: 'brand' };
+    return {
+      theme: this.props.theme ?? 'light',
+      shell: this.shell(),
+      yes: true, n10: 10, n32: 32, p3480: 3480, p4250: 4250,
+      crumbs: [{ label: 'Purchases' }, { label: 'Products & services' }],
+      tabs: [{ id: 'all', label: 'All', count: 214 }, { id: 'p', label: 'Products', count: 128 }, { id: 's', label: 'Services', count: 61 }, { id: 'b', label: 'Bundles', count: 9 }, { id: 'v', label: 'Variants', count: 16 }],
+      views: [{ value: 'table', label: 'Table', icon: 'file-spreadsheet' }, { value: 'cards', label: 'Cards', icon: 'layout-dashboard' }],
+      kinds: [{ value: 'product', label: 'Product' }, { value: 'service', label: 'Service' }, { value: 'bundle', label: 'Bundle' }, { value: 'variant', label: 'Has variants' }],
+      categories: opt([['hw', 'Hardware'], ['net', 'Networking'], ['srv', 'Services'], ['lic', 'Licences'], ['pwr', 'Power']]),
+      units: opt([['pcs', 'Piece (pcs)'], ['job', 'Job'], ['hr', 'Hour'], ['yr', 'Year'], ['seat', 'Seat']]),
+      vatCats: opt([['S', 'Standard rated (15%)'], ['Z', 'Zero rated (0%)'], ['E', 'Exempt'], ['O', 'Out of scope']]),
+      searchKeys: ['sku', 'name', 'ar'],
+      filters: Z.FilterChip ? [h(Z.FilterChip, { key: 'c', label: 'Category', icon: 'boxes' }), h(Z.FilterChip, { key: 's', label: 'Stock', value: 'Low', active: true, onRemove: function () {} }), h(Z.FilterChip, { key: 'v', label: 'VAT category', icon: 'percent' })] : null,
+      bulk: [{ label: 'Change price', icon: 'percent' }, { label: 'Change category', icon: 'boxes' }, { label: 'Deactivate', icon: 'x', danger: true }],
+      rows: data.map(function (d) { return { id: d[0], sku: d[0], name: d[1], ar: d[2], cat: d[3], kind: d[4], price: d[5], cost: d[6], stock: d[7], min: d[8], vat: d[9] }; }),
+      cols: [
+        { key: 'name', header: 'Item', sortable: true, render: function (r) { return h('span', { className: 'zw-cell-primary' }, h('b', null, r.name), h('small', null, r.ar + ' · ' + r.sku)); } },
+        { key: 'kind', header: 'Type', render: function (r) { return Z.Badge ? h(Z.Badge, { size: 'sm', tone: kindTone[r.kind] }, r.kind) : r.kind; } },
+        { key: 'cat', header: 'Category', sortable: true },
+        { key: 'vat', header: 'VAT', render: function (r) { return Z.Badge ? h(Z.Badge, { size: 'sm', tone: r.vat === 'S' ? 'neutral' : 'accent' }, r.vat === 'S' ? '15%' : 'Zero-rated') : r.vat; } },
+        { key: 'cost', header: 'Cost', align: 'end', render: function (r) { return r.cost == null ? h('span', { style: { color: 'var(--ink-muted)' } }, '—') : (Z.Amount ? h(Z.Amount, { value: r.cost, currency: false }) : r.cost); } },
+        { key: 'price', header: 'Price', align: 'end', sortable: true, render: function (r) { return Z.Amount ? h(Z.Amount, { value: r.price }) : r.price; } },
+        { key: 'stock', header: 'Stock', align: 'end', sortable: true, sortValue: function (r) { return r.stock == null ? 9999 : r.stock; }, render: function (r) {
+          if (r.stock == null) return h('span', { style: { color: 'var(--ink-muted)' } }, 'n/a');
+          var low = r.stock < r.min;
+          return h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 6, color: low ? 'var(--danger-fg)' : 'var(--ink)', fontWeight: 600 } }, low && Z.Icon ? h(Z.Icon, { name: 'circle-alert', size: 14 }) : null, r.stock, h('span', { style: { color: 'var(--ink-muted)', fontWeight: 400 } }, ' / min ' + r.min));
+        } }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

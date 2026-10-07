@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head><link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script><meta charset="utf-8"><title>DataGrid — preview</title>
+<style>html,body{margin:0}body{background:var(--bg-canvas);color:var(--ink);font-family:var(--font-sans);padding:20px;box-sizing:border-box}*{box-sizing:border-box}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.col{display:flex;flex-direction:column;gap:12px}.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.lbl{font:600 11px/16px var(--font-sans);color:var(--ink-muted);letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}.panel{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px}.stage{position:relative;overflow:hidden;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--bg-canvas)}</style></head>
+<body>
+<div id="root"></div>
+<script>
+var Z = window.ZatcaWeb, h = React.createElement, F = React.Fragment, useState = React.useState;
+function AR(c){ return h(Z.LocaleProvider, { lang: 'ar' }, c); }
+function EN(c){ return h(Z.LocaleProvider, { lang: 'en' }, c); }
+var rows = [
+  { id: 'INV-2026-00126', customer: 'شركة الخليج للخدمات', branch: 'Jeddah', issued: '07 Oct 2026', due: '06 Nov 2026', total: 13200, status: 'sent', zatca: 'accepted' },
+  { id: 'INV-2026-00125', customer: 'مؤسسة النور التجارية', branch: 'Dammam', issued: '05 Oct 2026', due: '04 Nov 2026', total: 8625, status: 'partially_paid', zatca: 'accepted' },
+  { id: 'INV-2026-00124', customer: 'شركة البناء الحديث', branch: 'Riyadh', issued: '01 Oct 2026', due: '31 Oct 2026', total: 48300, status: 'paid', zatca: 'accepted' },
+  { id: 'INV-2026-00123', customer: 'Al Waha Hospitality Co.', branch: 'Head Office', issued: '22 Sep 2026', due: '06 Oct 2026', total: 3105, status: 'overdue', zatca: 'warning' },
+  { id: 'INV-2026-00122', customer: 'شركة البناء الحديث', branch: 'Riyadh', issued: '18 Sep 2026', due: '18 Oct 2026', total: 21850, status: 'viewed', zatca: 'accepted' },
+  { id: 'INV-2026-00121', customer: 'مؤسسة الريان للتوريدات', branch: 'Dammam', issued: '15 Sep 2026', due: '—', total: 5750, status: 'draft', zatca: 'not_validated' },
+  { id: 'INV-2026-00120', customer: 'شركة الخليج للخدمات', branch: 'Jeddah', issued: '11 Sep 2026', due: '11 Oct 2026', total: 17940, status: 'paid', zatca: 'accepted' },
+  { id: 'INV-2026-00119', customer: 'Najd Logistics LLC', branch: 'Riyadh', issued: '09 Sep 2026', due: '09 Oct 2026', total: 9890, status: 'credited', zatca: 'accepted' },
+  { id: 'INV-2026-00118', customer: 'مؤسسة النور التجارية', branch: 'Dammam', issued: '02 Sep 2026', due: '02 Oct 2026', total: 4320, status: 'paid', zatca: 'rejected' }];
+var cols = [
+  { key: 'id', header: 'Invoice', sortable: true, render: function (r) { return h('span', { className: 'zw-mono', style: { color: 'var(--ink)', fontWeight: 500 } }, r.id); } },
+  { key: 'customer', header: 'Customer', sortable: true, render: function (r) { return h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 10 } }, h(Z.Avatar, { name: r.customer, size: 'sm', square: true }), h('span', { className: 'zw-cell-primary' }, h('b', null, r.customer), h('small', null, r.branch))); } },
+  { key: 'issued', header: 'Issued' }, { key: 'due', header: 'Due' },
+  { key: 'zatca', header: 'E-invoice', render: function (r) { return h(Z.ComplianceStatus, { status: r.zatca, size: 'sm' }); } },
+  { key: 'status', header: 'Status', render: function (r) { return h(Z.InvoiceStatus, { status: r.status, size: 'sm' }); } },
+  { key: 'total', header: 'Total', align: 'end', sortable: true, numeric: true, render: function (r) { return h(Z.Amount, { value: r.total }); } }];
+ReactDOM.createRoot(document.getElementById('root')).render(h(Z.DataGrid, { columns: cols.filter(function (c) { return c.key !== 'due'; }), rows: rows, pageSize: 6, searchPlaceholder: 'Search invoice # or customer…', searchKeys: ['id', 'customer'],
+  filters: [h(Z.FilterChip, { key: 's', label: 'Status', value: 'Unpaid', active: true, onRemove: function () {} }), h(Z.FilterChip, { key: 'b', label: 'Branch', icon: 'building-2' }), h(Z.FilterChip, { key: 'd', label: 'Date', icon: 'calendar' })],
+  actions: [h(Z.Button, { key: 'e', size: 'sm', variant: 'secondary', iconStart: 'download' }, 'Export'), h(Z.Button, { key: 'n', size: 'sm', iconStart: 'plus' }, 'New invoice')],
+  bulkActions: [{ label: 'Send reminders', icon: 'send' }, { label: 'Download PDFs', icon: 'download' }, { label: 'Cancel', icon: 'x', danger: true }] }));
+</script>
+</body>
+</html>

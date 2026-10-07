@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Invoice issued — ZatcaWeb mobile</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="width: 390px; height: 844px; overflow: hidden; display: flex; flex-direction: column; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 12px 8px;">
+    <a href="MobileHome.dc.html" aria-label="Done" style="display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-md); color: var(--ink-secondary);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="x" size="{{n20}}"></x-import></a>
+    <x-import component-from-global-scope="ZatcaWeb.IconButton" icon="ellipsis" label="More actions"></x-import>
+  </header>
+
+  <main style="flex: 1; overflow: hidden; padding: 0 20px 20px; display: flex; flex-direction: column; gap: 16px;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding-top: 4px;">
+      <span style="display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--success-bg); color: var(--success-fg);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="circle-check" size="{{n32}}"></x-import></span>
+      <h1 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 650;">Invoice issued</h1>
+      <span style="font-family: var(--font-mono); font-size: 13px; color: var(--ink-muted);">INV-2026-00128 · شركة الخليج للخدمات</span>
+      <x-import component-from-global-scope="ZatcaWeb.Amount" value="{{total}}" size="hero"></x-import>
+    </div>
+
+    <section style="display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default);">
+      <div style="padding: 4px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: #ffffff;"><x-import component-from-global-scope="ZatcaWeb.QrCode" value="{{qr}}" size="{{n88}}" label="Invoice QR code"></x-import></div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+        <x-import component-from-global-scope="ZatcaWeb.ComplianceStatus" status="accepted"></x-import>
+        <span style="font-size: 12px; line-height: 18px; color: var(--ink-muted);">Validated, signed and cleared at 10:41. QR code generated.</span>
+      </div>
+    </section>
+
+    <span style="font-size: 13px; font-weight: 650; color: var(--ink-secondary);">Share with customer</span>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;">
+      <sc-for list="{{share}}" as="s" hint-placeholder-count="4">
+        <button type="button" style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 4px; border-radius: var(--radius-lg); border: 1px solid var(--border-default); background: var(--bg-surface); color: var(--ink); font: 600 12px var(--font-sans); cursor: pointer;"><span style="display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: {{s.bg}}; color: {{s.fg}};"><x-import component-from-global-scope="ZatcaWeb.Icon" name="{{s.icon}}" size="{{n20}}"></x-import></span>{{s.label}}</button>
+      </sc-for>
+    </div>
+
+    <section style="padding: 14px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 8px; font-size: 14px;">
+      <div style="display: flex; justify-content: space-between;"><span style="color: var(--ink-secondary);">Subtotal</span><span style="font-variant-numeric: tabular-nums;">6,060.00</span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: var(--ink-secondary);">VAT 15%</span><span style="font-variant-numeric: tabular-nums;">909.00</span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: var(--ink-secondary);">Due</span><span>22 Oct 2026 · Net 15</span></div>
+    </section>
+
+    <x-import component-from-global-scope="ZatcaWeb.Toast" tone="success" title="Sent on WhatsApp" description="+966 55 301 7720 · we’ll tell you when it’s viewed"></x-import>
+  </main>
+
+  <footer style="padding: 12px 16px 24px; display: flex; gap: 10px;">
+    <a href="MobileInvoice.dc.html" style="flex: 1; display: flex; align-items: center; justify-content: center; height: 52px; border-radius: var(--radius-lg); border: 1px solid var(--border-control); background: var(--bg-surface); color: var(--ink); font-weight: 600; text-decoration: none;">New invoice</a>
+    <a href="MobileHome.dc.html" style="flex: 1; display: flex; align-items: center; justify-content: center; height: 52px; border-radius: var(--radius-lg); background: var(--brand-600); color: var(--on-brand); font-weight: 650; text-decoration: none;">Done</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var Z = window.ZatcaWeb || {};
+    return {
+      theme: this.props.theme ?? 'light',
+      n20: 20, n32: 32, n88: 88,
+      total: 6969,
+      qr: Z.tlvBase64 ? Z.tlvBase64({ seller: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', timestamp: '2026-10-07T10:41:00Z', total: '6969.00', vatTotal: '909.00' }) : '',
+      share: [
+        { label: 'WhatsApp', icon: 'message-circle', bg: 'var(--success-bg)', fg: 'var(--success-fg)' },
+        { label: 'Email', icon: 'mail', bg: 'var(--info-bg)', fg: 'var(--info-fg)' },
+        { label: 'Copy link', icon: 'copy', bg: 'var(--bg-sunken)', fg: 'var(--ink-secondary)' },
+        { label: 'PDF', icon: 'download', bg: 'var(--accent-100)', fg: 'var(--accent-700)' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

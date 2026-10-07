@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Accounting — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="display: flex; flex-wrap: wrap; min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{shell.nav}}" active="accounting" favorites="{{shell.favs}}" plan="{{shell.plan}}" orgs="{{shell.orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" breadcrumbs="{{crumbs}}" quick-create="{{shell.quick}}" notifications="{{shell.n}}" user="{{shell.user}}" theme="{{theme}}"></x-import>
+    <main style="width: 100%; max-width: 1360px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">Accounting</h1>
+          <p style="margin: 0; font-size: 14px; color: var(--ink-muted);">Entries are generated automatically from invoices, expenses and payments · fiscal year Jan–Dec 2026</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="lock">Close period</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="plus">Journal entry</x-import>
+        </div>
+      </div>
+
+      <x-import component-from-global-scope="ZatcaWeb.Tabs" tabs="{{tabs}}" default-value="overview"></x-import>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 16px;">
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 4px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Profit &amp; loss</h2><span style="font-size: 12px; color: var(--ink-muted);">Q3 2026</span></div>
+          <sc-for list="{{pl}}" as="r" hint-placeholder-count="10">
+            <div style="display: flex; justify-content: space-between; padding: {{r.pad}}; font-size: 14px; border-top: {{r.rule}}; font-weight: {{r.w}}; color: {{r.color}};"><span style="padding-inline-start: {{r.indent}};">{{r.label}}</span><span style="font-variant-numeric: tabular-nums;">{{r.value}}</span></div>
+          </sc-for>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 4px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Balance sheet</h2><span style="font-size: 12px; color: var(--ink-muted);">at 30 Sep 2026</span></div>
+          <sc-for list="{{bs}}" as="r" hint-placeholder-count="12">
+            <div style="display: flex; justify-content: space-between; padding: {{r.pad}}; font-size: 14px; border-top: {{r.rule}}; font-weight: {{r.w}}; color: {{r.color}};"><span style="padding-inline-start: {{r.indent}};">{{r.label}}</span><span style="font-variant-numeric: tabular-nums;">{{r.value}}</span></div>
+          </sc-for>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--success-fg);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="circle-check" size="{{n16}}"></x-import>Balanced · trial balance debits equal credits (SAR 3,284,906.40)</div>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Chart of accounts</h2><a href="#coa" style="font-size: 13px;">Manage</a></div>
+          <sc-for list="{{coa}}" as="a" hint-placeholder-count="12">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; padding-inline-start: {{a.indent}}; font-weight: {{a.w}};"><span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); width: 44px;">{{a.code}}</span><span style="flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{a.name}}</span><span style="font-variant-numeric: tabular-nums; color: var(--ink-secondary);">{{a.bal}}</span></div>
+          </sc-for>
+        </section>
+      </div>
+
+      <section style="border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; gap: 12px; flex-wrap: wrap;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600;">Journal entries</h2>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;"><x-import component-from-global-scope="ZatcaWeb.FilterChip" label="Source" value="All" icon="workflow" active="{{yes}}"></x-import><x-import component-from-global-scope="ZatcaWeb.FilterChip" label="Account" icon="calculator"></x-import><x-import component-from-global-scope="ZatcaWeb.FilterChip" label="Date" icon="calendar"></x-import></div>
+        </div>
+        <div style="overflow-x: auto;">
+          <div role="table" style="display: table; width: 100%; min-width: 820px; border-collapse: collapse; font-size: 13px;">
+            <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px;"><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: start; font-weight: 600;">Entry</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Account</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Source</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: end; font-weight: 600;">Debit</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: end; font-weight: 600;">Credit</div></div></div>
+            <div role="rowgroup" style="display: table-row-group;">
+              <sc-for list="{{journal}}" as="j" hint-placeholder-count="12">
+                <div role="row" style="display: table-row; border-top: {{j.rule}};">
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 9px 24px; vertical-align: top;"><sc-if value="{{j.first}}" hint-placeholder-val="{{true}}"><span style="display: flex; flex-direction: column;"><span style="font-family: var(--font-mono); font-weight: 600;">{{j.no}}</span><span style="font-size: 12px; color: var(--ink-muted);">{{j.date}} · {{j.memo}}</span></span></sc-if></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 9px 12px; padding-inline-start: {{j.indent}};"><span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); margin-inline-end: 8px;">{{j.code}}</span>{{j.account}}</div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 9px 12px; vertical-align: top;"><sc-if value="{{j.first}}" hint-placeholder-val="{{true}}"><x-import component-from-global-scope="ZatcaWeb.Badge" tone="{{j.tone}}" icon="{{j.icon}}" size="sm">{{j.source}}</x-import></sc-if></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 9px 12px; text-align: end; font-variant-numeric: tabular-nums;">{{j.dr}}</div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 9px 24px; text-align: end; font-variant-numeric: tabular-nums;">{{j.cr}}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  shell() {
+    return {
+      n: 3,
+      user: { name: 'Faisal Al-Otaibi' },
+      nav: [
+        { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+        { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'notes', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+        { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+        { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'banking', label: 'Banking', icon: 'landmark' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'notifications', label: 'Notifications', icon: 'bell' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'VAT return · Q3 2026' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }],
+      quick: [{ heading: 'Quick create' }, { label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }]
+    };
+  }
+  renderVals() {
+    var Z = window.ZatcaWeb || {};
+    var f = function (n) { return Z.fmtNumber ? Z.fmtNumber(n) : n.toFixed(2); };
+    var line = function (label, value, kind) {
+      var total = kind === 'total', grand = kind === 'grand', head = kind === 'head';
+      return { label: label, value: value == null ? '' : (value < 0 ? '(' + f(-value) + ')' : f(value)), w: total || grand || head ? 650 : 400, indent: kind === 'sub' ? '16px' : '0', rule: total || grand ? '1px solid var(--border-default)' : '0', pad: grand ? '12px 0 6px' : '7px 0', color: kind === 'sub' ? 'var(--ink-secondary)' : (grand ? 'var(--success-fg)' : 'var(--ink)') };
+    };
+    var src = { invoice: ['brand', 'receipt', 'Invoice'], payment: ['success', 'wallet', 'Payment'], expense: ['info', 'banknote', 'Expense'], manual: ['neutral', 'pencil', 'Manual'] };
+    var entries = [
+      ['JE-2026-01842', '07 Oct', 'INV-2026-00126 · شركة الخليج للخدمات', 'invoice', [['1130', 'Accounts receivable', 13200, null], ['4100', 'Sales — services & hardware', null, 11478.26], ['2310', 'VAT output payable', null, 1721.74]]],
+      ['JE-2026-01841', '06 Oct', 'Payment for INV-2026-00124', 'payment', [['1112', 'Bank — Al Rajhi', 23300, null], ['1130', 'Accounts receivable', null, 23300]]],
+      ['JE-2026-01840', '05 Oct', 'stc business bill · STC-B-99213', 'expense', [['6230', 'Telecom & internet', 2400.43, null], ['1350', 'VAT input recoverable', 360.07, null], ['2140', 'Corporate card payable', null, 2760.5]]],
+      ['JE-2026-01839', '01 Oct', 'Dammam office rent — October (Noura)', 'manual', [['6110', 'Rent expense', 18500, null], ['2210', 'Accrued expenses', null, 18500]]]
+    ];
+    var journal = [];
+    entries.forEach(function (e) {
+      var s = src[e[3]];
+      e[4].forEach(function (l, i) { journal.push({ first: i === 0, no: e[0], date: e[1] + ' 2026', memo: e[2], tone: s[0], icon: s[1], source: s[2], code: l[0], account: l[1], dr: l[2] == null ? '' : f(l[2]), cr: l[3] == null ? '' : f(l[3]), indent: l[2] == null ? '36px' : '12px', rule: i === 0 ? '1px solid var(--border-default)' : '0' }); });
+    });
+    var coa = [['1000', 'Assets', '1,141,580.00', 0], ['1110', 'Cash & bank', '412,860.00', 1], ['1130', 'Accounts receivable', '128,300.00', 1], ['1200', 'Inventory', '386,420.00', 1], ['1500', 'Fixed assets', '214,000.00', 1], ['2000', 'Liabilities', '213,365.00', 0], ['2100', 'Accounts payable', '96,240.00', 1], ['2310', 'VAT payable', '49,125.00', 1], ['3000', 'Equity', '928,215.00', 0], ['4000', 'Revenue', '655,780.00', 0], ['5000', 'Cost of sales', '214,600.00', 0], ['6000', 'Operating expenses', '335,950.00', 0]];
+    return {
+      theme: this.props.theme ?? 'light',
+      shell: this.shell(),
+      yes: true, n16: 16,
+      crumbs: [{ label: 'Finance' }, { label: 'Accounting' }],
+      tabs: [{ id: 'overview', label: 'Overview' }, { id: 'coa', label: 'Chart of accounts' }, { id: 'je', label: 'Journal entries' }, { id: 'gl', label: 'General ledger' }, { id: 'tb', label: 'Trial balance' }, { id: 'ar', label: 'Receivables' }, { id: 'ap', label: 'Payables' }, { id: 'cf', label: 'Cash flow' }, { id: 'pl', label: 'Profit & loss' }, { id: 'bs', label: 'Balance sheet' }, { id: 'tax', label: 'Tax reports' }],
+      pl: [line('Revenue', 655780, 'head'), line('Sales', 663100, 'sub'), line('Returns & credit notes', -7320, 'sub'), line('Cost of sales', -214600), line('Gross profit · 67.3%', 441180, 'total'), line('Salaries', -204000, 'sub'), line('Rent', -55500, 'sub'), line('Marketing', -26800, 'sub'), line('Utilities & telecom', -18400, 'sub'), line('Other operating', -31250, 'sub'), line('Net profit', 105230, 'grand')],
+      bs: [line('Assets', null, 'head'), line('Cash & bank', 412860, 'sub'), line('Accounts receivable', 128300, 'sub'), line('Inventory', 386420, 'sub'), line('Fixed assets (net)', 214000, 'sub'), line('Total assets', 1141580, 'total'), line('Liabilities', 213365, 'head'), line('Payables, VAT & accruals', 213365, 'sub'), line('Equity', 928215, 'head'), line('Capital', 500000, 'sub'), line('Retained earnings', 428215, 'sub'), line('Total liabilities & equity', 1141580, 'total')],
+      coa: coa.map(function (c) { return { code: c[0], name: c[1], bal: c[2], indent: c[3] ? '16px' : '0', w: c[3] ? 400 : 650 }; }),
+      journal: journal
+    };
+  }
+}
+</script>
+</body>
+</html>

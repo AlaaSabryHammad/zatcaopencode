@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>E-Invoicing Compliance Center — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="display: flex; flex-wrap: wrap; min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{shell.nav}}" active="einv" favorites="{{shell.favs}}" plan="{{shell.plan}}" orgs="{{shell.orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" breadcrumbs="{{crumbs}}" quick-create="{{shell.quick}}" notifications="{{shell.n}}" user="{{shell.user}}" theme="{{theme}}"></x-import>
+    <main style="width: 100%; max-width: 1360px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"><h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">E-Invoicing Compliance Center</h1><x-import component-from-global-scope="ZatcaWeb.Badge" tone="brand" dot="{{yes}}">Production</x-import></div>
+          <p style="margin: 0; font-size: 14px; color: var(--ink-muted);">Statuses below come from validation results and the e-invoicing platform’s responses.</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="refresh-cw">Run compliance check</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="plus">Onboard device</x-import>
+        </div>
+      </div>
+
+      <x-import component-from-global-scope="ZatcaWeb.ComplianceStatus" variant="detailed" status="requires_action" label="Requires action — 2 items" detail="2 documents were rejected and need correction. The Jeddah device certificate expires in 12 days." meta="Last sync 2 min ago"></x-import>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="6">
+          <div style="padding: 16px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px;">
+            <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-secondary);"><span style="display: grid; place-items: center; width: 26px; height: 26px; border-radius: var(--radius-sm); background: {{k.bg}}; color: {{k.fg}};"><x-import component-from-global-scope="ZatcaWeb.Icon" name="{{k.icon}}" size="{{n14}}"></x-import></span>{{k.label}}</span>
+            <span style="font-size: 26px; line-height: 32px; font-weight: 650; letter-spacing: -0.015em; font-variant-numeric: tabular-nums;">{{k.value}}</span>
+            <span style="font-size: 12px; color: var(--ink-muted);">{{k.note}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <x-import component-from-global-scope="ZatcaWeb.Tabs" tabs="{{tabs}}" default-value="overview"></x-import>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+        <section style="grid-column: span 2; min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+          <x-import component-from-global-scope="ZatcaWeb.Chart" type="stacked" title="Documents processed" subtitle="Last 14 days" data="{{daily}}" series="{{dailySeries}}" format="number" height="{{n220}}" table-toggle="{{yes}}"></x-import>
+        </section>
+        <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Document pipeline</h2><span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted);">INV-2026-00118</span></div>
+          <x-import component-from-global-scope="ZatcaWeb.Timeline" items="{{pipeline}}" compact="{{yes}}"></x-import>
+        </section>
+      </div>
+
+      <section style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Errors to fix</h2><a href="#errors" style="font-size: 13px;">All errors</a></div>
+        <sc-for list="{{errors}}" as="e" hint-placeholder-count="2">
+          <div style="display: flex; gap: 16px; flex-wrap: wrap; padding: 20px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid {{e.border}};">
+            <span style="display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--radius-md); background: {{e.bg}}; color: {{e.fg}}; flex: none;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="{{e.icon}}" size="{{n20}}"></x-import></span>
+            <div style="flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"><span style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-xs); background: var(--bg-sunken);">{{e.code}}</span><x-import component-from-global-scope="ZatcaWeb.ComplianceStatus" status="{{e.status}}" size="sm"></x-import><span style="font-size: 12px; color: var(--ink-muted);">{{e.when}}</span></div>
+              <span style="font-size: 15px; font-weight: 600;">{{e.title}}</span>
+              <span style="font-size: 13px; color: var(--ink-secondary);">Affected: <a href="InvoiceDetail.dc.html" style="font-family: var(--font-mono);">{{e.doc}}</a> · {{e.customer}}</span>
+              <div style="display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: var(--radius-md); background: var(--bg-sunken); font-size: 13px; line-height: 20px;"><span style="color: var(--ink-brand); display: inline-flex; padding-top: 1px;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="sparkles" size="{{n16}}"></x-import></span><span><strong>Recommended action:</strong> {{e.fix}}</span></div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; align-items: stretch; min-width: 160px;">
+              <x-import component-from-global-scope="ZatcaWeb.Button" size="sm" icon-start="pencil">{{e.cta}}</x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Button" size="sm" variant="secondary" icon-start="refresh-cw">Retry</x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Button" size="sm" variant="ghost" icon-start="file-text">Technical details</x-import>
+            </div>
+          </div>
+        </sc-for>
+      </section>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); gap: 16px;">
+        <section style="min-width: 0; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Devices &amp; certificates</h2><x-import component-from-global-scope="ZatcaWeb.Button" size="sm" variant="ghost" icon-start="plus">Add</x-import></div>
+          <div style="overflow-x: auto;">
+            <div role="table" style="display: table; width: 100%; border-collapse: collapse; font-size: 13px;">
+              <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px;"><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: start; font-weight: 600;">Device</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Branch</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Certificate</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: end; font-weight: 600;">Docs · Oct</div></div></div>
+              <div role="rowgroup" style="display: table-row-group;">
+                <sc-for list="{{devices}}" as="d" hint-placeholder-count="3">
+                  <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle);"><div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 24px;"><span style="display: flex; flex-direction: column;"><span style="font-family: var(--font-mono); font-weight: 600;">{{d.id}}</span><span style="font-size: 12px; color: var(--ink-muted);">{{d.kind}}</span></span></div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; white-space: nowrap;">{{d.branch}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px;"><span style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;"><x-import component-from-global-scope="ZatcaWeb.Badge" tone="{{d.tone}}" icon="{{d.icon}}" size="sm">{{d.status}}</x-import><span style="font-size: 12px; color: var(--ink-muted);">{{d.expires}}</span></span></div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 24px; text-align: end; font-variant-numeric: tabular-nums; font-weight: 600;">{{d.docs}}</div></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section style="min-width: 0; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Submission log</h2><a href="#logs" style="font-size: 13px;">Full log</a></div>
+          <div style="overflow-x: auto;">
+            <div role="table" style="display: table; width: 100%; border-collapse: collapse; font-size: 13px;">
+              <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px;"><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: start; font-weight: 600;">Time</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Document</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Flow</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Result</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: end; font-weight: 600;">Response</div></div></div>
+              <div role="rowgroup" style="display: table-row-group;">
+                <sc-for list="{{logs}}" as="l" hint-placeholder-count="6">
+                  <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle);"><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 24px; white-space: nowrap; color: var(--ink-secondary); font-variant-numeric: tabular-nums;">{{l.time}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 12px; font-family: var(--font-mono); white-space: nowrap;">{{l.doc}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 12px; white-space: nowrap; color: var(--ink-secondary);">{{l.flow}}</div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 12px;"><x-import component-from-global-scope="ZatcaWeb.ComplianceStatus" status="{{l.status}}" size="sm"></x-import></div><div role="cell" style="display: table-cell; vertical-align: middle; padding: 11px 24px; text-align: end; font-variant-numeric: tabular-nums; color: var(--ink-muted);">{{l.ms}}</div></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1550}}'>
+class Component extends DCLogic {
+  shell() {
+    return {
+      n: 3,
+      user: { name: 'Faisal Al-Otaibi' },
+      nav: [
+        { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+        { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'notes', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+        { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+        { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'banking', label: 'Banking', icon: 'landmark' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'notifications', label: 'Notifications', icon: 'bell' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'VAT return · Q3 2026' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }],
+      quick: [{ heading: 'Quick create' }, { label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }]
+    };
+  }
+  renderVals() {
+    var t = function (tone) { return { bg: 'var(--' + tone + '-bg)', fg: 'var(--' + tone + '-fg)' }; };
+    var k = function (icon, tone, label, value, note) { var c = tone === 'brand' ? { bg: 'var(--brand-100)', fg: 'var(--ink-brand)' } : t(tone); return { icon: icon, bg: c.bg, fg: c.fg, label: label, value: value, note: note }; };
+    var days = [[24, 52, 1, 0], [25, 61, 0, 0], [26, 18, 0, 0], [27, 71, 1, 1], [28, 66, 0, 0], [29, 58, 2, 0], [30, 74, 0, 0], [1, 92, 1, 0], [2, 88, 1, 1], [3, 22, 0, 0], [4, 79, 0, 0], [5, 96, 2, 0], [6, 101, 1, 0], [7, 47, 0, 0]];
+    return {
+      theme: this.props.theme ?? 'light',
+      shell: this.shell(),
+      yes: true, n14: 14, n16: 16, n20: 20, n220: 220,
+      crumbs: [{ label: 'Finance' }, { label: 'E-Invoicing' }],
+      kpis: [
+        k('shield-check', 'warning', 'Compliance status', 'Action needed', '2 items to resolve'),
+        k('server', 'brand', 'Connected devices', '3', '1 certificate expiring'),
+        k('file-text', 'info', 'Processed · October', '1,284', 'Reporting 1,198 · clearance 86'),
+        k('circle-check', 'success', 'Successful', '1,271', 'incl. 9 accepted with warnings'),
+        k('x', 'danger', 'Rejected', '2', 'need correction'),
+        k('clock', 'neutral', 'Pending', '11', 'queued · auto-retry on'),
+        k('refresh-cw', 'neutral', 'Last sync', '09:58', '2 minutes ago')
+      ],
+      tabs: [{ id: 'overview', label: 'Overview' }, { id: 'config', label: 'Configuration' }, { id: 'certs', label: 'Certificates' }, { id: 'devices', label: 'Devices', count: 3 }, { id: 'validation', label: 'Invoice validation' }, { id: 'logs', label: 'Submission logs' }, { id: 'errors', label: 'Errors', count: 2 }, { id: 'audit', label: 'Audit trail' }],
+      daily: days.map(function (d, i) { return { label: (i < 7 ? 'Sep ' : 'Oct ') + d[0], accepted: d[1], warning: d[2], rejected: d[3] }; }),
+      dailySeries: [{ key: 'accepted', label: 'Accepted', color: 'success-fill' }, { key: 'warning', label: 'Accepted with warnings', color: 'warning-fill' }, { key: 'rejected', label: 'Rejected', color: 'danger-fill' }],
+      pipeline: [
+        { title: 'Invoice created', time: '02 Sep 11:20', icon: 'file-plus', tone: 'brand' },
+        { title: 'Validated locally', time: '11:21', icon: 'circle-check', tone: 'success' },
+        { title: 'Signed', time: '11:21', icon: 'key-round', tone: 'success', description: 'EGS-DMM-01' },
+        { title: 'QR generated', time: '11:21', icon: 'qr-code', tone: 'success' },
+        { title: 'Processed', time: '11:31', icon: 'refresh-cw', tone: 'success' },
+        { title: 'Rejected', time: '11:31', icon: 'x', tone: 'danger', description: 'BR-KSA-37 · seller building number' }
+      ],
+      errors: [
+        { code: 'BR-KSA-37', status: 'rejected', when: '02 Sep 2026 11:31', title: 'Seller building number must contain 4 digits', doc: 'INV-2026-00118', customer: 'مؤسسة النور التجارية', fix: 'The Dammam branch address has building number “742”. Update it to the 4-digit number on the National Address certificate, then resubmit — the invoice keeps its number.', cta: 'Fix branch address', icon: 'circle-alert', bg: 'var(--danger-bg)', fg: 'var(--danger-fg)', border: 'var(--danger-fg)' },
+        { code: 'CERT-EXP', status: 'requires_action', when: 'Expires 19 Oct 2026', title: 'Jeddah device certificate expires in 12 days', doc: 'EGS-JED-01', customer: 'Jeddah branch', fix: 'Renew the certificate with a new OTP from the e-invoicing portal. Invoices from Jeddah will queue as “Submission pending” if it expires.', cta: 'Renew certificate', icon: 'triangle-alert', bg: 'var(--warning-bg)', fg: 'var(--warning-fg)', border: 'var(--border-default)' }
+      ],
+      devices: [
+        { id: 'EGS-RYD-01', kind: 'Cloud · invoices & notes', branch: 'Head Office', tone: 'success', icon: 'shield-check', status: 'Active', expires: 'Expires 14 Mar 2027', docs: '742' },
+        { id: 'EGS-DMM-01', kind: 'Cloud · invoices & notes', branch: 'Dammam', tone: 'success', icon: 'shield-check', status: 'Active', expires: 'Expires 02 Feb 2027', docs: '318' },
+        { id: 'EGS-JED-01', kind: 'Cloud · invoices & POS', branch: 'Jeddah', tone: 'warning', icon: 'triangle-alert', status: 'Expiring', expires: 'Expires 19 Oct 2026', docs: '224' }
+      ],
+      logs: [
+        { time: '09:58:12', doc: 'SIM-2026-04431', flow: 'Reporting', status: 'accepted', ms: '412 ms' },
+        { time: '09:55:40', doc: 'INV-2026-00126', flow: 'Clearance', status: 'accepted', ms: '1.2 s' },
+        { time: '09:51:03', doc: 'SIM-2026-04430', flow: 'Reporting', status: 'warning', ms: '388 ms' },
+        { time: '09:47:22', doc: 'INV-2026-00119', flow: 'Clearance', status: 'submission_pending', ms: 'retry 3/5' },
+        { time: '09:40:18', doc: 'CN-2026-0010', flow: 'Clearance', status: 'accepted', ms: '960 ms' },
+        { time: '09:32:51', doc: 'SIM-2026-04429', flow: 'Reporting', status: 'accepted', ms: '401 ms' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

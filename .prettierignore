@@ -1,0 +1,9 @@
+design/
+node_modules/
+.next/
+pnpm-lock.yaml
+prisma/migrations/
+public/fonts/
+src/components/zw/styles/zw-components.css
+src/components/zw/lib/icon-nodes.ts
+src/components/zw/lib/logo-paths.ts

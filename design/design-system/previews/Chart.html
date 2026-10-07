@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script><meta charset="utf-8"><title>Chart — preview</title>
+<style>html,body{margin:0}body{background:var(--bg-canvas);color:var(--ink);font-family:var(--font-sans);padding:20px;box-sizing:border-box}*{box-sizing:border-box}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.col{display:flex;flex-direction:column;gap:12px}.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.lbl{font:600 11px/16px var(--font-sans);color:var(--ink-muted);letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}.panel{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px}.stage{position:relative;overflow:hidden;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--bg-canvas)}</style></head>
+<body>
+<div id="root"></div>
+<script>
+var Z = window.ZatcaWeb, h = React.createElement, F = React.Fragment, useState = React.useState;
+function AR(c){ return h(Z.LocaleProvider, { lang: 'ar' }, c); }
+function EN(c){ return h(Z.LocaleProvider, { lang: 'en' }, c); }
+var months = [['Apr',142,98],['May',158,104],['Jun',151,112],['Jul',176,109],['Aug',169,121],['Sep',192,118],['Oct',214,126]].map(function (m) { return { label: m[0], revenue: m[1] * 1000, expenses: m[2] * 1000 }; });
+var cash = [['W1',42],['W2',38],['W3',51],['W4',47],['W5',55],['W6',49],['W7',61],['W8',66],['W9',58],['W10',72]].map(function (m) { return { label: m[0], inflow: m[1] * 1000, outflow: (m[1] * 0.72) * 1000 }; });
+var statusData = [{ label: 'Paid', value: 182400, color: 'success-fill' }, { label: 'Unpaid', value: 64250, color: 'chart-2' }, { label: 'Overdue', value: 31200, color: 'danger-fill' }, { label: 'Draft', value: 9800, color: 'neutral-fg' }];
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'col', style: { gap: 16 } },
+  h('div', { className: 'panel' }, h(Z.Chart, { type: 'bar', title: 'Revenue vs expenses', subtitle: 'Last 7 months · SAR', data: months, series: [{ key: 'revenue', label: 'Revenue' }, { key: 'expenses', label: 'Expenses', color: 'chart-3' }], format: 'currency', tableToggle: true, height: 220 })),
+  h('div', { className: 'grid2' },
+    h('div', { className: 'panel' }, h(Z.Chart, { type: 'area', title: 'Cash flow', subtitle: 'Weekly · SAR', data: cash, series: [{ key: 'inflow', label: 'Inflow' }, { key: 'outflow', label: 'Outflow', color: 'chart-3', dashed: true }], format: 'currency', height: 180 })),
+    h('div', { className: 'panel' }, h(Z.Chart, { type: 'donut', title: 'Invoice status', subtitle: 'October · SAR', data: statusData, format: 'currency', height: 180 })))));
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Customers — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="display: flex; flex-wrap: wrap; min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{shell.nav}}" active="customers" favorites="{{shell.favs}}" plan="{{shell.plan}}" orgs="{{shell.orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" breadcrumbs="{{crumbs}}" quick-create="{{shell.quick}}" notifications="{{shell.n}}" user="{{shell.user}}" theme="{{theme}}"></x-import>
+    <main style="width: 100%; max-width: 1360px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">Customers</h1>
+          <p style="margin: 0; font-size: 14px; color: var(--ink-muted);">148 customers · SAR 95,450.00 outstanding across 18 invoices</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="upload">Import</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="user-plus" kbd="C">Add customer</x-import>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="users" label="Active customers" value="92" currency="{{no}}" delta="{{d6}}" footnote="invoiced in the last 90 days"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="clock" tone="warning" label="Outstanding" value="{{outstanding}}" delta="{{d18}}" invert="{{yes}}"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="calendar" tone="info" label="Average time to pay" value="23 days" currency="{{no}}" delta="{{dm4}}" invert="{{yes}}" footnote="4 days faster than Q2"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="user-plus" tone="accent" label="New this month" value="7" currency="{{no}}" footnote="3 companies · 4 individuals"></x-import>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <x-import component-from-global-scope="ZatcaWeb.Tabs" tabs="{{tabs}}" default-value="all" variant="pill"></x-import>
+        <span style="font-size: 13px; color: var(--ink-muted);">Saved view: <strong style="color: var(--ink);">Riyadh key accounts</strong></span>
+      </div>
+
+      <x-import component-from-global-scope="ZatcaWeb.DataGrid" columns="{{cols}}" rows="{{rows}}" page-size="{{n10}}" search-placeholder="Search name, VAT, CR, mobile…" search-keys="{{searchKeys}}" filters="{{filters}}" actions="{{gridActions}}" bulk-actions="{{bulk}}"></x-import>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+  shell() {
+    return {
+      n: 3,
+      user: { name: 'Faisal Al-Otaibi' },
+      nav: [
+        { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+        { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'notes', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+        { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+        { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'banking', label: 'Banking', icon: 'landmark' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'notifications', label: 'Notifications', icon: 'bell' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'VAT return · Q3 2026' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }],
+      quick: [{ heading: 'Quick create' }, { label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }]
+    };
+  }
+  renderVals() {
+    var h = React.createElement, Z = window.ZatcaWeb || {};
+    var data = [
+      ['c1', 'شركة البناء الحديث', 'Company · Construction', '300456789100003', 'Riyadh', ['Key account', 'Net 30'], 41650, 412600, '31 days', 'Today'],
+      ['c3', 'شركة الخليج للخدمات', 'Company · Facilities', '302233445500003', 'Jeddah', ['Net 30'], 13200, 168400, '19 days', 'Today'],
+      ['c2', 'مؤسسة النور التجارية', 'Establishment · Retail', '310987654300003', 'Dammam', ['Retail'], 5425, 96250, '22 days', 'Yesterday'],
+      ['c4', 'Al Waha Hospitality Co.', 'Company · Hospitality', '311122233300003', 'Al Khobar', ['Managed Wi-Fi'], 3105, 58900, '38 days', '22 Sep'],
+      ['c5', 'Najd Logistics LLC', 'Company · Logistics', '300998877600003', 'Riyadh', ['Recurring'], 9890, 74300, '14 days', '28 Sep'],
+      ['c6', 'مؤسسة الريان للتوريدات', 'Establishment · Supplies', '301122334400003', 'Dammam', ['New'], 0, 5750, '—', '15 Sep'],
+      ['c7', 'عبدالله محمد الشهري', 'Individual', '—', 'Riyadh', ['Walk-in'], 0, 4830, '0 days', '12 Sep'],
+      ['c8', 'Red Sea Clinics Co.', 'Company · Healthcare', '302445566700003', 'Jeddah', ['Net 15'], 9200, 132000, '27 days', '18 Sep'],
+      ['c9', 'شركة المراعي الذهبية للأغذية', 'Company · Food', '300112233400003', 'Riyadh', ['Key account'], 0, 211450, '12 days', '05 Sep'],
+      ['c10', 'Tamimi Consulting', 'Company · Services', '310556677800003', 'Riyadh', [], 0, 18200, '9 days', '29 Aug'],
+      ['c11', 'نورة سعد القحطاني', 'Individual', '—', 'Riyadh', ['Walk-in'], 0, 2415, '0 days', '21 Aug']
+    ];
+    var rows = data.map(function (d) { return { id: d[0], name: d[1], kind: d[2], vat: d[3], city: d[4], tags: d[5], outstanding: d[6], sales: d[7], days: d[8], last: d[9] }; });
+    return {
+      theme: this.props.theme ?? 'light',
+      shell: this.shell(),
+      yes: true, no: false, n10: 10, d6: 6.2, d18: 18, dm4: -14.8,
+      outstanding: 95450,
+      crumbs: [{ label: 'Sales' }, { label: 'Customers' }],
+      tabs: [{ id: 'all', label: 'All', count: 148 }, { id: 'co', label: 'Companies', count: 96 }, { id: 'ind', label: 'Individuals', count: 52 }, { id: 'due', label: 'With balance', count: 11 }],
+      searchKeys: ['name', 'vat', 'city'],
+      filters: Z.FilterChip ? [h(Z.FilterChip, { key: 'c', label: 'City', icon: 'building-2' }), h(Z.FilterChip, { key: 't', label: 'Tag', value: 'Key account', active: true, onRemove: function () {} }), h(Z.FilterChip, { key: 'b', label: 'Balance', icon: 'wallet' })] : null,
+      gridActions: Z.Button ? [h(Z.Button, { key: 'x', size: 'sm', variant: 'secondary', iconStart: 'download' }, 'Export')] : null,
+      bulk: [{ label: 'Send statement', icon: 'send' }, { label: 'Add tag', icon: 'hash' }, { label: 'Export', icon: 'file-spreadsheet' }],
+      rows: rows,
+      cols: [
+        { key: 'name', header: 'Customer', sortable: true, render: function (r) { return h('a', { href: 'CustomerProfile.dc.html', style: { display: 'inline-flex', alignItems: 'center', gap: 10, color: 'inherit', textDecoration: 'none' } }, Z.Avatar ? h(Z.Avatar, { name: r.name, size: 'sm', square: r.kind !== 'Individual' }) : null, h('span', { className: 'zw-cell-primary' }, h('b', null, r.name), h('small', null, r.kind))); } },
+        { key: 'vat', header: 'VAT number', mono: true },
+        { key: 'city', header: 'City', sortable: true },
+        { key: 'tags', header: 'Tags', render: function (r) { return h('span', { style: { display: 'inline-flex', gap: 4 } }, r.tags.map(function (t) { return Z.Badge ? h(Z.Badge, { key: t, size: 'sm', tone: t === 'Key account' ? 'brand' : (t === 'New' ? 'accent' : 'neutral') }, t) : t; })); } },
+        { key: 'outstanding', header: 'Outstanding', align: 'end', sortable: true, render: function (r) { return Z.Amount ? h(Z.Amount, { value: r.outstanding, tone: r.outstanding === 0 ? 'muted' : (r.days !== '—' && parseInt(r.days, 10) > 30 ? 'danger' : undefined) }) : r.outstanding; } },
+        { key: 'sales', header: 'Sales · 12 mo', align: 'end', sortable: true, render: function (r) { return Z.Amount ? h(Z.Amount, { value: r.sales }) : r.sales; } },
+        { key: 'days', header: 'Avg. pay time', align: 'end' },
+        { key: 'last', header: 'Last activity' },
+        { key: 'menu', header: '', width: 48, render: function () { return Z.IconButton ? h(Z.IconButton, { icon: 'ellipsis', label: 'Customer actions', size: 'sm' }) : null; } }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

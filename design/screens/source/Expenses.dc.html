@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Expenses — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="display: flex; flex-wrap: wrap; min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{shell.nav}}" active="expenses" favorites="{{shell.favs}}" plan="{{shell.plan}}" orgs="{{shell.orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" breadcrumbs="{{crumbs}}" quick-create="{{shell.quick}}" notifications="{{shell.n}}" user="{{shell.user}}" theme="{{theme}}"></x-import>
+    <main style="width: 100%; max-width: 1400px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">Expenses</h1>
+          <p style="margin: 0; font-size: 14px; color: var(--ink-muted);">October 2026 · 64 expenses across 3 branches</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.SegmentedControl" options="{{periods}}" default-value="month" size="sm" label="Period"></x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="scan-line">Scan receipt</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="plus" kbd="E">New expense</x-import>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" emphasis="{{yes}}" icon="banknote" label="Total expenses" value="{{k.total}}" delta="{{d46}}" invert="{{yes}}" trend="{{k.trend}}" footnote="vs September"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="percent" tone="accent" label="Recoverable input VAT" value="{{k.vat}}" footnote="from 41 eligible expenses"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="workflow" tone="warning" label="Awaiting approval" value="{{k.pending}}" footnote="3 expenses · oldest 2 days"></x-import>
+        <x-import component-from-global-scope="ZatcaWeb.StatCard" icon="paperclip" tone="danger" label="Missing receipts" value="5" currency="{{no}}" footnote="SAR 2,140.00 without attachment"></x-import>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+        <div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px;">
+            <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+              <x-import component-from-global-scope="ZatcaWeb.Chart" type="donut" title="By category" subtitle="October · SAR" data="{{cats}}" format="currency" height="{{n160}}"></x-import>
+            </section>
+            <section style="min-width: 0; padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm);">
+              <x-import component-from-global-scope="ZatcaWeb.Chart" type="stacked" title="By branch" subtitle="Last 6 months · SAR" data="{{byBranch}}" series="{{branchSeries}}" format="currency" height="{{n200}}"></x-import>
+            </section>
+          </div>
+          <section style="border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; gap: 12px; flex-wrap: wrap;"><h2 style="margin: 0; font-size: 14px; font-weight: 600;">Recent expenses</h2><div style="display: flex; gap: 8px;"><x-import component-from-global-scope="ZatcaWeb.FilterChip" label="Category"></x-import><x-import component-from-global-scope="ZatcaWeb.FilterChip" label="Branch"></x-import></div></div>
+            <div style="overflow-x: auto;">
+              <div role="table" style="display: table; width: 100%; border-collapse: collapse; font-size: 13px;">
+                <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px;"><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 20px; text-align: start; font-weight: 600;">Supplier · reference</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Category</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Date</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Paid with</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Status</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: end; font-weight: 600;">VAT</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 20px; text-align: end; font-weight: 600;">Amount</div></div></div>
+                <div role="rowgroup" style="display: table-row-group;">
+                  <sc-for list="{{expenses}}" as="e" hint-placeholder-count="7">
+                    <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle);">
+                      <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 20px;"><span style="display: inline-flex; align-items: center; gap: 10px;"><span style="display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--bg-sunken); color: var(--ink-secondary);"><x-import component-from-global-scope="ZatcaWeb.Icon" name="{{e.icon}}" size="{{n16}}"></x-import></span><span style="display: flex; flex-direction: column;"><span style="font-weight: 550; white-space: nowrap;">{{e.supplier}}</span><span style="font-size: 12px; color: var(--ink-muted); font-family: var(--font-mono);">{{e.ref}}</span></span></span></div>
+                      <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; white-space: nowrap;">{{e.cat}}</div>
+                      <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; white-space: nowrap; color: var(--ink-secondary);">{{e.date}}</div>
+                      <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; white-space: nowrap; color: var(--ink-secondary);">{{e.method}}</div>
+                      <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px;"><x-import component-from-global-scope="ZatcaWeb.Badge" tone="{{e.tone}}" icon="{{e.sicon}}" size="sm">{{e.status}}</x-import></div>
+                      <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; text-align: end;"><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{e.vat}}" size="sm" currency="{{no}}"></x-import></div>
+                      <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 20px; text-align: end;"><x-import component-from-global-scope="ZatcaWeb.Amount" value="{{e.amount}}"></x-import></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside style="flex: 1 1 360px; min-width: 0; max-width: 460px; border-radius: var(--radius-xl); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-md); display: flex; flex-direction: column;">
+          <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 17px; font-weight: 650;">New expense</span><span style="font-size: 13px; color: var(--ink-muted);">Drop a receipt and we’ll fill in what we can.</span></div>
+          <div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px;">
+            <x-import component-from-global-scope="ZatcaWeb.FileUpload" label="Receipt" icon="scan-line" hint="PDF, JPG or PNG up to 10 MB" files="{{receipt}}"></x-import>
+            <div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--radius-md); background: var(--accent-100); color: var(--accent-700); font-size: 13px; line-height: 20px;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="sparkles" size="{{n16}}"></x-import><span><strong>Receipt scanning (OCR) is coming soon.</strong> Supplier, VAT number, date and totals will be read from the receipt for you to confirm.</span></div>
+            <x-import component-from-global-scope="ZatcaWeb.Combobox" label="Supplier" options="{{suppliers}}" default-value="s1" on-create="{{noop}}"></x-import>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+              <x-import component-from-global-scope="ZatcaWeb.Select" label="Category" options="{{categories}}" default-value="util"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Input" label="Invoice / reference" mono="{{yes}}" default-value="STC-B-99213" dir="ltr"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.DatePicker" label="Date" default-value="2026-10-05" today="2026-10-07"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Select" label="Payment method" options="{{methods}}" default-value="card"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.CurrencyInput" label="Amount incl. VAT" default-value="{{a1}}"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.CurrencyInput" label="VAT (15%)" default-value="{{a2}}" hint="Calculated · editable"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Select" label="Branch" options="{{branches}}" default-value="hq"></x-import>
+              <x-import component-from-global-scope="ZatcaWeb.Select" label="Project" options="{{projects}}" default-value="none"></x-import>
+            </div>
+            <x-import component-from-global-scope="ZatcaWeb.Select" label="Cost center" options="{{costCenters}}" default-value="it"></x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Checkbox" label="Supplier VAT invoice received" description="Needed to recover input VAT in the VAT return" default-checked="{{yes}}"></x-import>
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--border-subtle); background: var(--bg-sunken); border-radius: 0 0 var(--radius-xl) var(--radius-xl);">
+            <x-import component-from-global-scope="ZatcaWeb.Button" variant="ghost">Cancel</x-import>
+            <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="check">Save expense</x-import>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  shell() {
+    return {
+      n: 3,
+      user: { name: 'Faisal Al-Otaibi' },
+      nav: [
+        { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+        { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'notes', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+        { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+        { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'banking', label: 'Banking', icon: 'landmark' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'notifications', label: 'Notifications', icon: 'bell' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'VAT return · Q3 2026' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }],
+      quick: [{ heading: 'Quick create' }, { label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }]
+    };
+  }
+  renderVals() {
+    var opt = function (arr) { return arr.map(function (a) { return { value: a[0], label: a[1] }; }); };
+    var st = { approved: ['success', 'circle-check', 'Approved'], pending: ['warning', 'clock', 'Awaiting approval'], paid: ['brand', 'wallet', 'Paid'], missing: ['danger', 'paperclip', 'No receipt'] };
+    var ex = [
+      ['Saudi Telecom Company (stc)', 'STC-B-99213', 'Utilities', '05 Oct', 'Corporate card', 'paid', 2760.5, 'smartphone'],
+      ['مؤسسة الأمان العقارية', 'RENT-DMM-10', 'Rent', '01 Oct', 'Bank transfer', 'approved', 18500, 'building'],
+      ['Aramco fuel station · Olaya', '—', 'Transportation', '04 Oct', 'Cash', 'missing', 320, 'truck'],
+      ['Jarir Bookstore', 'JB-554120', 'Supplies', '03 Oct', 'Mada', 'paid', 1438.5, 'package'],
+      ['Snap Saudi Ads', 'SNP-AD-2210', 'Marketing', '02 Oct', 'Corporate card', 'pending', 9400, 'sparkles'],
+      ['Saudi Electricity Company', 'SEC-77120391', 'Utilities', '02 Oct', 'Bank transfer', 'approved', 3479.5, 'zap'],
+      ['شركة الصيانة المتكاملة', 'MNT-2026-118', 'Maintenance', '01 Oct', 'Bank transfer', 'pending', 5720, 'settings']
+    ];
+    return {
+      theme: this.props.theme ?? 'light',
+      shell: this.shell(),
+      yes: true, no: false, n16: 16, n160: 160, n200: 200, d46: 4.6, a1: 2760.5, a2: 360.07,
+      noop: function () {},
+      crumbs: [{ label: 'Purchases' }, { label: 'Expenses' }],
+      periods: [{ value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }],
+      k: { total: 126480, trend: [98, 104, 112, 109, 121, 118, 126], vat: 18972, pending: 18940 },
+      cats: [{ label: 'Salaries', value: 68000 }, { label: 'Rent', value: 18500 }, { label: 'Marketing', value: 9400 }, { label: 'Supplies', value: 7980 }, { label: 'Other', value: 22600, color: 'neutral-fg' }],
+      byBranch: [['May', 52, 31, 21], ['Jun', 58, 33, 21], ['Jul', 55, 33, 21], ['Aug', 63, 35, 23], ['Sep', 60, 35, 23], ['Oct', 66.48, 36.5, 23.5]].map(function (m) { return { label: m[0], hq: Math.round(m[1] * 1000), dmm: Math.round(m[2] * 1000), jed: Math.round(m[3] * 1000) }; }),
+      branchSeries: [{ key: 'hq', label: 'Head Office' }, { key: 'dmm', label: 'Dammam', color: 'chart-2' }, { key: 'jed', label: 'Jeddah', color: 'chart-3' }],
+      expenses: ex.map(function (e) { var s = st[e[5]]; return { supplier: e[0], ref: e[1], cat: e[2], date: e[3] + ' 2026', method: e[4], tone: s[0], sicon: s[1], status: s[2], amount: e[6], vat: Math.round(e[6] / 1.15 * 0.15 * 100) / 100, icon: e[7] }; }),
+      receipt: [{ name: 'stc-business-bill-oct.pdf', size: 312000, status: 'done' }],
+      suppliers: [{ value: 's1', label: 'Saudi Telecom Company (stc)', description: 'VAT 300000475600003 · Riyadh', avatar: true, square: true }, { value: 's2', label: 'Saudi Electricity Company', description: 'Utilities', avatar: true, square: true }, { value: 's3', label: 'Jarir Bookstore', description: 'Supplies', avatar: true, square: true }],
+      categories: opt([['rent', 'Rent'], ['util', 'Utilities'], ['sal', 'Salaries'], ['trans', 'Transportation'], ['mkt', 'Marketing'], ['mnt', 'Maintenance'], ['sup', 'Supplies'], ['other', 'Other']]),
+      methods: opt([['cash', 'Cash'], ['bank', 'Bank transfer'], ['card', 'Corporate card'], ['mada', 'Mada'], ['apple', 'Apple Pay'], ['cheque', 'Cheque']]),
+      branches: opt([['hq', 'Head Office — Riyadh'], ['dmm', 'Dammam'], ['jed', 'Jeddah']]),
+      projects: opt([['none', 'No project'], ['p1', 'Modern Construction — network phase 2'], ['p2', 'Gulf Services — Jeddah fit-out']]),
+      costCenters: opt([['it', 'IT operations'], ['sales', 'Sales'], ['admin', 'Administration']])
+    };
+  }
+}
+</script>
+</body>
+</html>

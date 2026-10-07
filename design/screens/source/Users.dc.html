@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Users &amp; permissions — ZatcaWeb</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/zatcaweb/tokens.css">
+<link rel="stylesheet" href="ds/zatcaweb/components/bundle.css">
+<script src="ds/zatcaweb/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--bg-canvas)}
+a{color:var(--ink-brand)}a:hover{color:var(--brand-700)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="display: flex; flex-wrap: wrap; min-height: 100vh; background: var(--bg-canvas); color: var(--ink); font-family: var(--font-sans);">
+  <div style="flex: 0 0 auto; display: flex; background: var(--bg-sunken); border-inline-end: 1px solid var(--border-default);">
+    <x-import component-from-global-scope="ZatcaWeb.Sidebar" sections="{{shell.nav}}" active="users" favorites="{{shell.favs}}" plan="{{shell.plan}}" orgs="{{shell.orgs}}" current-org="o1"></x-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+    <x-import component-from-global-scope="ZatcaWeb.Topbar" breadcrumbs="{{crumbs}}" quick-create="{{shell.quick}}" notifications="{{shell.n}}" user="{{shell.user}}" theme="{{theme}}"></x-import>
+    <main style="width: 100%; max-width: 1360px; margin: 0 auto; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h1 style="margin: 0; font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.015em;">Users &amp; permissions</h1>
+          <p style="margin: 0; font-size: 14px; color: var(--ink-muted);">9 of 10 seats used on the Business plan · 1 pending invitation</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <x-import component-from-global-scope="ZatcaWeb.Button" variant="secondary" icon-start="plus">New role</x-import>
+          <x-import component-from-global-scope="ZatcaWeb.Button" icon-start="user-plus">Invite user</x-import>
+        </div>
+      </div>
+
+      <x-import component-from-global-scope="ZatcaWeb.Tabs" tabs="{{tabs}}" default-value="users"></x-import>
+
+      <section style="border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <div style="overflow-x: auto;">
+          <div role="table" style="display: table; width: 100%; min-width: 900px; border-collapse: collapse; font-size: 13px;">
+            <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px;"><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: start; font-weight: 600;">User</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Role</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Branches</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Two-factor</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 12px; text-align: start; font-weight: 600;">Last active</div><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: end; font-weight: 600;"></div></div></div>
+            <div role="rowgroup" style="display: table-row-group;">
+              <sc-for list="{{users}}" as="u" hint-placeholder-count="7">
+                <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle);">
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 24px;"><span style="display: inline-flex; align-items: center; gap: 12px;"><x-import component-from-global-scope="ZatcaWeb.Avatar" name="{{u.name}}" size="md" status="{{u.presence}}"></x-import><span style="display: flex; flex-direction: column;"><span style="font-weight: 600; font-size: 14px;">{{u.name}}</span><span style="color: var(--ink-muted);">{{u.email}}</span></span></span></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px;"><x-import component-from-global-scope="ZatcaWeb.Badge" tone="{{u.roleTone}}" size="sm">{{u.role}}</x-import></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; color: var(--ink-secondary); white-space: nowrap;">{{u.branches}}</div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px;"><x-import component-from-global-scope="ZatcaWeb.Badge" tone="{{u.mfaTone}}" icon="{{u.mfaIcon}}" size="sm">{{u.mfa}}</x-import></div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px; color: var(--ink-secondary); white-space: nowrap;">{{u.last}}</div>
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 12px 24px; text-align: end;"><x-import component-from-global-scope="ZatcaWeb.IconButton" icon="ellipsis" label="User actions" size="sm"></x-import></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style="border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 20px 24px; flex-wrap: wrap;">
+          <div style="display: flex; flex-direction: column;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Permission matrix</h2><span style="font-size: 13px; color: var(--ink-muted);">Owner has every permission and can’t be edited. Changes are logged in the audit trail.</span></div>
+          <div style="display: flex; gap: 8px;"><x-import component-from-global-scope="ZatcaWeb.Button" variant="ghost" size="sm">Discard</x-import><x-import component-from-global-scope="ZatcaWeb.Button" size="sm" icon-start="check">Save changes</x-import></div>
+        </div>
+        <div style="overflow-x: auto;">
+          <div role="table" style="display: table; width: 100%; min-width: 980px; border-collapse: collapse; font-size: 13px;">
+            <div role="rowgroup" style="display: table-header-group;"><div role="row" style="display: table-row; background: var(--bg-sunken); color: var(--ink-muted); font-size: 12px;">
+              <div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 24px; text-align: start; font-weight: 600; min-width: 200px;">Permission</div>
+              <sc-for list="{{roles}}" as="r" hint-placeholder-count="9"><div role="columnheader" style="display: table-cell; vertical-align: middle; font-weight: 600; padding: 10px 6px; text-align: center; font-weight: 600; white-space: nowrap;">{{r}}</div></sc-for>
+            </div></div>
+            <div role="rowgroup" style="display: table-row-group;">
+              <sc-for list="{{matrix}}" as="m" hint-placeholder-count="14">
+                <div role="row" style="display: table-row; border-top: 1px solid var(--border-subtle); background: {{m.bg}};">
+                  <div role="cell" style="display: table-cell; vertical-align: middle; padding: 10px 24px; font-weight: {{m.w}}; color: {{m.color}};">{{m.label}}</div>
+                  <sc-for list="{{m.cells}}" as="c" hint-placeholder-count="9"><div role="cell" style="display: table-cell; vertical-align: middle; padding: 8px 6px; text-align: center;"><sc-if value="{{c.show}}" hint-placeholder-val="{{true}}"><x-import component-from-global-scope="ZatcaWeb.Checkbox" default-checked="{{c.on}}" disabled="{{c.locked}}" aria-label="{{c.aria}}"></x-import></sc-if></div></sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding: 24px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div style="display: flex; flex-direction: column;"><h2 style="margin: 0; font-size: 16px; font-weight: 600;">Approval workflow · Large invoices</h2><span style="font-size: 13px; color: var(--ink-muted);">Applies to tax invoices from every branch · 3 invoices approved this month</span></div>
+          <x-import component-from-global-scope="ZatcaWeb.Switch" label="Active" default-checked="{{yes}}"></x-import>
+        </div>
+        <div style="display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; row-gap: 16px;">
+          <sc-for list="{{flow}}" as="s" hint-placeholder-count="4">
+            <div style="display: flex; align-items: center;">
+              <div style="display: flex; flex-direction: column; gap: 6px; width: 220px; padding: 16px; border-radius: var(--radius-lg); border: {{s.border}}; background: {{s.bg}};">
+                <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="{{s.icon}}" size="{{n14}}"></x-import>{{s.kind}}</span>
+                <span style="font-size: 14px; font-weight: 600;">{{s.title}}</span>
+                <span style="font-size: 12px; color: var(--ink-muted);">{{s.detail}}</span>
+              </div>
+              <sc-if value="{{s.arrow}}" hint-placeholder-val="{{true}}"><span style="display: inline-flex; color: var(--ink-muted); padding: 0 10px;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="arrow-right" size="{{n18}}"></x-import></span></sc-if>
+            </div>
+          </sc-for>
+          <button type="button" style="align-self: center; margin-inline-start: 10px; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: var(--radius-md); border: 1px dashed var(--border-control); background: transparent; color: var(--ink-secondary); font: 500 13px var(--font-sans); cursor: pointer;"><x-import component-from-global-scope="ZatcaWeb.Icon" name="plus" size="{{n14}}"></x-import>Add step</button>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  shell() {
+    return {
+      n: 3,
+      user: { name: 'Faisal Al-Otaibi' },
+      nav: [
+        { items: [{ id: 'dash', label: 'Dashboard', icon: 'layout-dashboard' }] },
+        { heading: 'Sales', items: [{ id: 'sales', label: 'Sales', icon: 'receipt', children: [{ id: 'invoices', label: 'Invoices', badge: 18 }, { id: 'quotes', label: 'Quotations' }, { id: 'notes', label: 'Credit & debit notes' }, { id: 'recurring', label: 'Recurring' }] }, { id: 'customers', label: 'Customers', icon: 'users' }, { id: 'payments', label: 'Payments', icon: 'wallet' }] },
+        { heading: 'Purchases', items: [{ id: 'purchases', label: 'Purchases', icon: 'shopping-cart' }, { id: 'expenses', label: 'Expenses', icon: 'banknote' }, { id: 'suppliers', label: 'Suppliers', icon: 'truck' }, { id: 'products', label: 'Products & services', icon: 'package' }, { id: 'inventory', label: 'Inventory', icon: 'warehouse' }] },
+        { heading: 'Finance', items: [{ id: 'reports', label: 'Reports', icon: 'chart-column' }, { id: 'accounting', label: 'Accounting', icon: 'calculator' }, { id: 'banking', label: 'Banking', icon: 'landmark' }, { id: 'vat', label: 'VAT Center', icon: 'percent' }, { id: 'einv', label: 'E-Invoicing', icon: 'shield-check', badge: 2, badgeTone: 'danger' }] },
+        { heading: 'Workspace', items: [{ id: 'branches', label: 'Branches', icon: 'building-2' }, { id: 'users', label: 'Users & roles', icon: 'user-cog' }, { id: 'integrations', label: 'Integrations', icon: 'plug' }, { id: 'notifications', label: 'Notifications', icon: 'bell' }, { id: 'settings', label: 'Settings', icon: 'settings' }, { id: 'help', label: 'Help & support', icon: 'life-buoy' }] }
+      ],
+      favs: [{ id: 'f1', label: 'VAT return · Q3 2026' }, { id: 'f2', label: 'شركة البناء الحديث' }],
+      plan: { name: 'Business plan', badge: 'Renews 1 Jan', used: 412, limit: 1000, meter: '412 / 1,000 invoices this month' },
+      orgs: [{ id: 'o1', name: 'شركة آفاق التقنية المحدودة', vat: '310123456700003', role: 'Owner', plan: 'Business' }, { id: 'o2', name: 'Afaq Trading Est.', vat: '311987654300003', role: 'Accountant', plan: 'Starter' }, { id: 'o3', name: 'مؤسسة إبراهيم للمقاولات', vat: '300555666700003', role: 'Viewer', plan: 'Professional' }],
+      quick: [{ heading: 'Quick create' }, { label: 'New invoice', icon: 'receipt', shortcut: 'N' }, { label: 'New quotation', icon: 'file-text', shortcut: 'Q' }, { label: 'New customer', icon: 'user-plus', shortcut: 'C' }, { label: 'New product', icon: 'package', shortcut: 'P' }, { label: 'New expense', icon: 'banknote', shortcut: 'E' }, { label: 'New supplier', icon: 'truck' }, { label: 'Record payment', icon: 'wallet', shortcut: 'R' }]
+    };
+  }
+  renderVals() {
+    var roleTone = { Owner: 'accent', Administrator: 'brand', Accountant: 'info', 'Sales Manager': 'brand', Salesperson: 'neutral', Cashier: 'neutral', Auditor: 'warning', Viewer: 'neutral' };
+    var u = [
+      ['Faisal Al-Otaibi', 'faisal@afaq-tech.sa', 'Owner', 'All branches', true, 'Now', 'online'],
+      ['Noura Al-Qahtani', 'noura@afaq-tech.sa', 'Accountant', 'All branches', true, '12 min ago', 'online'],
+      ['Ahmed Saleh', 'ahmed@afaq-tech.sa', 'Sales Manager', 'Head Office, Jeddah', true, '1 h ago', 'away'],
+      ['Reem Hassan', 'reem@afaq-tech.sa', 'Cashier', 'Jeddah', false, 'Yesterday', null],
+      ['Omar Al-Zahrani', 'omar@external-audit.sa', 'Auditor', 'All branches · read-only', true, '3 days ago', null],
+      ['Majed Al-Dossary', 'majed@afaq-tech.sa', 'Salesperson', 'Dammam', true, 'Today 08:40', null],
+      ['lama@afaq-tech.sa', 'Invitation sent 05 Oct · expires in 5 days', 'Viewer', 'Head Office', false, 'Pending', null]
+    ];
+    var roles = ['Owner', 'Admin', 'Accountant', 'Sales mgr', 'Salesperson', 'Cashier', 'Auditor', 'Viewer', 'Custom'];
+    var groups = [
+      ['Invoices', [['View invoices', 'YYYYYYYYY'], ['Create invoices', 'YYYYYYNNY'], ['Edit drafts', 'YYYYYYNNN'], ['Delete drafts', 'YYYYNNNNN'], ['Issue invoices', 'YYYYNYNNY'], ['Record payments', 'YYYNNYNNN']]],
+      ['Customers & products', [['Manage customers', 'YYYYYNNNY'], ['Manage products & prices', 'YYYYNNNNN']]],
+      ['Reports & finance', [['View reports', 'YYYYNNYYY'], ['Export reports', 'YYYYNNYNN'], ['VAT Center & filing', 'YYYNNNYNN']]],
+      ['Administration', [['Manage users', 'YYNNNNNNN'], ['Manage settings', 'YYNNNNNNN'], ['E-invoicing devices', 'YYYNNNNNN']]]
+    ];
+    var matrix = [];
+    groups.forEach(function (g) {
+      matrix.push({ label: g[0], w: 650, color: 'var(--ink-muted)', bg: 'var(--bg-sunken)', cells: roles.map(function () { return { show: false }; }) });
+      g[1].forEach(function (p) { matrix.push({ label: p[0], w: 450, color: 'var(--ink)', bg: 'transparent', cells: roles.map(function (r, i) { return { show: true, on: p[1][i] === 'Y', locked: i === 0, aria: p[0] + ' — ' + r }; }) }); });
+    });
+    return {
+      theme: this.props.theme ?? 'light',
+      shell: this.shell(),
+      yes: true, n14: 14, n18: 18,
+      crumbs: [{ label: 'Workspace' }, { label: 'Users & roles' }],
+      tabs: [{ id: 'users', label: 'Users', count: 9 }, { id: 'roles', label: 'Roles & permissions', count: 9 }, { id: 'approvals', label: 'Approval workflows', count: 2 }, { id: 'sessions', label: 'Active sessions' }],
+      users: u.map(function (x) { return { name: x[0], email: x[1], role: x[2], roleTone: roleTone[x[2]] || 'neutral', branches: x[3], mfa: x[4] ? 'On' : (x[5] === 'Pending' ? '—' : 'Off'), mfaTone: x[4] ? 'success' : (x[5] === 'Pending' ? 'neutral' : 'warning'), mfaIcon: x[4] ? 'shield-check' : 'triangle-alert', last: x[5], presence: x[6] || undefined }; }),
+      roles: roles,
+      matrix: matrix,
+      flow: [
+        { kind: 'Trigger', title: 'Tax invoice over SAR 50,000.00', detail: 'Any branch · any salesperson', icon: 'zap', border: '1px solid var(--accent-500)', bg: 'var(--accent-100)', arrow: true },
+        { kind: 'Approval 1', title: 'Sales Manager', detail: 'Ahmed Saleh · within 24 h', icon: 'user-cog', border: '1px solid var(--border-default)', bg: 'var(--bg-surface)', arrow: true },
+        { kind: 'Approval 2', title: 'Finance', detail: 'Noura Al-Qahtani · within 24 h', icon: 'calculator', border: '1px solid var(--border-default)', bg: 'var(--bg-surface)', arrow: true },
+        { kind: 'Action', title: 'Issue invoice', detail: 'Validate, sign, clear and send', icon: 'file-check', border: '1px solid var(--brand-200)', bg: 'var(--brand-50)', arrow: false }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

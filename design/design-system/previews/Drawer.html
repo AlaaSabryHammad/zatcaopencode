@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head><link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script><meta charset="utf-8"><title>Drawer — preview</title>
+<style>html,body{margin:0}body{background:var(--bg-canvas);color:var(--ink);font-family:var(--font-sans);padding:20px;box-sizing:border-box}*{box-sizing:border-box}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.col{display:flex;flex-direction:column;gap:12px}.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.lbl{font:600 11px/16px var(--font-sans);color:var(--ink-muted);letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}.panel{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:16px}.stage{position:relative;overflow:hidden;border-radius:var(--radius-lg);border:1px solid var(--border-default);background:var(--bg-canvas)}</style></head>
+<body>
+<div id="root"></div>
+<script>
+var Z = window.ZatcaWeb, h = React.createElement, F = React.Fragment, useState = React.useState;
+function AR(c){ return h(Z.LocaleProvider, { lang: 'ar' }, c); }
+function EN(c){ return h(Z.LocaleProvider, { lang: 'en' }, c); }
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'stage', style: { height: 480 } }, h(Z.Drawer, { open: true, contained: true, width: 420, title: 'Record payment', description: 'INV-2026-00125 · مؤسسة النور التجارية', onClose: function () {},
+  footer: [h(Z.Button, { key: 'c', variant: 'secondary' }, 'Cancel'), h(Z.Button, { key: 's', iconStart: 'check' }, 'Record payment')] },
+  h('div', { className: 'col', style: { gap: 16 } },
+    h(Z.Alert, { tone: 'neutral', title: 'Balance due: SAR 5,425.00' }),
+    h(Z.CurrencyInput, { label: 'Amount received', defaultValue: 5425, required: true }),
+    h(Z.Select, { label: 'Method', defaultValue: 'mada', options: [{ value: 'cash', label: 'Cash' }, { value: 'bank', label: 'Bank transfer' }, { value: 'mada', label: 'Mada' }, { value: 'apple', label: 'Apple Pay' }, { value: 'cheque', label: 'Cheque' }] }),
+    h(Z.DatePicker, { label: 'Payment date', defaultValue: '2026-10-07', today: '2026-10-07' })))));
+</script>
+</body>
+</html>
