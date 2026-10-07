@@ -1,7 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
-import { sha256 } from '@/server/crypto';
+import { sha256, hmac } from '@/server/crypto';
 import { prisma } from '@/server/db';
 import { getRateLimitStore } from '@/server/rate-limit';
 import { createSession, revokeSession, revokeAllSessions } from '@/server/services/session.service';
@@ -201,7 +201,7 @@ export async function resetPassword(input: unknown): Promise<ActionResult> {
   return { ok: true };
 }
 
-/** تأكيد البريد الإلكتروني */
+/** تأكيد البريد الإلكتروني (idempotent: إعادة فتح رابط مستخدم لبريد موثّق تنجح) */
 export async function verifyEmail(input: { token: string } | unknown): Promise<ActionResult> {
   const token =
     typeof input === 'object' && input && 'token' in input
@@ -209,9 +209,20 @@ export async function verifyEmail(input: { token: string } | unknown): Promise<A
       : String(input ?? '');
   if (!token || token.length < 20) return { ok: false, error: 'auth.errors.invalidToken' };
   const c = await consumeVerificationToken(token, 'VERIFY_EMAIL');
-  if (!c.ok || !c.userId) return { ok: false, error: 'auth.errors.invalidToken' };
-  await markEmailVerified(c.userId);
-  return { ok: true };
+  if (c.ok && c.userId) {
+    await markEmailVerified(c.userId);
+    return { ok: true };
+  }
+  // التوكن مستخدم مسبقًا لكن البريد توثّق (ضغطة مزدوجة / StrictMode) → نجاح
+  const rec = await prisma.verificationToken.findFirst({
+    where: { tokenHash: hmac(token, 'token:VERIFY_EMAIL'), purpose: 'VERIFY_EMAIL' },
+    select: { userId: true, usedAt: true },
+  });
+  if (rec?.usedAt) {
+    const u = await prisma.user.findUnique({ where: { id: rec.userId }, select: { emailVerifiedAt: true } });
+    if (u?.emailVerifiedAt) return { ok: true };
+  }
+  return { ok: false, error: 'auth.errors.invalidToken' };
 }
 
 /** طلب رمز OTP للهاتف */

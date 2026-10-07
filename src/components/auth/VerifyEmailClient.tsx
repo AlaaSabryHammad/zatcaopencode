@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -12,8 +12,11 @@ export function VerifyEmailClient() {
   const sp = useSearchParams();
   const token = sp.get('token');
   const [state, setState] = useState<'pending' | 'ok' | 'error'>('pending');
+  const fired = useRef(false);
 
   useEffect(() => {
+    if (fired.current) return;
+    fired.current = true;
     (async () => {
       if (!token) {
         setState('error');
