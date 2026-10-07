@@ -23,6 +23,19 @@ pnpm db:seed
 pnpm dev                   # http://localhost:3000 → /ar
 ```
 
+### Without Docker (local PostgreSQL 16)
+
+Create the same roles and databases as `docker/postgres/init.sql`, as a superuser:
+
+```bash
+psql -U postgres -c "CREATE ROLE zatcaweb_owner LOGIN PASSWORD 'zatcaweb_owner' NOSUPERUSER CREATEDB;" \
+                 -c "CREATE DATABASE zatcaweb OWNER zatcaweb_owner;"
+psql -U postgres -d zatcaweb -f docker/postgres/init.sql
+pnpm db:migrate && pnpm db:seed
+```
+
+Redis, MinIO and Mailpit are only needed from Phase 2 on (rate limiting, email) and Phase 6 (files/PDF).
+
 - Component gallery (dev only): http://localhost:3000/en/dev/components
 - Mailpit: http://localhost:8025 · MinIO console: http://localhost:9001
 
