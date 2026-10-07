@@ -8,8 +8,14 @@ import { env } from '@/server/env';
 
 const transport = createTransport();
 
-export async function sendVerificationEmail(opts: { to: string; name: string; token: string }) {
-  const verifyUrl = `${env.APP_URL}/auth/verify-email?token=${opts.token}`;
+function withLocale(path: string, locale: string): string {
+  const l = locale === 'en' ? 'en' : 'ar';
+  const base = env.APP_URL.replace(/\/$/, '');
+  return `${base}/${l}${path}`;
+}
+
+export async function sendVerificationEmail(opts: { to: string; name: string; token: string; locale: string }) {
+  const verifyUrl = `${withLocale('/auth/verify-email', opts.locale)}?token=${opts.token}`;
   const html = await render(VerifyEmail({ name: opts.name, verifyUrl, appUrl: env.APP_URL }));
   await transport.sendMail({
     from: mailFrom,
@@ -24,8 +30,9 @@ export async function sendPasswordResetEmail(opts: {
   name: string;
   token: string;
   expiresInHours: number;
+  locale: string;
 }) {
-  const resetUrl = `${env.APP_URL}/auth/reset-password?token=${opts.token}`;
+  const resetUrl = `${withLocale('/auth/reset-password', opts.locale)}?token=${opts.token}`;
   const html = await render(
     ResetPassword({ name: opts.name, resetUrl, appUrl: env.APP_URL, expiresInHours: opts.expiresInHours }),
   );

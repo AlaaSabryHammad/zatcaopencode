@@ -68,7 +68,7 @@ export async function register(input: unknown): Promise<ActionResult<{ email: st
 
   try {
     const token = await createVerificationToken(user.id, 'VERIFY_EMAIL', VERIFY_EMAIL_TTL_H);
-    await sendVerificationEmail({ to: user.email, name: user.name, token });
+    await sendVerificationEmail({ to: user.email, name: user.name, token, locale: 'ar' });
   } catch (e) {
     console.error('sendVerificationEmail failed:', e);
   }
@@ -176,11 +176,11 @@ export async function forgotPassword(input: unknown): Promise<ActionResult> {
   const parsed = forgotSchema.safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
   const { email } = parsed.data;
-  const u = await prisma.user.findUnique({ where: { email }, select: { id: true, name: true } });
+  const u = await prisma.user.findUnique({ where: { email }, select: { id: true, name: true, locale: true } });
   if (u) {
     try {
       const token = await createVerificationToken(u.id, 'RESET_PASSWORD', RESET_TOKEN_TTL_H);
-      await sendPasswordResetEmail({ to: email, name: u.name, token, expiresInHours: RESET_TOKEN_TTL_H });
+      await sendPasswordResetEmail({ to: email, name: u.name, token, expiresInHours: RESET_TOKEN_TTL_H, locale: u.locale });
     } catch (e) {
       console.error('sendPasswordResetEmail failed:', e);
     }
