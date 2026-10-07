@@ -5,6 +5,7 @@ import { VerifyEmail } from './templates/VerifyEmail';
 import { ResetPassword } from './templates/ResetPassword';
 import { OtpCode } from './templates/OtpCode';
 import { Invitation } from './templates/Invitation';
+import { InvoiceEmail } from './templates/InvoiceEmail';
 import { env } from '@/server/env';
 
 const transport = createTransport();
@@ -82,4 +83,27 @@ export async function sendInvitationEmail(opts: {
     }),
   );
   await transport.sendMail({ from: mailFrom, to: opts.to, subject: `دعوة للانضمام إلى ${opts.orgName} — ZatcaWeb`, html });
+}
+
+export async function sendInvoiceEmail(opts: {
+  to: string;
+  customerName: string;
+  number: string;
+  total: number;
+  currency: string;
+  token: string;
+  locale: string;
+}) {
+  const viewUrl = `${withLocale('/s', opts.locale)}/${opts.token}`;
+  const html = await render(
+    InvoiceEmail({
+      customerName: opts.customerName,
+      number: opts.number,
+      total: opts.total.toFixed(2),
+      currency: opts.currency,
+      viewUrl,
+      appUrl: env.APP_URL,
+    }),
+  );
+  await transport.sendMail({ from: mailFrom, to: opts.to, subject: `فاتورة ${opts.number} — ZatcaWeb`, html });
 }
