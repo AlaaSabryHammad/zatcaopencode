@@ -234,7 +234,14 @@ model Organization {
   defaultLocale        String             @default("ar") @map("default_locale")
   currency             String             @default("SAR")
   fiscalYearStartMonth Int                @default(1) @map("fiscal_year_start_month")
+  /// reg | group | none
+  vatStatus            String             @default("reg") @map("vat_status")
+  /// Invoice template choice (Modern | Classic | Minimal | Corporate).
+  invoiceTemplate      String             @default("Modern") @map("invoice_template")
   status               OrganizationStatus @default(trial)
+  /// Onboarding wizard progress (0-6) and completion timestamp.
+  onboardingStep       Int                @default(0) @map("onboarding_step")
+  onboardingCompletedAt DateTime?         @map("onboarding_completed_at") @db.Timestamptz(6)
   createdById          String?            @map("created_by_id") @db.Uuid
   createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -244,6 +251,8 @@ model Organization {
   memberships Membership[]
   roles       Role[]
   invitations Invitation[]
+  branches    Branch[]
+  sequences   InvoiceSequence[]
   auditLogs   AuditLog[]
 
   @@map("organization")
@@ -265,6 +274,55 @@ model OrganizationAddress {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("organization_address")
+}
+
+/// Physical location. The head-office branch is created by the onboarding wizard.
+model Branch {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  code           String /// unique per org (e.g. HO, RYD-01)
+  nameAr         String   @map("name_ar")
+  nameEn         String?  @map("name_en")
+  city           String?
+  district       String?
+  street         String?
+  buildingNo     String?  @map("building_no")
+  postalCode     String?  @map("postal_code")
+  phone          String?
+  email          String?
+  isHeadOffice   Boolean  @default(false) @map("is_head_office")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sequences    InvoiceSequence[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+  @@map("branch")
+}
+
+/// Gap-free document numbering. Numbers are allocated with SELECT … FOR UPDATE
+/// inside the issuing transaction (Phase 6). One row per (org, branch?, type, year).
+model InvoiceSequence {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  branchId       String?  @map("branch_id") @db.Uuid
+  /// TAX | SIMPLIFIED | QUOTATION | ...
+  documentType   String   @map("document_type")
+  /// Display pattern, e.g. INV-{YYYY}-{#####}
+  prefix         String
+  nextValue      Int      @default(1) @map("next_value")
+  year           Int
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, branchId, documentType, year])
+  @@index([organizationId])
+  @@map("invoice_sequence")
 }
 
 /// Permission catalogue (keys like `invoice.issue`). Synced from src/server/rbac/permissions.ts.

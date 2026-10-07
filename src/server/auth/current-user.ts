@@ -18,6 +18,7 @@ export async function getCurrentUser() {
       locale: true,
       theme: true,
       emailVerifiedAt: true,
+      phoneVerifiedAt: true,
       twoFactorEnabled: true,
       lastLoginAt: true,
     },
@@ -29,7 +30,17 @@ export async function getCurrentUser() {
 export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 
 const membershipInclude = {
-  organization: { select: { id: true, nameAr: true, nameEn: true, slug: true, logoKey: true } },
+  organization: {
+    select: {
+      id: true,
+      nameAr: true,
+      nameEn: true,
+      slug: true,
+      logoKey: true,
+      onboardingStep: true,
+      onboardingCompletedAt: true,
+    },
+  },
   role: { select: { id: true, key: true, nameAr: true, nameEn: true, isSystem: true } },
 } as const;
 

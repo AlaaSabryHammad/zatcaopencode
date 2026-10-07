@@ -91,3 +91,16 @@ The `init` migration is applied. `docker-compose.yml` remains the reference setu
 data (`samples.ts`). Fixture text is sample data, not product copy, so it is not in `messages/`. Each demo
 can be shown in ar/en × light/dark, using `data-theme` scoping (tokens are attribute-scoped).
 The route returns 404 in production unless `ENABLE_DEV_GALLERY=true`.
+
+### D-012 · Phase 3 scope notes (onboarding wizard)
+
+- The wizard writes each step straight to the database (org / address / branding / tax), so progress is
+  genuinely "saved automatically" and resumes via `Organization.onboardingStep`. No draft table.
+- `Branch` (head office `HO`) and `InvoiceSequence` (TAX + SIMPLIFIED, org-wide, current year) are created by
+  `finalizeWorkspace()`. Number allocation with `SELECT … FOR UPDATE` arrives with issuing (Phase 6).
+- Default chart of accounts is deferred to Phase 9 (`Account` model does not exist yet).
+- Logo / stamp / signature upload is deferred to the files phase (S3/MinIO, Phase 14) — the branding step
+  persists `brandColor` + `invoiceTemplate` only.
+- Welcome-checklist CTAs for customers / products / invoices / e-invoicing device are disabled with a
+  "soon" badge until their phases land; Invite links to the working `/settings/users` page.
+- The old quick form `/onboarding/create-org` now redirects to the wizard `/onboarding`.
