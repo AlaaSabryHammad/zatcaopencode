@@ -1,0 +1,189 @@
+import type { PermissionKey } from './permissions';
+
+export type SystemRoleKey =
+  | 'org.owner'
+  | 'org.admin'
+  | 'accountant'
+  | 'sales.manager'
+  | 'salesperson'
+  | 'cashier'
+  | 'auditor'
+  | 'viewer';
+
+export interface SystemRoleDef {
+  key: SystemRoleKey;
+  nameAr: string;
+  nameEn: string;
+  permissions: PermissionKey[];
+}
+
+/**
+ * Default system roles matching the Users/Roles design.
+ * `org.owner` holds all permissions including billing; `org.admin` holds all except billing.
+ */
+export const SYSTEM_ROLES: SystemRoleDef[] = [
+  {
+    key: 'org.owner',
+    nameAr: 'مالك المؤسسة',
+    nameEn: 'Owner',
+    permissions: [
+      'org.manage',
+      'org.switch',
+      'billing.manage',
+      'user.view',
+      'user.create',
+      'user.update',
+      'user.delete',
+      'role.manage',
+      'invitation.manage',
+      'product.view',
+      'product.manage',
+      'branch.view',
+      'branch.manage',
+      'warehouse.manage',
+      'sale.view',
+      'sale.create',
+      'sale.manage',
+      'pos.access',
+      'pos.close',
+      'purchase.view',
+      'purchase.manage',
+      'supplier.manage',
+      'account.view',
+      'account.manage',
+      'journal.manage',
+      'tax.view',
+      'tax.manage',
+      'invoice.view',
+      'invoice.issue',
+      'invoice.cancel',
+      'invoice.creditnote',
+      'zatca.submit',
+      'payment.view',
+      'payment.manage',
+      'report.view',
+      'report.export',
+      'audit.view',
+      'integration.manage',
+    ],
+  },
+  {
+    key: 'org.admin',
+    nameAr: 'مدير المؤسسة',
+    nameEn: 'Organization Admin',
+    permissions: [
+      'org.manage',
+      'org.switch',
+      'user.view',
+      'user.create',
+      'user.update',
+      'user.delete',
+      'role.manage',
+      'invitation.manage',
+      'product.view',
+      'product.manage',
+      'branch.view',
+      'branch.manage',
+      'warehouse.manage',
+      'sale.view',
+      'sale.create',
+      'sale.manage',
+      'pos.access',
+      'pos.close',
+      'purchase.view',
+      'purchase.manage',
+      'supplier.manage',
+      'account.view',
+      'account.manage',
+      'journal.manage',
+      'tax.view',
+      'tax.manage',
+      'invoice.view',
+      'invoice.issue',
+      'invoice.cancel',
+      'invoice.creditnote',
+      'zatca.submit',
+      'payment.view',
+      'payment.manage',
+      'report.view',
+      'report.export',
+      'audit.view',
+      'integration.manage',
+    ],
+  },
+  {
+    key: 'accountant',
+    nameAr: 'محاسب',
+    nameEn: 'Accountant',
+    permissions: [
+      'account.view',
+      'account.manage',
+      'journal.manage',
+      'tax.view',
+      'tax.manage',
+      'invoice.view',
+      'invoice.issue',
+      'invoice.creditnote',
+      'payment.view',
+      'payment.manage',
+      'report.view',
+      'report.export',
+      'purchase.view',
+      'purchase.manage',
+      'supplier.manage',
+      'branch.view',
+      'product.view',
+      'sale.view',
+      'audit.view',
+    ],
+  },
+  {
+    key: 'sales.manager',
+    nameAr: 'مدير مبيعات',
+    nameEn: 'Sales Manager',
+    permissions: [
+      'sale.view',
+      'sale.create',
+      'sale.manage',
+      'pos.access',
+      'pos.close',
+      'invoice.view',
+      'invoice.issue',
+      'invoice.cancel',
+      'product.view',
+      'product.manage',
+      'branch.view',
+      'report.view',
+      'report.export',
+      'user.view',
+      'payment.view',
+      'payment.manage',
+      'supplier.manage',
+      'purchase.view',
+    ],
+  },
+  {
+    key: 'salesperson',
+    nameAr: 'مندوب مبيعات',
+    nameEn: 'Salesperson',
+    permissions: ['sale.view', 'sale.create', 'pos.access', 'invoice.view', 'invoice.issue', 'product.view', 'branch.view', 'payment.view', 'report.view'],
+  },
+  {
+    key: 'cashier',
+    nameAr: 'أمين صندوق',
+    nameEn: 'Cashier',
+    permissions: ['pos.access', 'pos.close', 'sale.view', 'sale.create', 'invoice.view', 'invoice.issue', 'payment.view', 'payment.manage', 'product.view', 'branch.view'],
+  },
+  {
+    key: 'auditor',
+    nameAr: 'مراجع',
+    nameEn: 'Auditor',
+    permissions: ['audit.view', 'report.view', 'report.export', 'invoice.view', 'sale.view', 'purchase.view', 'account.view', 'tax.view', 'branch.view', 'user.view'],
+  },
+  {
+    key: 'viewer',
+    nameAr: 'مشاهد',
+    nameEn: 'Viewer',
+    permissions: ['sale.view', 'invoice.view', 'product.view', 'branch.view', 'report.view', 'purchase.view', 'account.view', 'tax.view'],
+  },
+];
