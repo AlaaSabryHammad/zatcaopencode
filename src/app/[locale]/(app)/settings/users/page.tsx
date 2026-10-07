@@ -3,8 +3,10 @@ import { formatDistanceToNow } from 'date-fns';
 import { arSA, enUS } from 'date-fns/locale';
 import { redirect } from 'next/navigation';
 import { requireOrgContext } from '@/server/auth/current-user';
+import { hasPermission } from '@/server/rbac/guard';
 import { withRls } from '@/server/db';
 import { Badge, Card, Table } from '@/components/zw';
+import { InviteUserForm } from '@/components/invites/InviteUserForm';
 
 export default async function UsersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -53,7 +55,7 @@ export default async function UsersPage({ params }: { params: Promise<{ locale: 
   }));
 
   return (
-    <div className="mx-auto w-full max-w-content px-4 py-6 sm:px-8">
+    <div className="mx-auto flex w-full max-w-content flex-col gap-4 px-4 py-6 sm:px-8">
       <Card title={t('users.title')}>
         <Table
           columns={[
@@ -66,6 +68,27 @@ export default async function UsersPage({ params }: { params: Promise<{ locale: 
           rows={rows}
         />
       </Card>
+      <InviteUserFormGate orgId={orgId} userId={ctx.user.id} userEmail={ctx.user.email} />
     </div>
   );
+}
+
+async function InviteUserFormGate({
+  orgId,
+  userId,
+  userEmail,
+}: {
+  orgId: string;
+  userId: string;
+  userEmail: string;
+}) {
+  if (!(await hasPermission('invitation.manage'))) return null;
+  const roles = await withRls({ orgId, userId, userEmail }, (tx) =>
+    tx.role.findMany({
+      where: { OR: [{ organizationId: orgId }, { organizationId: null, isSystem: true }] },
+      select: { id: true, key: true, nameAr: true, nameEn: true, isSystem: true },
+      orderBy: [{ isSystem: 'desc' }, { nameAr: 'asc' }],
+    }),
+  );
+  return <InviteUserForm roles={roles} />;
 }

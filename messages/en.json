@@ -273,5 +273,20 @@
     "title": "Roles",
     "description": "Manage organization roles and permissions",
     "system": "System"
+  },
+  "invites": {
+    "title": "Invite user",
+    "send": "Send invitation",
+    "sent": "Invitation sent to {email}",
+    "acceptTitle": "Accept invitation",
+    "acceptDesc": "Invitation to join {org} as {role}",
+    "accept": "Accept invitation",
+    "accepted": "Invitation accepted, welcome to {org}",
+    "goHome": "Go home",
+    "signInFirst": "Sign in with the invited email ({email}) to accept",
+    "errors": {
+      "invalid": "Invalid or expired invitation",
+      "emailMismatch": "This invitation is for a different email"
+    }
   }
 }

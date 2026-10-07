@@ -4,6 +4,7 @@ import { createTransport, mailFrom } from './config';
 import { VerifyEmail } from './templates/VerifyEmail';
 import { ResetPassword } from './templates/ResetPassword';
 import { OtpCode } from './templates/OtpCode';
+import { Invitation } from './templates/Invitation';
 import { env } from '@/server/env';
 
 const transport = createTransport();
@@ -59,4 +60,26 @@ export async function sendOtpEmail(opts: {
     }),
   );
   await transport.sendMail({ from: mailFrom, to: opts.to, subject: `رمز التحقق: ${opts.code}`, html });
+}
+
+export async function sendInvitationEmail(opts: {
+  to: string;
+  orgName: string;
+  roleName: string;
+  token: string;
+  locale: string;
+  expiresInDays: number;
+}) {
+  const acceptUrl = `${withLocale('/invite', opts.locale)}?token=${opts.token}`;
+  const html = await render(
+    Invitation({
+      orgName: opts.orgName,
+      roleName: opts.roleName,
+      email: opts.to,
+      acceptUrl,
+      appUrl: env.APP_URL,
+      expiresInDays: opts.expiresInDays,
+    }),
+  );
+  await transport.sendMail({ from: mailFrom, to: opts.to, subject: `دعوة للانضمام إلى ${opts.orgName} — ZatcaWeb`, html });
 }
