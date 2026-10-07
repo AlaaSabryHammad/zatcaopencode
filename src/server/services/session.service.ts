@@ -35,11 +35,15 @@ export function issueSessionToken(remember: boolean, mfaPending = false): Sessio
   if (mfaPending) {
     return { token, tokenHash, expiresAt: new Date(Date.now() + MFA_TTL_MIN * 60_000) };
   }
-  const expiresAt = remember ? addDays(new Date(), SESSION_TTL_DAYS) : addHours(new Date(), SESSION_TTL_SHORT_HOURS);
+  const expiresAt = remember
+    ? addDays(new Date(), SESSION_TTL_DAYS)
+    : addHours(new Date(), SESSION_TTL_SHORT_HOURS);
   return { token, tokenHash, expiresAt };
 }
 
-export async function createSession(input: CreateSessionInput): Promise<{ token: string; sessionId: string; expiresAt: Date }> {
+export async function createSession(
+  input: CreateSessionInput,
+): Promise<{ token: string; sessionId: string; expiresAt: Date }> {
   const t = issueSessionToken(input.remember, input.mfaPending);
   const s = await prisma.session.create({
     data: {
@@ -82,11 +86,18 @@ export async function revokeAllSessions(userId: string, exceptSessionId?: string
 }
 
 export async function completeMfa(sessionId: string): Promise<void> {
-  await prisma.session.update({ where: { id: sessionId }, data: { mfaPending: false, lastSeenAt: new Date() } });
+  await prisma.session.update({
+    where: { id: sessionId },
+    data: { mfaPending: false, lastSeenAt: new Date() },
+  });
 }
 
 /** Rotate session: issue new token, revoke old. */
-export async function rotateSession(oldToken: string, ip?: string | null, userAgent?: string | null): Promise<{ token: string; expiresAt: Date } | null> {
+export async function rotateSession(
+  oldToken: string,
+  ip?: string | null,
+  userAgent?: string | null,
+): Promise<{ token: string; expiresAt: Date } | null> {
   const ctx = await getSessionByToken(oldToken);
   if (!ctx) return null;
   const { session } = ctx;
@@ -124,6 +135,15 @@ export async function listActiveSessions(userId: string) {
   return prisma.session.findMany({
     where: { userId, revokedAt: null, expiresAt: { gt: new Date() } },
     orderBy: { lastSeenAt: 'desc' },
-    select: { id: true, ip: true, userAgent: true, lastSeenAt: true, createdAt: true, expiresAt: true, remember: true, mfaPending: true },
+    select: {
+      id: true,
+      ip: true,
+      userAgent: true,
+      lastSeenAt: true,
+      createdAt: true,
+      expiresAt: true,
+      remember: true,
+      mfaPending: true,
+    },
   });
 }

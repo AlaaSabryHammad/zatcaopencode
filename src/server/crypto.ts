@@ -1,5 +1,13 @@
 import 'server-only';
-import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  createHmac,
+  randomBytes,
+  randomInt,
+  timingSafeEqual,
+} from 'node:crypto';
 import { env } from './env';
 
 /** URL-safe random token (default 32 bytes → 43 chars). */
@@ -62,13 +70,26 @@ export function encryptSecret(plaintext: string, context: string): string {
   const wrapped = gcmEncrypt(kek(), dek, `dek:${context}`);
   const body = gcmEncrypt(dek, Buffer.from(plaintext, 'utf8'), context);
   const wrappedDek = Buffer.concat([wrapped.iv, wrapped.tag, wrapped.ct]).toString('base64url');
-  return [VERSION, wrappedDek, body.iv.toString('base64url'), body.tag.toString('base64url'), body.ct.toString('base64url')].join('.');
+  return [
+    VERSION,
+    wrappedDek,
+    body.iv.toString('base64url'),
+    body.tag.toString('base64url'),
+    body.ct.toString('base64url'),
+  ].join('.');
 }
 
 export function decryptSecret(payload: string, context: string): string {
   const [version, wrappedDek, iv, tag, ct] = payload.split('.');
-  if (version !== VERSION || !wrappedDek || !iv || !tag || !ct) throw new Error('decryptSecret: malformed payload');
+  if (version !== VERSION || !wrappedDek || !iv || !tag || !ct)
+    throw new Error('decryptSecret: malformed payload');
   const w = Buffer.from(wrappedDek, 'base64url');
   const dek = gcmDecrypt(kek(), w.subarray(0, 12), w.subarray(12, 28), w.subarray(28), `dek:${context}`);
-  return gcmDecrypt(dek, Buffer.from(iv, 'base64url'), Buffer.from(tag, 'base64url'), Buffer.from(ct, 'base64url'), context).toString('utf8');
+  return gcmDecrypt(
+    dek,
+    Buffer.from(iv, 'base64url'),
+    Buffer.from(tag, 'base64url'),
+    Buffer.from(ct, 'base64url'),
+    context,
+  ).toString('utf8');
 }

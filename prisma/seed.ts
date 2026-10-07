@@ -33,8 +33,13 @@ async function seedSystemRoles() {
     // organizationId is nullable so upsert on the composite key isn't possible; use find-then-write.
     const existing = await prisma.role.findFirst({ where: { organizationId: null, key: r.key } });
     const role = existing
-      ? await prisma.role.update({ where: { id: existing.id }, data: { nameAr: r.nameAr, nameEn: r.nameEn, isSystem: true } })
-      : await prisma.role.create({ data: { organizationId: null, key: r.key, nameAr: r.nameAr, nameEn: r.nameEn, isSystem: true } });
+      ? await prisma.role.update({
+          where: { id: existing.id },
+          data: { nameAr: r.nameAr, nameEn: r.nameEn, isSystem: true },
+        })
+      : await prisma.role.create({
+          data: { organizationId: null, key: r.key, nameAr: r.nameAr, nameEn: r.nameEn, isSystem: true },
+        });
     await prisma.rolePermission.deleteMany({ where: { roleId: role.id } });
     await prisma.rolePermission.createMany({
       data: r.permissions.map((pk) => ({ roleId: role.id, permissionKey: pk })),

@@ -12,6 +12,12 @@
     "themeDark": "Dark",
     "themeSystem": "System",
     "retry": "Try again",
+    "loading": "Loading…",
+    "yes": "Yes",
+    "no": "No",
+    "never": "Never",
+    "status": "Status",
+    "welcome": "Welcome to ZatcaWeb",
     "independence": "ZatcaWeb is an independent platform and is not affiliated with ZATCA or any government entity."
   },
   "home": {
@@ -159,5 +165,109 @@
       "compliance": "Compliance status",
       "reporting": "Reporting / clearance"
     }
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "email": "Invalid email address",
+    "passwordMismatch": "Passwords do not match",
+    "nameShort": "Name is too short",
+    "nameLong": "Name is too long",
+    "passwordTooLong": "Password is too long",
+    "passwordWeak": "Weak password: at least 10 characters with letters and digits",
+    "phone": "Invalid mobile number (starts with 5, nine digits)",
+    "otp": "Code must be 6 digits",
+    "recoveryCode": "Invalid recovery code",
+    "terms": "You must accept the terms and conditions",
+    "slugInvalid": "Invalid slug (lowercase letters, digits, hyphens)",
+    "vatInvalid": "VAT number is 15 digits starting and ending with 3",
+    "fixErrors": "Please fix the errors in the form"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signInSubtitle": "Sign in to continue",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me for 30 days",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create account",
+    "name": "Full name",
+    "phone": "Mobile number",
+    "createAccountSubtitle": "Create your account to get started",
+    "haveAccount": "Already have an account?",
+    "checkEmail": "Check your email",
+    "verifyEmailSent": "A verification link was sent to {email}",
+    "backToSignIn": "Back to sign in",
+    "terms": "I agree to the Terms and Privacy Policy",
+    "forgotSubtitle": "Enter your email and we'll send you a reset link",
+    "sendResetLink": "Send reset link",
+    "resetLinkSent": "If the email exists, you'll receive a reset link",
+    "resetPassword": "Reset password",
+    "resetSubtitle": "Enter your new password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "passwordReset": "Password reset",
+    "passwordResetSuccess": "Your password has been reset. You can sign in now",
+    "verifyEmail": "Verify email",
+    "emailVerified": "Your email has been verified successfully",
+    "invalidToken": "Invalid or expired link",
+    "twoFactor": "Two-factor authentication",
+    "twoFactorSubtitle": "Enter the code from your authenticator app",
+    "totp": "Authenticator code",
+    "recoveryCode": "Recovery code",
+    "totpCode": "6-digit verification code",
+    "verify": "Verify",
+    "useRecovery": "Use recovery code",
+    "somethingWentWrong": "Something went wrong. Please try again",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "emailExists": "Email already registered",
+      "accountLocked": "Account temporarily locked. Try again in an hour",
+      "noPasswordSet": "No password set for this account",
+      "tooManyAttempts": "Too many attempts. Try later",
+      "sessionExpired": "Session expired. Please sign in again",
+      "mfaNotEnabled": "Two-factor authentication is not enabled",
+      "mfaInvalid": "Verification failed",
+      "otpInvalid": "Invalid verification code",
+      "otpExpired": "Verification code expired",
+      "otpMaxAttempts": "Maximum attempts exceeded",
+      "userNotFound": "User not found",
+      "recoveryInvalid": "Invalid or already used recovery code",
+      "unauthorized": "Unauthorized",
+      "invalidToken": "Invalid or expired link"
+    }
+  },
+  "org": {
+    "nameAr": "Organization name (Arabic)",
+    "nameEn": "Organization name (English)",
+    "slug": "Organization slug (URL)",
+    "crNumber": "Commercial Registration number",
+    "vatNumber": "VAT number",
+    "errors": {
+      "slugTaken": "Organization slug is already taken",
+      "notMember": "You are not a member of this organization"
+    }
+  },
+  "onboarding": {
+    "createOrg": "Create new organization",
+    "createOrgSubtitle": "Enter your organization details to get started",
+    "continue": "Continue"
+  },
+  "users": {
+    "user": "User",
+    "role": "Role",
+    "twoFactor": "Two-factor",
+    "lastActive": "Last active",
+    "branches": "Branches",
+    "errors": {
+      "alreadyMember": "User is already a member",
+      "pendingInvite": "There is a pending invitation for this email",
+      "cannotSuspendSelf": "You cannot suspend your own account"
+    }
+  },
+  "roles": {
+    "description": "Manage organization roles and permissions",
+    "system": "System"
   }
 }

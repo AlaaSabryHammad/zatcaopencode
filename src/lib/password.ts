@@ -28,7 +28,8 @@ export function passwordStrength(pw: string): PasswordStrength {
   const common = COMMON.some((c) => pw.toLowerCase().includes(c));
   const meetsPolicy = length >= PASSWORD_MIN && length <= PASSWORD_MAX && hasLetter && hasDigit && !common;
 
-  if (!length) return { score: 0, level: 'empty', length, hasLetter, hasDigit, hasSymbol, hasMixedCase, meetsPolicy };
+  if (!length)
+    return { score: 0, level: 'empty', length, hasLetter, hasDigit, hasSymbol, hasMixedCase, meetsPolicy };
   let score = Math.min(length, 16) * 4; // up to 64
   if (hasDigit) score += 8;
   if (hasSymbol) score += 14;

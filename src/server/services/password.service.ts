@@ -24,7 +24,11 @@ export async function verifyPassword(passwordHash: string, password: string): Pr
 }
 
 /** True if the candidate matches the current hash (reuse guard). */
-export async function passwordRecentlyUsed(userId: string, password: string, tx?: Prisma.TransactionClient): Promise<boolean> {
+export async function passwordRecentlyUsed(
+  userId: string,
+  password: string,
+  tx?: Prisma.TransactionClient,
+): Promise<boolean> {
   const client = tx ?? prisma;
   const u = await client.user.findUnique({ where: { id: userId }, select: { passwordHash: true } });
   if (!u?.passwordHash) return false;

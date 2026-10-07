@@ -13,17 +13,32 @@ export interface GenerateOtpResult {
 }
 
 /** Generate and persist a 6-digit OTP (HMAC-SHA256 stored). */
-export async function generateOtp(opts: { userId?: string; phone: string; purpose: OtpPurpose }): Promise<GenerateOtpResult> {
+export async function generateOtp(opts: {
+  userId?: string;
+  phone: string;
+  purpose: OtpPurpose;
+}): Promise<GenerateOtpResult> {
   const code = randomDigits(6);
   const codeHash = hmac(code, `otp:${opts.purpose}`);
   const expiresAt = addMinutes(new Date(), OTP_TTL_MIN);
   await prisma.otpCode.create({
-    data: { userId: opts.userId ?? null, phone: opts.phone, purpose: opts.purpose, codeHash, expiresAt, attempts: 0 },
+    data: {
+      userId: opts.userId ?? null,
+      phone: opts.phone,
+      purpose: opts.purpose,
+      codeHash,
+      expiresAt,
+      attempts: 0,
+    },
   });
   return { code, expiresAt };
 }
 
-export async function verifyOtp(opts: { phone: string; purpose: OtpPurpose; code: string }): Promise<{ ok: boolean; userId?: string; reason?: 'expired' | 'max_attempts' | 'invalid' }> {
+export async function verifyOtp(opts: {
+  phone: string;
+  purpose: OtpPurpose;
+  code: string;
+}): Promise<{ ok: boolean; userId?: string; reason?: 'expired' | 'max_attempts' | 'invalid' }> {
   const codeHash = hmac(opts.code, `otp:${opts.purpose}`);
   const rec = await prisma.otpCode.findFirst({
     where: { phone: opts.phone, purpose: opts.purpose, consumedAt: null, expiresAt: { gt: new Date() } },
@@ -44,7 +59,9 @@ export async function verifyOtp(opts: { phone: string; purpose: OtpPurpose; code
 
 /** Cleanup expired/consumed OTPs. */
 export async function cleanupOtp(): Promise<number> {
-  const res = await prisma.otpCode.deleteMany({ where: { OR: [{ consumedAt: { not: null } }, { expiresAt: { lt: new Date() } }] } });
+  const res = await prisma.otpCode.deleteMany({
+    where: { OR: [{ consumedAt: { not: null } }, { expiresAt: { lt: new Date() } }] },
+  });
   return res.count;
 }
 

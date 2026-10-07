@@ -21,7 +21,11 @@ export function issueSingleUseToken(purpose: TokenPurpose, ttlHours: number): Is
   return { token, tokenHash, expiresAt };
 }
 
-export async function createVerificationToken(userId: string, purpose: TokenPurpose, ttlHours: number): Promise<string> {
+export async function createVerificationToken(
+  userId: string,
+  purpose: TokenPurpose,
+  ttlHours: number,
+): Promise<string> {
   const t = issueSingleUseToken(purpose, ttlHours);
   await prisma.verificationToken.create({
     data: { userId, purpose, tokenHash: t.tokenHash, expiresAt: t.expiresAt },
@@ -29,7 +33,10 @@ export async function createVerificationToken(userId: string, purpose: TokenPurp
   return t.token;
 }
 
-export async function consumeVerificationToken(token: string, purpose: TokenPurpose): Promise<{ ok: boolean; userId?: string }> {
+export async function consumeVerificationToken(
+  token: string,
+  purpose: TokenPurpose,
+): Promise<{ ok: boolean; userId?: string }> {
   const tokenHash = hmac(token, `token:${purpose}`);
   const rec = await prisma.verificationToken.findFirst({
     where: { tokenHash, purpose, usedAt: null, expiresAt: { gt: new Date() } },
@@ -58,7 +65,10 @@ export async function resetFailedLogins(userId: string, tx?: Prisma.TransactionC
   return client.user.update({ where: { id: userId }, data: { failedLoginCount: 0, lockedUntil: null } });
 }
 
-export async function verifyCredentials(email: string, password: string): Promise<{ ok: boolean; userId?: string; reason?: 'locked' | 'no_password' | 'invalid' }> {
+export async function verifyCredentials(
+  email: string,
+  password: string,
+): Promise<{ ok: boolean; userId?: string; reason?: 'locked' | 'no_password' | 'invalid' }> {
   const e = email.toLowerCase().trim();
   const u = await prisma.user.findUnique({ where: { email: e } });
   if (!u || u.deletedAt) return { ok: false, reason: 'invalid' };

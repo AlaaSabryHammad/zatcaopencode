@@ -37,7 +37,7 @@ export const registerSchema = z.object({
   email: emailSchema,
   phone: saudiMobileSchema,
   password: passwordSchema,
-  terms: z.literal(true, 'validation.terms'),
+  terms: z.boolean().refine((v) => v === true, 'validation.terms'),
 });
 
 export const otpCodeSchema = z
@@ -64,7 +64,11 @@ export const recoveryCodeSchema = z.object({
 });
 
 export const changePasswordSchema = z
-  .object({ current: z.string().min(1, 'validation.required'), password: passwordSchema, confirm: z.string() })
+  .object({
+    current: z.string().min(1, 'validation.required'),
+    password: passwordSchema,
+    confirm: z.string(),
+  })
   .refine((v) => v.password === v.confirm, { path: ['confirm'], message: 'validation.passwordMismatch' });
 
 /** Only same-site relative paths are allowed as post-login redirects (open-redirect guard). */

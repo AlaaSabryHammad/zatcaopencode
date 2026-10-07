@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+import type Redis from 'ioredis';
 import type { RateLimitKey, RateLimitResult, RateLimitStore } from './types';
 
 /** Redis fixed-window rate limiter using INCR + EXPIRE (atomic for first hit). */

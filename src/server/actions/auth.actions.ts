@@ -77,7 +77,9 @@ export async function register(input: unknown): Promise<ActionResult<{ email: st
 }
 
 /** تسجيل الدخول بالبريد وكلمة المرور */
-export async function login(input: unknown): Promise<ActionResult<{ requiresMfa?: boolean; email?: string }>> {
+export async function login(
+  input: unknown,
+): Promise<ActionResult<{ requiresMfa?: boolean; email?: string }>> {
   const parsed = loginSchema.safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
   const { email, password, remember } = parsed.data;
@@ -89,10 +91,20 @@ export async function login(input: unknown): Promise<ActionResult<{ requiresMfa?
   const keyIp = ip ? `login:ip:${sha256(ip).slice(0, 16)}` : undefined;
 
   const r1 = await rl.increment(keyEmail, 10, 5 * 60_000);
-  if (!r1.allowed) return { ok: false, error: 'auth.errors.tooManyAttempts', retryAfter: Math.ceil((r1.resetMs - Date.now()) / 1000) };
+  if (!r1.allowed)
+    return {
+      ok: false,
+      error: 'auth.errors.tooManyAttempts',
+      retryAfter: Math.ceil((r1.resetMs - Date.now()) / 1000),
+    };
   if (keyIp) {
     const r2 = await rl.increment(keyIp, 20, 5 * 60_000);
-    if (!r2.allowed) return { ok: false, error: 'auth.errors.tooManyAttempts', retryAfter: Math.ceil((r2.resetMs - Date.now()) / 1000) };
+    if (!r2.allowed)
+      return {
+        ok: false,
+        error: 'auth.errors.tooManyAttempts',
+        retryAfter: Math.ceil((r2.resetMs - Date.now()) / 1000),
+      };
   }
 
   const cred = await verifyCredentials(email, password);
@@ -122,7 +134,10 @@ export async function login(input: unknown): Promise<ActionResult<{ requiresMfa?
   await setSessionCookie(s.token, s.expiresAt);
 
   prisma.user
-    .update({ where: { id: user.id }, data: { lastLoginAt: new Date(), failedLoginCount: 0, lockedUntil: null } })
+    .update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date(), failedLoginCount: 0, lockedUntil: null },
+    })
     .catch(() => {});
 
   return { ok: true, data: {} };
@@ -132,7 +147,10 @@ export async function login(input: unknown): Promise<ActionResult<{ requiresMfa?
 export async function logout(): Promise<ActionResult> {
   const token = await getSessionToken();
   if (token) {
-    const sess = await prisma.session.findUnique({ where: { tokenHash: sha256(token) }, select: { id: true } });
+    const sess = await prisma.session.findUnique({
+      where: { tokenHash: sha256(token) },
+      select: { id: true },
+    });
     if (sess) await revokeSession(sess.id);
   }
   await clearSessionCookie();
@@ -143,7 +161,10 @@ export async function logout(): Promise<ActionResult> {
 export async function logoutAll(): Promise<ActionResult> {
   const token = await getSessionToken();
   if (token) {
-    const sess = await prisma.session.findUnique({ where: { tokenHash: sha256(token) }, select: { id: true, userId: true } });
+    const sess = await prisma.session.findUnique({
+      where: { tokenHash: sha256(token) },
+      select: { id: true, userId: true },
+    });
     if (sess) await revokeAllSessions(sess.userId, sess.id);
   }
   await clearSessionCookie();
@@ -182,7 +203,10 @@ export async function resetPassword(input: unknown): Promise<ActionResult> {
 
 /** تأكيد البريد الإلكتروني */
 export async function verifyEmail(input: { token: string } | unknown): Promise<ActionResult> {
-  const token = typeof input === 'object' && input && 'token' in input ? String((input as { token: unknown }).token ?? '') : String(input ?? '');
+  const token =
+    typeof input === 'object' && input && 'token' in input
+      ? String((input as { token: unknown }).token ?? '')
+      : String(input ?? '');
   if (!token || token.length < 20) return { ok: false, error: 'auth.errors.invalidToken' };
   const c = await consumeVerificationToken(token, 'VERIFY_EMAIL');
   if (!c.ok || !c.userId) return { ok: false, error: 'auth.errors.invalidToken' };
@@ -197,7 +221,12 @@ export async function requestOtp(input: unknown, purpose: OtpPurpose = 'LOGIN'):
   const { phone } = parsed.data;
   const rl = getRateLimitStore();
   const r = await rl.increment(otpRateLimitKey(phone, purpose), 5, 10 * 60_000);
-  if (!r.allowed) return { ok: false, error: 'auth.errors.tooManyAttempts', retryAfter: Math.ceil((r.resetMs - Date.now()) / 1000) };
+  if (!r.allowed)
+    return {
+      ok: false,
+      error: 'auth.errors.tooManyAttempts',
+      retryAfter: Math.ceil((r.resetMs - Date.now()) / 1000),
+    };
 
   const u = await prisma.user.findUnique({ where: { phone }, select: { id: true, name: true, email: true } });
   const res = await generateOtp({ userId: u?.id, phone, purpose });
@@ -219,7 +248,11 @@ export async function verifyOtpCode(input: unknown, purpose: OtpPurpose = 'LOGIN
   const v = await verifyOtp({ phone, purpose, code });
   if (!v.ok) {
     const err =
-      v.reason === 'max_attempts' ? 'auth.errors.otpMaxAttempts' : v.reason === 'expired' ? 'auth.errors.otpExpired' : 'auth.errors.otpInvalid';
+      v.reason === 'max_attempts'
+        ? 'auth.errors.otpMaxAttempts'
+        : v.reason === 'expired'
+          ? 'auth.errors.otpExpired'
+          : 'auth.errors.otpInvalid';
     return { ok: false, error: err };
   }
   let userId = v.userId;

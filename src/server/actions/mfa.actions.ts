@@ -22,7 +22,8 @@ export async function verifyTotp(input: unknown): Promise<ActionResult> {
     where: { id: session.userId },
     select: { id: true, twoFactorEnabled: true, twoFactorSecret: true },
   });
-  if (!user?.twoFactorEnabled || !user.twoFactorSecret) return { ok: false, error: 'auth.errors.mfaNotEnabled' };
+  if (!user?.twoFactorEnabled || !user.twoFactorSecret)
+    return { ok: false, error: 'auth.errors.mfaNotEnabled' };
   let secret: string;
   try {
     secret = decryptSecret(user.twoFactorSecret, `totp:${user.id}`);
