@@ -16,9 +16,14 @@ export interface ShellNav {
 function useActiveNav(): ShellNav {
   const t = useTranslations('nav');
   const pathname = usePathname();
-  const seg = pathname.split('/').filter(Boolean).pop() ?? '';
+  const segs = pathname.split('/').filter(Boolean);
+  const seg = segs[segs.length - 1] ?? '';
+  if (segs.includes('customers')) return { active: 'customers', title: t('customers') };
+  if (segs.includes('products')) return { active: 'products', title: t('products') };
   const map: Record<string, { active: string; key: string }> = {
     dashboard: { active: 'dashboard', key: 'dashboard' },
+    customers: { active: 'customers', key: 'customers' },
+    products: { active: 'products', key: 'products' },
     users: { active: 'users', key: 'users' },
     roles: { active: 'roles', key: 'users' },
     security: { active: 'security', key: 'security' },
@@ -88,7 +93,7 @@ export function AppShellClient({
       heading: t('nav.sales'),
       items: [
         { id: 'sales', label: t('nav.sales'), icon: 'shopping-cart', badge: soon },
-        { id: 'customers', label: t('nav.customers'), icon: 'users', badge: soon },
+        { id: 'customers', label: t('nav.customers'), icon: 'users', href: '/customers' },
         { id: 'payments', label: t('nav.payments'), icon: 'wallet', badge: soon },
       ],
     },
@@ -102,7 +107,7 @@ export function AppShellClient({
     },
     {
       items: [
-        { id: 'products', label: t('nav.products'), icon: 'package', badge: soon },
+        { id: 'products', label: t('nav.products'), icon: 'package', href: '/products' },
         { id: 'inventory', label: t('nav.inventory'), icon: 'boxes', badge: soon },
       ],
     },
@@ -163,9 +168,9 @@ export function AppShellClient({
             onSearch={() => setCmdOpen(true)}
             onMenu={() => setCollapsed((v) => !v)}
             quickCreate={[
+              { label: t('nav.customers'), icon: 'user-plus', onSelect: () => router.push('/customers?new=1') },
+              { label: t('nav.products'), icon: 'package', onSelect: () => router.push('/products?new=1') },
               { label: `${t('nav.sales')} · ${soon}`, icon: 'receipt', disabled: true },
-              { label: `${t('nav.customers')} · ${soon}`, icon: 'user-plus', disabled: true },
-              { label: `${t('nav.products')} · ${soon}`, icon: 'package', disabled: true },
             ]}
             notifications={notifCount}
             onNotifications={() => router.push('/dashboard')}

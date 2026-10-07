@@ -241,16 +241,22 @@ async function seedDemo() {
 
   // ── customers ──
   const cust = (c: Omit<Prisma.CustomerCreateManyInput, 'organizationId'>) => prisma.customer.create({ data: { ...c, organizationId: org.id } });
-  const cuBrill = await cust({ type: 'company', nameAr: 'شركة البناء الحديث', nameEn: 'Modern Construction Co.', vatNumber: '300456789100003', crNumber: '1010223344', email: 'accounts@modern-build.sa', phone: '+966504121180', city: 'Riyadh', address: 'Building 2218, Prince Turki St, Al Malqa, Riyadh 13521', creditLimit: 150000, paymentTermsDays: 30 });
+  const cuBrill = await cust({ type: 'company', nameAr: 'شركة البناء الحديث', nameEn: 'Modern Construction Co.', vatNumber: '300456789100003', crNumber: '1010223344', email: 'accounts@modern-build.sa', phone: '+966504121180', city: 'Riyadh', address: 'Building 2218, Prince Turki St, Al Malqa, Riyadh 13521', creditLimit: 150000, paymentTermsDays: 30, tags: ['Key account'] });
   const cuGulf = await cust({ type: 'company', nameAr: 'شركة الخليج للخدمات', nameEn: 'Gulf Services Co.', vatNumber: '302233445500003', city: 'Jeddah', address: 'Al Rawdah, Jeddah 23435', paymentTermsDays: 30 });
-  const cuNoor = await cust({ type: 'company', nameAr: 'مؤسسة النور التجارية', nameEn: 'Al Noor Trading Est.', vatNumber: '310987654300003', city: 'Dammam', paymentTermsDays: 30 });
-  const cuWaha = await cust({ type: 'company', nameAr: 'شركة الواحة للضيافة', nameEn: 'Al Waha Hospitality Co.', vatNumber: '311122233300003', city: 'Al Khobar', paymentTermsDays: 30 });
-  const cuNajd = await cust({ type: 'company', nameAr: 'نجد للخدمات اللوجستية', nameEn: 'Najd Logistics LLC', vatNumber: '300998877600003', city: 'Riyadh', paymentTermsDays: 30 });
-  const cuRayan = await cust({ type: 'company', nameAr: 'مؤسسة الريان للتوريدات', nameEn: 'Al Rayan Supplies Est.', vatNumber: '301122334400003', city: 'Dammam', paymentTermsDays: 30 });
-  const cuWalk = await cust({ type: 'individual', nameAr: 'عبدالله محمد الشهري', city: 'Riyadh', paymentTermsDays: 0 });
+  const cuNoor = await cust({ type: 'company', nameAr: 'مؤسسة النور التجارية', nameEn: 'Al Noor Trading Est.', vatNumber: '310987654300003', city: 'Dammam', paymentTermsDays: 30, tags: ['Retail'] });
+  const cuWaha = await cust({ type: 'company', nameAr: 'شركة الواحة للضيافة', nameEn: 'Al Waha Hospitality Co.', vatNumber: '311122233300003', city: 'Al Khobar', paymentTermsDays: 30, tags: ['Managed Wi-Fi'] });
+  const cuNajd = await cust({ type: 'company', nameAr: 'نجد للخدمات اللوجستية', nameEn: 'Najd Logistics LLC', vatNumber: '300998877600003', city: 'Riyadh', paymentTermsDays: 30, tags: ['Recurring'] });
+  const cuRayan = await cust({ type: 'company', nameAr: 'مؤسسة الريان للتوريدات', nameEn: 'Al Rayan Supplies Est.', vatNumber: '301122334400003', city: 'Dammam', paymentTermsDays: 30, tags: ['New'] });
+  const cuWalk = await cust({ type: 'individual', nameAr: 'عبدالله محمد الشهري', city: 'Riyadh', paymentTermsDays: 0, tags: ['Walk-in'] });
   const cuRed = await cust({ type: 'company', nameAr: 'عيادات البحر الأحمر', nameEn: 'Red Sea Clinics Co.', vatNumber: '302445566700003', city: 'Jeddah', paymentTermsDays: 15 });
-  const cuGold = await cust({ type: 'company', nameAr: 'شركة المراعي الذهبية للأغذية', nameEn: 'Golden Fields Food Co.', vatNumber: '300112233400003', city: 'Riyadh', paymentTermsDays: 30 });
+  const cuGold = await cust({ type: 'company', nameAr: 'شركة المراعي الذهبية للأغذية', nameEn: 'Golden Fields Food Co.', vatNumber: '300112233400003', city: 'Riyadh', paymentTermsDays: 30, tags: ['Key account'] });
   const cuTam = await cust({ type: 'company', nameAr: 'تميمي للاستشارات', nameEn: 'Tamimi Consulting', vatNumber: '310556677800003', city: 'Riyadh', paymentTermsDays: 30 });
+  await prisma.customerContact.createMany({
+    data: [
+      { organizationId: org.id, customerId: cuBrill.id, name: 'Khalid Al-Harbi', role: 'Project manager' },
+      { organizationId: org.id, customerId: cuBrill.id, name: 'Sara Al-Mutairi', role: 'Accounts payable' },
+    ],
+  });
 
   // ── invoice helpers ──
   interface NamedLine { productId?: string; description: string; descriptionAr?: string; qty: number; unit?: string; unitPrice: number; discountPct?: number; vatRate?: number }

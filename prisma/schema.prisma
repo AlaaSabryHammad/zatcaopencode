@@ -254,6 +254,7 @@ model Organization {
   branches    Branch[]
   sequences   InvoiceSequence[]
   customers   Customer[]
+  customerContacts CustomerContact[]
   categories  Category[]
   products    Product[]
   stockLevels StockLevel[]
@@ -475,16 +476,35 @@ model Customer {
   creditLimit      Decimal?     @map("credit_limit") @db.Decimal(18, 2)
   paymentTermsDays Int          @default(30) @map("payment_terms_days")
   notes            String?
+  tags             String[]     @default([])
   createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   invoices     Invoice[]
   payments     Payment[]
+  contacts     CustomerContact[]
 
   @@index([organizationId])
   @@index([organizationId, nameAr])
   @@map("customer")
+}
+
+model CustomerContact {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  customerId     String   @map("customer_id") @db.Uuid
+  name           String
+  role           String?
+  email          String?
+  phone          String?
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer     Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("customer_contact")
 }
 
 model Category {

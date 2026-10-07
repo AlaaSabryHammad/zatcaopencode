@@ -55,6 +55,12 @@ a placeholder until then.
 server-side cursor pagination, so Phase 5 adds a server-driven mode built on TanStack Table with the same
 visual shell and the same loading, empty and error states.
 
+Update (Phase 5): TanStack Table is pinned at v8 (`@tanstack/react-table@8`). v9 rewrote the API surface
+(`useTable`/feature factories; classic names moved to a `/legacy` entry), so v8 stays until a deliberate
+migration. The server-driven `ServerTable` (`src/components/data/ServerTable.tsx`) uses v8 with manual
+sorting/pagination over URL query state. Pagination is offset-based (page + total) rather than keyset:
+lists are small and aggregates are computed per row, so keyset over computed columns buys nothing yet.
+
 ### D-007 · Negative amounts default to `danger-fg`
 
 DESIGN_SPEC §1 requires "true minus + danger-fg" for negative money, but the reference `Amount` only colours
@@ -124,3 +130,15 @@ The route returns 404 in production unless `ENABLE_DEV_GALLERY=true`.
   command menu and `/settings/security` (full user menu arrives with Settings, Phase 11).
 - `pnpm db:rls-check` proves cross-tenant isolation through the app role (reads isolated, writes
   blocked, invitation preview closed). Pure dashboard math has unit tests (`tests/unit/dashboard-stats`).
+
+### D-014 · Phase 5 scope notes (customers & products)
+
+- Lists are server-driven (search/sort/filter/pagination in URL query, TanStack Table v8 for sort/select
+  state with the `zw-table` shell). Pagination is offset-based; see D-006.
+- `Customer.tags` (string array) and `CustomerContact` were added; tags render as badges, Net-terms from
+  `paymentTermsDays`. Documents/notes tabs show honest empty states (Attachment/Note models arrive with
+  later phases). Statement email (Phase 10) and New invoice (Phase 6) buttons are disabled with "soon".
+- Profile credit card shows limit meter + terms + currency only (no price-list/salesperson models yet).
+- CSV import is inline (≤500 rows, per-row errors) — no ImportJob model until the import/export centre
+  (Phase 14). Product images arrive with file management (Phase 14).
+- New `customer.view/manage` permission keys ride the existing RBAC sync (seed upserts).

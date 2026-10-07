@@ -17,6 +17,8 @@ export const PERMISSIONS = {
   'invitation.manage': { group: 'users', description: 'Manage invitations' },
 
   // Products, inventory, branches
+  'customer.view': { group: 'customers', description: 'View customers' },
+  'customer.manage': { group: 'customers', description: 'Create and manage customers' },
   'product.view': { group: 'catalog', description: 'View products and categories' },
   'product.manage': { group: 'catalog', description: 'Create and manage products' },
   'branch.view': { group: 'branches', description: 'View branches' },

@@ -44,13 +44,18 @@ async function main() {
       },
     });
 
-    // 1. reads are isolated
+    // 1. reads are isolated (invoices, customers, products)
     const seenFromB = await withCtx(orgB.id, (db) => db.invoice.findMany({ where: { organizationId: orgA.id } }));
     if (seenFromB.length !== 0) throw new Error(`cross-tenant read leaked ${seenFromB.length} rows`);
     const ownInA = await withCtx(orgA.id, (db) => db.invoice.findMany({ where: { organizationId: orgA.id } }));
     if (ownInA.length !== 1) throw new Error(`own-context read returned ${ownInA.length} rows, want 1`);
     const noCtx = await app.invoice.findMany({ where: { organizationId: orgA.id } });
     if (noCtx.length !== 0) throw new Error('read without context leaked rows');
+    await owner.customer.create({ data: { organizationId: orgA.id, nameAr: 'RLS', type: 'company' } });
+    await owner.product.create({ data: { organizationId: orgA.id, sku: `RLS-${stamp}`, nameAr: 'RLS', sellingPrice: 1 } });
+    const custFromB = await withCtx(orgB.id, (db) => db.customer.findMany({ where: { organizationId: orgA.id } }));
+    const prodFromB = await withCtx(orgB.id, (db) => db.product.findMany({ where: { organizationId: orgA.id } }));
+    if (custFromB.length !== 0 || prodFromB.length !== 0) throw new Error('customer/product read leaked across tenants');
 
     // 2. writes outside the context are rejected
     let blocked = false;
