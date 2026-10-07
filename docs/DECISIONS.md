@@ -74,10 +74,16 @@ transaction.
 
 ### D-010 · Local environment
 
-The machine used for Phase 1 had no Docker or PostgreSQL. All infrastructure files are in place
-(`docker-compose.yml`, init SQL, Prisma schema, seed), but the first migration has not been created or applied
-yet. Run `docker compose up -d && pnpm db:migrate --name init && pnpm db:seed` once Docker is available.
-Phase 2 depends on it.
+The development machine has no Docker and no admin rights. PostgreSQL 16.15 runs from the official EDB
+portable binaries under `%LOCALAPPDATA%\Programs\PostgreSQL16`:
+
+- data directory: `data\`, scram-sha-256 auth, UTF-8, `localhost:5432`
+- `start-postgres.cmd` / `stop-postgres.cmd`, plus a logon starter in the Windows Startup folder
+- superuser password in `superuser-password.txt` (local only, never committed)
+
+Roles and databases match `docker/postgres/init.sql`. One difference: locally `zatcaweb_owner` is NOSUPERUSER
+with CREATEDB, while in Docker it is the image's superuser. This stricter local setup is fine for migrations.
+The `init` migration is applied. `docker-compose.yml` remains the reference setup for other machines and CI.
 
 ### D-011 · Gallery fixtures
 
